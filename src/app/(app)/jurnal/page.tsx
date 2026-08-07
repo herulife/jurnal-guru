@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
+import ExportButton from "@/components/ExportButton";
 
 interface Jurnal { id: string; tanggal: string; namaKelas: string; mataPelajaran: string; jamKe: string; materi: string; kendala: string; deskripsi: string; solusi: string; kehadiranSiswa: string; catatan: string; kelasId: string; }
 interface Kelas { id: string; namaKelas: string; }
@@ -58,7 +59,24 @@ export default function JurnalPage() {
     <div className="p-6 fade-in">
       <header className="sticky top-0 z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
         <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">Jurnal Mengajar</h1>
-        <button className="btn btn-primary btn-sm" onClick={openAdd}><i className="fas fa-plus"></i> Tambah</button>
+        <div className="flex items-center gap-2">
+          <ExportButton
+            fileName="jurnal-mengajar"
+            title="Jurnal Mengajar"
+            columns={[
+              { key: "tanggal", label: "Tanggal" },
+              { key: "namaKelas", label: "Kelas" },
+              { key: "mataPelajaran", label: "Mapel" },
+              { key: "jamKe", label: "Jam Ke" },
+              { key: "materi", label: "Materi" },
+              { key: "kendala", label: "Kendala" },
+              { key: "kehadiranSiswa", label: "Kehadiran" },
+              { key: "catatan", label: "Catatan" },
+            ]}
+            rows={data}
+          />
+          <button className="btn btn-primary btn-sm" onClick={openAdd}><i className="fas fa-plus"></i> Tambah</button>
+        </div>
       </header>
 
       <div className="flex flex-wrap items-center gap-3 mb-5">
