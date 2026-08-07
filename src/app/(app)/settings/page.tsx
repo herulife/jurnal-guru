@@ -2,15 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { apiGet, apiPut, apiPost } from "@/lib/useApi";
-import AdminGuard from "@/components/AdminGuard";
+import GoogleSheetsSection from "@/components/GoogleSheetsSection";
 
 export default function SettingsPage() {
+  const [isAdmin, setIsAdmin] = useState(false);
   const [form, setForm] = useState({ app_name: "", tahun_ajaran: "", semester: "1", kkm_default: "75", bank_name: "BRI", bank_account_number: "", bank_account_name: "", bank_note: "" });
 
   useEffect(() => {
     apiGet<Record<string, string>>("/api/settings").then((r) => {
       if (r.ok && r.data) setForm((prev) => ({ ...prev, ...r.data }));
     });
+    fetch("/api/auth/check").then((r) => r.json()).then((r) => {
+      if (r.ok && r.data?.user?.role === "Admin") setIsAdmin(true);
+    }).catch(() => {});
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -38,13 +42,16 @@ export default function SettingsPage() {
   }
 
   return (
-    <AdminGuard>
     <div className="p-6 fade-in">
       <header className="sticky top-0 z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
         <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">Pengaturan</h1>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="max-w-4xl">
+        <GoogleSheetsSection />
+
+        {isAdmin && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <div className="card">
           <h3 className="font-bold text-gray-800 mb-6 font-[Outfit]">Pengaturan</h3>
           <form onSubmit={handleSubmit}>
@@ -85,8 +92,9 @@ export default function SettingsPage() {
             <input type="file" id="restoreInput" accept=".json" className="hidden" onChange={handleRestore} />
           </div>
         </div>
+        </div>
+        )}
       </div>
     </div>
-    </AdminGuard>
   );
 }

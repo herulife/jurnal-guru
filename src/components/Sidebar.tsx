@@ -34,8 +34,8 @@ const menuItems: { section: string; items: MenuItem[] }[] = [
       { label: "LCKH", icon: "fa-clipboard-list", href: "/lckh", adminOnly: true },
       { label: "LKB", icon: "fa-file-alt", href: "/lkb", adminOnly: true },
       { label: "Template Surat", icon: "fa-envelope", href: "/surat" },
-      { label: "Google Sheets", icon: "fa-file-excel", href: "/google-sheets" },
       { label: "Langganan", icon: "fa-crown", href: "/subscription" },
+      { label: "Pengaturan", icon: "fa-cog", href: "/settings" },
       { label: "FAQ", icon: "fa-circle-question", href: "/faq" },
     ],
   },
@@ -44,7 +44,6 @@ const menuItems: { section: string; items: MenuItem[] }[] = [
     items: [
       { label: "Profil Sekolah", icon: "fa-school", href: "/profil", adminOnly: true },
       { label: "Tagihan", icon: "fa-credit-card", href: "/billing", adminOnly: true },
-      { label: "Pengaturan", icon: "fa-cog", href: "/settings", adminOnly: true },
       { label: "Activity Log", icon: "fa-history", href: "/log", adminOnly: true },
     ],
   },
