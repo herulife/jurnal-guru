@@ -1,0 +1,809 @@
+// ============================================
+// TEACHER DASHBOARD - Backend Lengkap
+// ============================================
+var SPREADSHEET_ID = '1icRNLSR9pg-CdN1EW3EK7qZllbcNVbrvjwKTKveTbV4';
+
+function getSheet_(n){return SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(n)}
+function getHeaders_(s){return s.getRange(1,1,1,s.getLastColumn()).getValues()[0]}
+function getAllRows_(sn){
+  var s=getSheet_(sn);if(!s||s.getLastRow()<2)return[];
+  var h=getHeaders_(s),lr=s.getLastRow(),d=s.getRange(2,1,lr-1,s.getLastColumn()).getValues();
+  var r=d.filter(function(r){return r[0]&&String(r[0]).trim()!==''}).map(function(r){var o={};h.forEach(function(k,i){var v=r[i];if(typeof v==='object'&&v instanceof Date){if(v.getFullYear()===1899&&v.getMonth()===11&&v.getDate()===30){var hh=v.getHours(),mm=v.getMinutes();v=String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0')}else{var dd=String(v.getDate()).padStart(2,'0'),mm=String(v.getMonth()+1).padStart(2,'0'),yy=v.getFullYear();v=dd+'/'+mm+'/'+yy}}o[k]=v;if(o[k]==='*'||o[k]===null)o[k]=''});return o});
+  return JSON.parse(JSON.stringify(r))
+}
+function findRowIndex_(sn,id){
+  var s=getSheet_(sn);if(!s||s.getLastRow()<2)return -1;
+  var ids=s.getRange(2,1,s.getLastRow()-1,1).getValues().flat().map(function(v){return String(v)});
+  var idx=ids.indexOf(String(id));return idx>=0?idx+2:-1
+}
+function uuid_(){return Utilities.getUuid()}
+function hashPw_(pw){var b=Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,pw);return b.map(function(x){return('0'+(x&0xFF).toString(16)).slice(-2)}).join('')}
+function createSession_(uid,u,r,n){var t=uuid_();CacheService.getScriptCache().put('sess_'+t,JSON.stringify({userId:uid,username:u,role:r,nama:n,ts:Date.now()}),28800);return t}
+function getSession_(t){try{if(!t)return null;var d=CacheService.getScriptCache().get('sess_'+t);return d?JSON.parse(d):null}catch(e){console.log('getSession_ ERR: '+e.message);return null}}
+function killSession_(t){CacheService.getScriptCache().remove('sess_'+t)}
+function addLog_(uid,act,desc){try{var s=getSheet_('Activity_Log');if(s)s.appendRow([uuid_(),new Date(),uid,act,desc,''])}catch(e){}}
+
+// === AUTH ===
+function apiLogin(u,p){try{var us=getAllRows_('Users'),h=hashPw_(p),user=null;for(var i=0;i<us.length;i++)if(us[i].Username===u&&us[i].Password===h){user=us[i];break}if(!user)return{ok:false,msg:'Username atau password salah'};var t=createSession_(user.ID,user.Username,user.Role,user.Nama_Lengkap);addLog_(user.ID,'LOGIN',user.Username+' login');return{ok:true,token:t,user:{id:user.ID,username:user.Username,role:user.Role,nama:user.Nama_Lengkap}}}catch(e){return{ok:false,msg:e.message}}}
+function apiLogout(t){var s=getSession_(t);if(s)addLog_(s.userId,'LOGOUT',s.username+' logout');killSession_(t);return{ok:true}}
+function apiCheckAuth(t){var s=getSession_(t);return s?{ok:true,user:s}:{ok:false}}
+
+// === DASHBOARD ===
+function apiDashboard(t){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var sw=getAllRows_('Data_Siswa'),kl=getAllRows_('Data_Kelas'),ab=getAllRows_('Absensi'),nl=getAllRows_('Nilai'),td=new Date(),ts=td.getFullYear()+'-'+String(td.getMonth()+1).padStart(2,'0')+'-'+String(td.getDate()).padStart(2,'0'),ahi=0;for(var i=0;i<ab.length;i++){var d=new Date(ab[i].Tanggal),ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');if(ds===ts)ahi++}var rn=0;if(nl.length>0){var tot=0;for(var i=0;i<nl.length;i++)tot+=(Number(nl[i].Nilai)||0);rn=Math.round(tot/nl.length*10)/10}var dp={};for(var i=0;i<kl.length;i++)dp[kl[i].Nama_Kelas]=0;for(var i=0;i<sw.length;i++){var f=false;for(var j=0;j<kl.length;j++)if(kl[j].ID===sw[i].Kelas_ID){dp[kl[j].Nama_Kelas]++;f=true;break}if(!f)dp[kl[i].Kelas_ID]=(dp[kl[i].Kelas_ID]||0)+1}return{ok:true,data:{totalSiswa:sw.length,totalKelas:kl.length,absenHariIni:ahi,rataNilai:rn,distPerKelas:dp,totalAbsensi:ab.length,totalNilai:nl.length}}}catch(e){return{ok:false,msg:e.message}}}
+
+// === PROFIL ===
+function apiGetProfil(t){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var d=getAllRows_('Profil_Sekolah');return{ok:true,data:d.length>0?d[0]:{}}}catch(e){return{ok:false,msg:e.message}}}
+function apiUpdateProfil(t,nd){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var sh=getSheet_('Profil_Sekolah'),h=getHeaders_(sh),r=findRowIndex_('Profil_Sekolah',nd.ID);if(r<0)return{ok:false,msg:'Tidak ditemukan'};var nk=Object.keys(nd),maxCol=h.length;for(var i=0;i<nk.length;i++){if(nk[i]==='ID')continue;var ci=h.indexOf(nk[i]);if(ci<0){sh.getRange(1,maxCol+1).setValue(nk[i]);h.push(nk[i]);maxCol++;ci=h.length-1}sh.getRange(r,ci+1).setValue(nd[nk[i]]||'')}addLog_(s.userId,'UPDATE_PROFIL','Update profil');return{ok:true,msg:'Profil berhasil diperbarui'}}catch(e){return{ok:false,msg:e.message}}}
+
+// === KELAS ===
+function apiGetKelas(t){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var kl=getAllRows_('Data_Kelas'),sw=getAllRows_('Data_Siswa');for(var i=0;i<kl.length;i++){var c=0;for(var j=0;j<sw.length;j++){if(sw[j].Kelas_ID===kl[i].ID){c++;continue}var idx=Number(sw[j].Kelas_ID)-1;if(idx>=0&&idx<kl.length&&kl[idx].ID===kl[i].ID)c++}kl[i].Jumlah_Siswa=c}return{ok:true,data:kl}}catch(e){return{ok:false,msg:e.message}}}
+function apiAddKelas(t,d){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var id=uuid_();getSheet_('Data_Kelas').appendRow([id,d.Nama_Kelas,d.Tingkat,d.Jurusan,d.Tahun_Ajaran,d.Wali_Kelas||'',0]);addLog_(s.userId,'ADD_KELAS','Tambah '+d.Nama_Kelas);return{ok:true,msg:'Kelas ditambahkan',id:id}}catch(e){return{ok:false,msg:e.message}}}
+function apiUpdateKelas(t,id,d){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var r=findRowIndex_('Data_Kelas',id);if(r<0)return{ok:false,msg:'Tidak ditemukan'};var sh=getSheet_('Data_Kelas'),f=['Nama_Kelas','Tingkat','Jurusan','Tahun_Ajaran','Wali_Kelas'];for(var i=0;i<f.length;i++)if(d.hasOwnProperty(f[i]))sh.getRange(r,i+2).setValue(d[f[i]]||'');addLog_(s.userId,'UPDATE_KELAS','Edit kelas');return{ok:true,msg:'Kelas diperbarui'}}catch(e){return{ok:false,msg:e.message}}}
+function apiDeleteKelas(t,id){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var r=findRowIndex_('Data_Kelas',id);if(r<0)return{ok:false,msg:'Tidak ditemukan'};getSheet_('Data_Kelas').deleteRow(r);addLog_(s.userId,'DELETE_KELAS','Hapus kelas');return{ok:true,msg:'Kelas dihapus'}}catch(e){return{ok:false,msg:e.message}}}
+
+// === SISWA ===
+function apiGetSiswa(t,kid){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var sw=getAllRows_('Data_Siswa'),kl=getAllRows_('Data_Kelas');for(var i=0;i<sw.length;i++){var ki=null;for(var j=0;j<kl.length;j++)if(kl[j].ID===sw[i].Kelas_ID){ki=kl[j];break}if(!ki){var idx=Number(sw[i].Kelas_ID)-1;if(idx>=0&&idx<kl.length)ki=kl[idx]}sw[i].Nama_Kelas=ki?ki.Nama_Kelas:'-';sw[i].Kelas_UUID=ki?ki.ID:''}if(kid)sw=sw.filter(function(x){return x.Kelas_UUID===kid});return{ok:true,data:sw}}catch(e){return{ok:false,msg:e.message}}}
+function apiAddSiswa(t,d){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var id=uuid_();getSheet_('Data_Siswa').appendRow([id,d.NIS,d.NISN,d.Nama_Siswa,d.Jenis_Kelamin,d.Kelas_ID,d.Alamat||'',d.Telepon||'',d.Email||'',d.Nama_Ortu||'']);addLog_(s.userId,'ADD_SISWA','Tambah '+d.Nama_Siswa);return{ok:true,msg:'Siswa ditambahkan',id:id}}catch(e){return{ok:false,msg:e.message}}}
+function apiUpdateSiswa(t,id,d){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var r=findRowIndex_('Data_Siswa',id);if(r<0)return{ok:false,msg:'Tidak ditemukan'};var sh=getSheet_('Data_Siswa'),f=['NIS','NISN','Nama_Siswa','Jenis_Kelamin','Kelas_ID','Alamat','Telepon','Email','Nama_Ortu'];for(var i=0;i<f.length;i++)if(d.hasOwnProperty(f[i]))sh.getRange(r,i+2).setValue(d[f[i]]||'');addLog_(s.userId,'UPDATE_SISWA','Edit siswa');return{ok:true,msg:'Siswa diperbarui'}}catch(e){return{ok:false,msg:e.message}}}
+function apiDeleteSiswa(t,id){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var r=findRowIndex_('Data_Siswa',id);if(r<0)return{ok:false,msg:'Tidak ditemukan'};getSheet_('Data_Siswa').deleteRow(r);addLog_(s.userId,'DELETE_SISWA','Hapus siswa');return{ok:true,msg:'Siswa dihapus'}}catch(e){return{ok:false,msg:e.message}}}
+
+// === UPLOAD MASSAL SISWA ===
+function apiUploadSiswaBatch(t, arr) {
+  var s = getSession_(t);
+  if (!s) return { ok: false, msg: 'Unauthorized' };
+  try {
+    var sh = getSheet_('Data_Siswa');
+    var kl = getAllRows_('Data_Kelas');
+    var kelasMap = {};
+    for (var i = 0; i < kl.length; i++) kelasMap[kl[i].Nama_Kelas] = kl[i].ID;
+    var added = 0, skipped = 0, errors = [];
+    for (var i = 0; i < arr.length; i++) {
+      var d = arr[i];
+      if (!d.Nama_Siswa || !d.NIS) { skipped++; errors.push('Baris ' + (i + 2) + ': NIS dan Nama wajib diisi'); continue; }
+      var kelasId = kelasMap[d.Nama_Kelas] || '';
+      if (!kelasId && d.Nama_Kelas) { skipped++; errors.push('Baris ' + (i + 2) + ': Kelas "' + d.Nama_Kelas + '" tidak ditemukan'); continue; }
+      sh.appendRow([uuid_(), d.NIS, d.NISN || '', d.Nama_Siswa, d.Jenis_Kelamin || 'L', kelasId, d.Alamat || '', d.Telepon || '', d.Email || '', d.Nama_Ortu || '']);
+      added++;
+    }
+    addLog_(s.userId, 'UPLOAD_SISWA', 'Upload massal: ' + added + ' ditambah, ' + skipped + ' dilewati');
+    return { ok: true, msg: added + ' siswa berhasil ditambahkan, ' + skipped + ' dilewati', added: added, skipped: skipped, errors: errors };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+
+// === JADWAL ===
+function jdGet(t){try{var jd=getAllRows_('Jadwal_Mengajar'),kl=getAllRows_('Data_Kelas');for(var i=0;i<jd.length;i++){var k=null;for(var j=0;j<kl.length;j++)if(kl[j].ID===jd[i].Kelas_ID){k=kl[j];break}if(!k){var idx=Number(jd[i].Kelas_ID)-1;if(idx>=0&&idx<kl.length)k=kl[idx]}jd[i].Nama_Kelas=k?k.Nama_Kelas:'-'}return{ok:true,data:jd}}catch(e){return{ok:false,msg:e.message}}}
+function apiAddJadwal(t,d){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{getSheet_('Jadwal_Mengajar').appendRow([uuid_(),d.Kelas_ID,d.Mata_Pelajaran,d.Hari,d.Jam_Mulai,d.Jam_Selesai,d.Semester||'',d.Ruangan||'']);SpreadsheetApp.flush();addLog_(s.userId,'ADD_JADWAL','Tambah jadwal');return{ok:true,msg:'Jadwal ditambahkan'}}catch(e){return{ok:false,msg:e.message}}}
+function apiUpdateJadwal(t,id,d){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var r=findRowIndex_('Jadwal_Mengajar',id);if(r<0)return{ok:false,msg:'Tidak ditemukan'};var sh=getSheet_('Jadwal_Mengajar'),f=['Kelas_ID','Mata_Pelajaran','Hari','Jam_Mulai','Jam_Selesai','Semester','Ruangan'];for(var i=0;i<f.length;i++)if(d.hasOwnProperty(f[i]))sh.getRange(r,i+2).setValue(d[f[i]]||'');addLog_(s.userId,'UPDATE_JADWAL','Edit jadwal');return{ok:true,msg:'Jadwal diperbarui'}}catch(e){return{ok:false,msg:e.message}}}
+function apiDeleteJadwal(t,id){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var r=findRowIndex_('Jadwal_Mengajar',id);if(r<0)return{ok:false,msg:'Tidak ditemukan'};getSheet_('Jadwal_Mengajar').deleteRow(r);addLog_(s.userId,'DELETE_JADWAL','Hapus jadwal');return{ok:true,msg:'Jadwal dihapus'}}catch(e){return{ok:false,msg:e.message}}}
+
+// === ABSENSI ===
+function normDate_(v){if(!v)return'';var s=String(v);if(s.indexOf('-')>=0){var p=s.split('-');if(p.length===3)return p[0]+'-'+p[1]+'-'+p[2]}if(s.indexOf('/')>=0){var p=s.split('/');if(p.length===3)return p[2]+'-'+p[1]+'-'+p[0]}return s}
+function apiGetAbsensi(t,fl){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var ab=getAllRows_('Absensi'),kl=getAllRows_('Data_Kelas'),sw=getAllRows_('Data_Siswa');for(var i=0;i<ab.length;i++){var st=null;for(var j=0;j<sw.length;j++)if(sw[j].ID===ab[i].Siswa_ID){st=sw[j];break}ab[i].Nama_Siswa=st?st.Nama_Siswa:'-';var k=null;for(var j=0;j<kl.length;j++)if(kl[j].ID===ab[i].Kelas_ID){k=kl[j];break}if(!k){var idx=Number(ab[i].Kelas_ID)-1;if(idx>=0&&idx<kl.length)k=kl[idx]}ab[i].Nama_Kelas=k?k.Nama_Kelas:'-'}if(fl){if(fl.tanggal)ab=ab.filter(function(a){return a.Tanggal&&normDate_(a.Tanggal)===normDate_(fl.tanggal)});if(fl.kelasId)ab=ab.filter(function(a){return a.Kelas_ID===fl.kelasId})}return{ok:true,data:ab}}catch(e){return{ok:false,msg:e.message}}}
+function apiSaveAbsensi(t,recs){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var sh=getSheet_('Absensi'),ex=getAllRows_('Absensi');for(var i=0;i<recs.length;i++){var r=recs[i],found=false;for(var j=0;j<ex.length;j++){if(normDate_(ex[j].Tanggal)===normDate_(r.Tanggal)&&ex[j].Siswa_ID===r.Siswa_ID){var row=findRowIndex_('Absensi',ex[j].ID);if(row>0){sh.getRange(row,6).setValue(r.Status);sh.getRange(row,7).setValue(r.Keterangan||'');found=true}break}}if(!found)sh.appendRow([uuid_(),r.Tanggal,r.Siswa_ID,r.Kelas_ID,r.Mata_Pelajaran,r.Status,r.Keterangan||'',s.userId])}addLog_(s.userId,'SAVE_ABSENSI','Simpan '+recs.length+' record');return{ok:true,msg:'Absensi disimpan'}}catch(e){return{ok:false,msg:e.message}}}
+function apiUpdateAbsensi(t,id,d){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var r=findRowIndex_('Absensi',id);if(r<0)return{ok:false,msg:'Tidak ditemukan'};var sh=getSheet_('Absensi'),f=['Tanggal','Siswa_ID','Kelas_ID','Mata_Pelajaran','Status','Keterangan'];for(var i=0;i<f.length;i++)if(d.hasOwnProperty(f[i]))sh.getRange(r,i+2).setValue(d[f[i]]||'');addLog_(s.userId,'UPDATE_ABSENSI','Edit absensi');return{ok:true,msg:'Absensi diperbarui'}}catch(e){return{ok:false,msg:e.message}}}
+function apiDeleteAbsensi(t,id){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var r=findRowIndex_('Absensi',id);if(r<0)return{ok:false,msg:'Tidak ditemukan'};getSheet_('Absensi').deleteRow(r);addLog_(s.userId,'DELETE_ABSENSI','Hapus absensi');return{ok:true,msg:'Absensi dihapus'}}catch(e){return{ok:false,msg:e.message}}}
+function apiGetRekapAbsensi(t,kelasId,startDate,endDate){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var ab=getAllRows_('Absensi'),sw=getAllRows_('Data_Siswa'),kl=getAllRows_('Data_Kelas'),km={};for(var i=0;i<kl.length;i++)km[kl[i].ID]=kl[i].Nama_Kelas;var ss=kelasId?sw.filter(function(x){return x.Kelas_ID===kelasId}):sw;if(startDate||endDate){var sd=startDate?new Date(startDate+'T00:00:00'):null,ed=endDate?new Date(endDate+'T23:59:59'):null;ab=ab.filter(function(a){var p=String(a.Tanggal).split('/'),d=new Date(p[2]+'-'+p[1]+'-'+p[0]+'T12:00:00');if(sd&&d<sd)return false;if(ed&&d>ed)return false;return true})}var rp=[];for(var i=0;i<ss.length;i++){var w=ss[i],ha=0,sa=0,iz=0,al=0;for(var j=0;j<ab.length;j++){if(ab[j].Siswa_ID===w.ID){if(ab[j].Status==='Hadir')ha++;else if(ab[j].Status==='Sakit')sa++;else if(ab[j].Status==='Izin')iz++;else al++}}var to=ha+sa+iz+al;rp.push({ID:w.ID,NIS:w.NIS,Nama_Siswa:w.Nama_Siswa,Nama_Kelas:km[w.Kelas_ID]||'-',Total_Hari:to,Hadir:ha,Sakit:sa,Izin:iz,Alpha:al,Persentase:to>0?Math.round(ha/to*100):0})}return{ok:true,data:rp}}catch(e){return{ok:false,msg:e.message}}}
+function apiDownloadPdfRekapAbsensi(t,kelasId,startDate,endDate){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var pr=getProfil_(),res=apiGetRekapAbsensi(t,kelasId,startDate,endDate);if(!res.ok)return res;var kl=getAllRows_('Data_Kelas'),kn='-';if(kelasId){for(var i=0;i<kl.length;i++)if(kl[i].ID===kelasId){kn=kl[i].Nama_Kelas;break}}var hd=['No','NIS','Nama Siswa','Kelas','Total','Hadir','Sakit','Izin','Alpha','%'];var ro=[];for(var i=0;i<res.data.length;i++){var r=res.data[i];ro.push([i+1,r.NIS,r.Nama_Siswa,r.Nama_Kelas,r.Total_Hari,r.Hadir,r.Sakit,r.Izin,r.Alpha,r.Persentase+'%'])}var fl=['Kelas: '+kn];if(startDate)fl.push('Dari: '+startDate);if(endDate)fl.push('Sampai: '+endDate);var b64=generatePdf_('REKAP ABSENSI SISWA',hd,ro,{schoolName:pr.Nama_Sekolah||'Sekolah',address:pr.Alamat||'',npsn:pr.NPSN||'',filters:fl,printedBy:s.nama});return{ok:true,data:b64,fileName:'RekapAbsensi_'+kn.replace(/\s+/g,'_')+'.pdf'}}catch(e){return{ok:false,msg:e.message}}}
+function apiDownloadExcelRekapAbsensi(t,kelasId,startDate,endDate){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var pr=getProfil_(),res=apiGetRekapAbsensi(t,kelasId,startDate,endDate);if(!res.ok)return res;var kl=getAllRows_('Data_Kelas'),kn='-';if(kelasId){for(var i=0;i<kl.length;i++)if(kl[i].ID===kelasId){kn=kl[i].Nama_Kelas;break}}var ss=SpreadsheetApp.create('RekapAbsensi_'+Date.now()),sh=ss.getActiveSheet();sh.setName('Rekap Absensi');var hd=['No','NIS','Nama Siswa','Kelas','Total','Hadir','Sakit','Izin','Alpha','Persentase'];var dt=[hd];for(var i=0;i<res.data.length;i++){var r=res.data[i];dt.push([i+1,r.NIS,r.Nama_Siswa,r.Nama_Kelas,r.Total_Hari,r.Hadir,r.Sakit,r.Izin,r.Alpha,r.Persentase+'%'])}sh.getRange(1,1,dt.length,dt[0].length).setValues(dt);sh.getRange(1,1,1,dt[0].length).setFontWeight('bold').setBackground('#1A2332').setFontColor('#ffffff');sh.setFrozenRows(1);for(var i=0;i<dt[0].length;i++)sh.autoResizeColumn(i+1);SpreadsheetApp.flush();var url='https://www.googleapis.com/drive/v3/files/'+ss.getId()+'/export?mimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';var resp=UrlFetchApp.fetch(url,{headers:{Authorization:'Bearer '+ScriptApp.getOAuthToken()},muteHttpExceptions:true});if(resp.getResponseCode()!==200)throw new Error('Gagal export: '+resp.getContentText());var b64=Utilities.base64Encode(resp.getBlob().getBytes());DriveApp.getFileById(ss.getId()).setTrashed(true);return{ok:true,data:b64,fileName:'RekapAbsensi_'+kn.replace(/\s+/g,'_')+'.xlsx'}}catch(e){return{ok:false,msg:e.message}}}
+
+// === NILAI ===
+function apiGetNilai(t,fl){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var nl=getAllRows_('Nilai'),kl=getAllRows_('Data_Kelas'),sw=getAllRows_('Data_Siswa');for(var i=0;i<nl.length;i++){var st=null;for(var j=0;j<sw.length;j++)if(sw[j].ID===nl[i].Siswa_ID){st=sw[j];break}nl[i].Nama_Siswa=st?st.Nama_Siswa:'-';var k=null;for(var j=0;j<kl.length;j++)if(kl[j].ID===nl[i].Kelas_ID){k=kl[j];break}if(!k){var idx=Number(nl[i].Kelas_ID)-1;if(idx>=0&&idx<kl.length)k=kl[idx]}nl[i].Nama_Kelas=k?k.Nama_Kelas:'-'}if(fl){if(fl.kelasId)nl=nl.filter(function(n){return n.Kelas_ID===fl.kelasId});if(fl.kategori)nl=nl.filter(function(n){return n.Kategori===fl.kategori})}return{ok:true,data:nl}}catch(e){return{ok:false,msg:e.message}}}
+function apiAddNilai(t,d){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{getSheet_('Nilai').appendRow([uuid_(),d.Tanggal||new Date(),d.Siswa_ID,d.Kelas_ID,d.Mata_Pelajaran,d.Kategori,d.Bab||'',d.Tujuan_Pembelajaran||'',d.Bentuk_Penugasan||'',Number(d.Nilai)||0,Number(d.KKM)||75,d.Remedial||'']);addLog_(s.userId,'ADD_NILAI','Tambah nilai');return{ok:true,msg:'Nilai ditambahkan'}}catch(e){return{ok:false,msg:e.message}}}
+function apiUpdateNilai(t,id,d){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var r=findRowIndex_('Nilai',id);if(r<0)return{ok:false,msg:'Tidak ditemukan'};var sh=getSheet_('Nilai'),f=['Tanggal','Siswa_ID','Kelas_ID','Mata_Pelajaran','Kategori','Bab','Tujuan_Pembelajaran','Bentuk_Penugasan','Nilai','KKM','Remedial'];for(var i=0;i<f.length;i++)if(d.hasOwnProperty(f[i])){var v=d[f[i]];if(f[i]==='Nilai'||f[i]==='KKM')v=Number(v)||0;sh.getRange(r,i+2).setValue(v)}addLog_(s.userId,'UPDATE_NILAI','Edit nilai');return{ok:true,msg:'Nilai diperbarui'}}catch(e){return{ok:false,msg:e.message}}}
+function apiDeleteNilai(t,id){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var r=findRowIndex_('Nilai',id);if(r<0)return{ok:false,msg:'Tidak ditemukan'};getSheet_('Nilai').deleteRow(r);addLog_(s.userId,'DELETE_NILAI','Hapus nilai');return{ok:true,msg:'Nilai dihapus'}}catch(e){return{ok:false,msg:e.message}}}
+
+// === JURNAL ===
+function fixDateFields_(row){
+  var fields=['Materi','Deskripsi','Kendala','Solusi','Kehadiran_Siswa','Jam_Ke','Catatan'];
+  for(var i=0;i<fields.length;i++){
+    var v=row[fields[i]];
+    if(v&&typeof v==='object'&&v.constructor===Date)row[fields[i]]=Utilities.formatDate(v,'Asia/Jakarta','HH:mm');
+  }return row
+}
+function apiGetJurnal(t,fl){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var jr=getAllRows_('Jurnal_Mengajar'),kl=getAllRows_('Data_Kelas');for(var i=0;i<jr.length;i++){jr[i]=fixDateFields_(jr[i]);var k=null;for(var j=0;j<kl.length;j++)if(kl[j].ID===jr[i].Kelas_ID){k=kl[j];break}if(!k){var idx=Number(jr[i].Kelas_ID)-1;if(idx>=0&&idx<kl.length)k=kl[idx]}jr[i].Nama_Kelas=k?k.Nama_Kelas:'-'}if(fl){if(fl.kelasId)jr=jr.filter(function(j){return j.Kelas_ID===fl.kelasId});if(fl.tanggal)jr=jr.filter(function(j){return j.Tanggal&&normDate_(j.Tanggal)===normDate_(fl.tanggal)});if(fl.tanggalAwal)jr=jr.filter(function(j){return j.Tanggal&&normDate_(j.Tanggal)>=normDate_(fl.tanggalAwal)});if(fl.tanggalAkhir)jr=jr.filter(function(j){return j.Tanggal&&normDate_(j.Tanggal)<=normDate_(fl.tanggalAkhir)})}return{ok:true,data:jr}}catch(e){return{ok:false,msg:e.message}}}
+function apiAddJurnal(t,d){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{getSheet_('Jurnal_Mengajar').appendRow([uuid_(),d.Tanggal||new Date(),d.Kelas_ID,d.Mata_Pelajaran,"'"+(d.Jam_Ke||''),d.Materi||'',d.Deskripsi||'',d.Kendala||'',d.Solusi||'',d.Kehadiran_Siswa||'',d.Catatan||'']);addLog_(s.userId,'ADD_JURNAL','Tambah jurnal');return{ok:true,msg:'Jurnal ditambahkan'}}catch(e){return{ok:false,msg:e.message}}}
+function apiUpdateJurnal(t,id,d){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var r=findRowIndex_('Jurnal_Mengajar',id);if(r<0)return{ok:false,msg:'Tidak ditemukan'};var sh=getSheet_('Jurnal_Mengajar'),f=['Tanggal','Kelas_ID','Mata_Pelajaran','Jam_Ke','Materi','Deskripsi','Kendala','Solusi','Kehadiran_Siswa','Catatan'];for(var i=0;i<f.length;i++)if(d.hasOwnProperty(f[i])){var v=d[f[i]]||'';if(f[i]==='Jam_Ke')v="'"+v;sh.getRange(r,i+2).setValue(v)}addLog_(s.userId,'UPDATE_JURNAL','Edit jurnal');return{ok:true,msg:'Jurnal diperbarui'}}catch(e){return{ok:false,msg:e.message}}}
+function apiDeleteJurnal(t,id){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var r=findRowIndex_('Jurnal_Mengajar',id);if(r<0)return{ok:false,msg:'Tidak ditemukan'};getSheet_('Jurnal_Mengajar').deleteRow(r);addLog_(s.userId,'DELETE_JURNAL','Hapus jurnal');return{ok:true,msg:'Jurnal dihapus'}}catch(e){return{ok:false,msg:e.message}}}
+
+// === SETTINGS ===
+function apiGetSettings(t){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var r=getAllRows_('Settings'),o={};for(var i=0;i<r.length;i++)o[r[i].Key]=r[i].Value;return{ok:true,data:o}}catch(e){return{ok:false,msg:e.message}}}
+function apiUpdateSettings(t,u){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var sh=getSheet_('Settings'),r=getAllRows_('Settings'),ks=Object.keys(u);for(var i=0;i<ks.length;i++)for(var j=0;j<r.length;j++)if(r[j].Key===ks[i])sh.getRange(j+2,2).setValue(u[ks[i]]);addLog_(s.userId,'UPDATE_SETTINGS','Update pengaturan');return{ok:true,msg:'Pengaturan disimpan'}}catch(e){return{ok:false,msg:e.message}}}
+
+// === LOG ===
+function apiGetLog(t){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var l=getAllRows_('Activity_Log');l.sort(function(a,b){return new Date(b.Timestamp)-new Date(a.Timestamp)});return{ok:true,data:l.slice(0,100)}}catch(e){return{ok:false,msg:e.message}}}
+
+// ============================================
+// PDF GENERATOR (Google Docs -> PDF -> Base64)
+// ============================================
+function generatePdf_(title, headers, rows, meta) {
+  var doc = DocumentApp.create('PDF_' + Date.now());
+  var body = doc.getBody();
+  body.setMarginLeft(50).setMarginRight(50).setMarginTop(40).setMarginBottom(40);
+  if (meta.schoolName) {
+    var p1 = body.appendParagraph(meta.schoolName);
+    p1.setHeading(DocumentApp.ParagraphHeading.HEADING1).setAlignment(DocumentApp.TextAlignment.CENTER);
+  }
+  if (meta.address) body.appendParagraph(meta.address).setAlignment(DocumentApp.TextAlignment.CENTER);
+  if (meta.npsn) body.appendParagraph('NPSN: ' + meta.npsn).setAlignment(DocumentApp.TextAlignment.CENTER);
+  body.appendHorizontalRule();
+  var tp = body.appendParagraph(title);
+  tp.setHeading(DocumentApp.ParagraphHeading.HEADING2).setAlignment(DocumentApp.TextAlignment.CENTER);
+  if (meta.filters) {
+    for (var i = 0; i < meta.filters.length; i++) {
+      body.appendParagraph(meta.filters[i]).setAlignment(DocumentApp.TextAlignment.LEFT);
+    }
+  }
+  if (rows.length > 0) {
+    var maxCols = headers.length;
+    var tblData = [headers];
+    for (var ri = 0; ri < rows.length; ri++) {
+      var row = [];
+      for (var ci = 0; ci < maxCols; ci++) {
+        var val = (rows[ri][ci] !== null && rows[ri][ci] !== undefined) ? String(rows[ri][ci]) : '';
+        row.push(val);
+      }
+      tblData.push(row);
+    }
+    var table = body.appendTable(tblData);
+    for (var c = 0; c < maxCols; c++) {
+      var cell = table.getRow(0).getCell(c);
+      cell.setBold(true).setBackgroundColor('#1A2332');
+      cell.editAsText().setForegroundColor('#ffffff').setFontSize(9);
+    }
+    for (var r = 1; r <= rows.length; r++) {
+      for (var c = 0; c < maxCols; c++) {
+        var tc = table.getRow(r).getCell(c);
+        tc.setFontSize(9);
+        if (r % 2 === 0) tc.setBackgroundColor('#f5f5f5');
+      }
+    }
+  } else {
+    body.appendParagraph('Tidak ada data untuk ditampilkan.');
+  }
+  body.appendParagraph('');
+  body.appendParagraph('Dicetak pada: ' + new Date().toLocaleString('id-ID')).setFontSize(8);
+  if (meta.printedBy) body.appendParagraph('Oleh: ' + meta.printedBy).setFontSize(8);
+  doc.saveAndClose();
+  var pdfBlob = DriveApp.getFileById(doc.getId()).getBlob().getAs('application/pdf');
+  DriveApp.getFileById(doc.getId()).setTrashed(true);
+  return Utilities.base64Encode(pdfBlob.getBytes());
+}
+
+function getProfil_() {
+  try {
+    var d = getAllRows_('Profil_Sekolah');
+    return d.length > 0 ? d[0] : {};
+  } catch (e) { return {}; }
+}
+
+function fmtDateStr_(v) {
+  if (!v) return '-';
+  var d = new Date(v);
+  return isNaN(d.getTime()) ? String(v) : d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+// === PDF NILAI ===
+function apiDownloadPdfNilai(t, kelasId, kategori) {
+  var s = getSession_(t);
+  if (!s) return { ok: false, msg: 'Unauthorized' };
+  try {
+    var pr = getProfil_();
+    var res = apiGetNilai(t, { kelasId: kelasId || null, kategori: kategori || null });
+    if (!res.ok) return res;
+    var kl = getAllRows_('Data_Kelas');
+    var kelasName = '-';
+    if (kelasId) { for (var i = 0; i < kl.length; i++) if (kl[i].ID === kelasId) { kelasName = kl[i].Nama_Kelas; break; } }
+    var headers = ['No', 'Nama Siswa', 'Kelas', 'Mata Pelajaran', 'Kategori', 'Nilai', 'KKM', 'Status'];
+    var rows = [];
+    for (var i = 0; i < res.data.length; i++) {
+      var n = res.data[i], nv = Number(n.Nilai) || 0, km = Number(n.KKM) || 75;
+      rows.push([i + 1, n.Nama_Siswa, n.Nama_Kelas, n.Mata_Pelajaran, n.Kategori, nv, km, nv >= km ? 'Tuntas' : 'Belum Tuntas']);
+    }
+    var filters = ['Kelas: ' + kelasName];
+    if (kategori) filters.push('Kategori: ' + kategori);
+    var b64 = generatePdf_('LAPORAN NILAI SISWA', headers, rows, {
+      schoolName: pr.Nama_Sekolah || 'Sekolah', address: pr.Alamat || '', npsn: pr.NPSN || '',
+      filters: filters, printedBy: s.nama
+    });
+    return { ok: true, data: b64, fileName: 'Nilai_' + kelasName.replace(/\s+/g, '_') + '.pdf' };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+function apiDownloadExcelNilai(t,kelasId,kategori){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var pr=getProfil_(),res=apiGetNilai(t,{kelasId:kelasId||null,kategori:kategori||null});if(!res.ok)return res;var kl=getAllRows_('Data_Kelas'),kn='-';if(kelasId){for(var i=0;i<kl.length;i++)if(kl[i].ID===kelasId){kn=kl[i].Nama_Kelas;break}}var ss=SpreadsheetApp.create('Nilai_'+Date.now()),sh=ss.getActiveSheet();sh.setName('Nilai');var hd=['No','Nama Siswa','Kelas','Mata Pelajaran','Kategori','Nilai','KKM','Status'];var dt=[hd];for(var i=0;i<res.data.length;i++){var n=res.data[i],nv=Number(n.Nilai)||0,km=Number(n.KKM)||75;dt.push([i+1,n.Nama_Siswa,n.Nama_Kelas,n.Mata_Pelajaran,n.Kategori,nv,km,nv>=km?'Tuntas':'Belum Tuntas'])}sh.getRange(1,1,dt.length,dt[0].length).setValues(dt);sh.getRange(1,1,1,dt[0].length).setFontWeight('bold').setBackground('#1A2332').setFontColor('#ffffff');sh.setFrozenRows(1);for(var i=0;i<dt[0].length;i++)sh.autoResizeColumn(i+1);SpreadsheetApp.flush();var url='https://www.googleapis.com/drive/v3/files/'+ss.getId()+'/export?mimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';var resp=UrlFetchApp.fetch(url,{headers:{Authorization:'Bearer '+ScriptApp.getOAuthToken()},muteHttpExceptions:true});if(resp.getResponseCode()!==200)throw new Error('Gagal export: '+resp.getContentText());var b64=Utilities.base64Encode(resp.getBlob().getBytes());DriveApp.getFileById(ss.getId()).setTrashed(true);return{ok:true,data:b64,fileName:'Nilai_'+kn.replace(/\s+/g,'_')+'.xlsx'}}catch(e){return{ok:false,msg:e.message}}}
+
+// === PDF ABSENSI ===
+function apiDownloadPdfAbsensi(t, tanggal, kelasId) {
+  var s = getSession_(t);
+  if (!s) return { ok: false, msg: 'Unauthorized' };
+  try {
+    var pr = getProfil_();
+    var res = apiGetAbsensi(t, { tanggal: tanggal || null, kelasId: kelasId || null });
+    if (!res.ok) return res;
+    var kl = getAllRows_('Data_Kelas');
+    var kelasName = '-';
+    if (kelasId) { for (var i = 0; i < kl.length; i++) if (kl[i].ID === kelasId) { kelasName = kl[i].Nama_Kelas; break; } }
+    var headers = ['No', 'Tanggal', 'Nama Siswa', 'Kelas', 'Mata Pelajaran', 'Status', 'Keterangan'];
+    var rows = [];
+    for (var i = 0; i < res.data.length; i++) {
+      var a = res.data[i];
+      rows.push([i + 1, fmtDateStr_(a.Tanggal), a.Nama_Siswa, a.Nama_Kelas, a.Mata_Pelajaran, a.Status, a.Keterangan || '-']);
+    }
+    var filters = ['Tanggal: ' + (tanggal || 'Semua'), 'Kelas: ' + kelasName];
+    var b64 = generatePdf_('LAPORAN ABSENSI SISWA', headers, rows, {
+      schoolName: pr.Nama_Sekolah || 'Sekolah', address: pr.Alamat || '', npsn: pr.NPSN || '',
+      filters: filters, printedBy: s.nama
+    });
+    return { ok: true, data: b64, fileName: 'Absensi_' + kelasName.replace(/\s+/g, '_') + '.pdf' };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+function apiDownloadExcelAbsensi(t,tanggal,kelasId){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var pr=getProfil_(),res=apiGetAbsensi(t,{tanggal:tanggal||null,kelasId:kelasId||null});if(!res.ok)return res;var kl=getAllRows_('Data_Kelas'),kn='-';if(kelasId){for(var i=0;i<kl.length;i++)if(kl[i].ID===kelasId){kn=kl[i].Nama_Kelas;break}}var ss=SpreadsheetApp.create('Absensi_'+Date.now()),sh=ss.getActiveSheet();sh.setName('Absensi');var hd=['No','Tanggal','Nama Siswa','Kelas','Mata Pelajaran','Status','Keterangan'];var dt=[hd];for(var i=0;i<res.data.length;i++){var a=res.data[i];dt.push([i+1,fmtDateStr_(a.Tanggal),a.Nama_Siswa,a.Nama_Kelas,a.Mata_Pelajaran,a.Status,a.Keterangan||'-'])}sh.getRange(1,1,dt.length,dt[0].length).setValues(dt);sh.getRange(1,1,1,dt[0].length).setFontWeight('bold').setBackground('#1A2332').setFontColor('#ffffff');sh.setFrozenRows(1);for(var i=0;i<dt[0].length;i++)sh.autoResizeColumn(i+1);SpreadsheetApp.flush();var url='https://www.googleapis.com/drive/v3/files/'+ss.getId()+'/export?mimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';var resp=UrlFetchApp.fetch(url,{headers:{Authorization:'Bearer '+ScriptApp.getOAuthToken()},muteHttpExceptions:true});if(resp.getResponseCode()!==200)throw new Error('Gagal export: '+resp.getContentText());var b64=Utilities.base64Encode(resp.getBlob().getBytes());DriveApp.getFileById(ss.getId()).setTrashed(true);return{ok:true,data:b64,fileName:'Absensi_'+kn.replace(/\s+/g,'_')+'.xlsx'}}catch(e){return{ok:false,msg:e.message}}}
+
+// === PDF JURNAL ===
+function apiDownloadPdfJurnal(t, kelasId, tanggal, tanggalAkhir) {
+  var s = getSession_(t);
+  if (!s) return { ok: false, msg: 'Unauthorized' };
+  try {
+    var pr = getProfil_();
+    var res = apiGetJurnal(t, { kelasId: kelasId || null, tanggal: tanggal || null, tanggalAkhir: tanggalAkhir || null });
+    if (!res.ok) return res;
+    var kl = getAllRows_('Data_Kelas');
+    var kelasName = '-';
+    if (kelasId) { for (var i = 0; i < kl.length; i++) if (kl[i].ID === kelasId) { kelasName = kl[i].Nama_Kelas; break; } }
+    var headers = ['No', 'Tanggal', 'Kelas', 'Mapel', 'Jam Ke', 'Materi', 'Kendala', 'Kehadiran'];
+    var rows = [];
+    for (var i = 0; i < res.data.length; i++) {
+      var j = res.data[i];
+      rows.push([i + 1, fmtDateStr_(j.Tanggal), j.Nama_Kelas, j.Mata_Pelajaran, j.Jam_Ke || '-', j.Materi || '-', j.Kendala || '-', j.Kehadiran_Siswa || '-']);
+    }
+    var filters = ['Kelas: ' + kelasName];
+    if (tanggal && tanggalAkhir) filters.push('Periode: ' + fmtDateStr_(tanggal) + ' s/d ' + fmtDateStr_(tanggalAkhir));
+    else if (tanggal) filters.push('Periode: ' + fmtDateStr_(tanggal));
+    var b64 = generatePdf_('JURNAL MENGAJAR', headers, rows, {
+      schoolName: pr.Nama_Sekolah || 'Sekolah', address: pr.Alamat || '', npsn: pr.NPSN || '',
+      filters: filters, printedBy: s.nama
+    });
+    return { ok: true, data: b64, fileName: 'Jurnal_' + kelasName.replace(/\s+/g, '_') + '.pdf' };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+function apiDownloadExcelJurnal(t,kelasId,tanggal,tanggalAkhir){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var pr=getProfil_(),res=apiGetJurnal(t,{kelasId:kelasId||null,tanggal:tanggal||null,tanggalAkhir:tanggalAkhir||null});if(!res.ok)return res;var kl=getAllRows_('Data_Kelas'),kn='-';if(kelasId){for(var i=0;i<kl.length;i++)if(kl[i].ID===kelasId){kn=kl[i].Nama_Kelas;break}}var ss=SpreadsheetApp.create('Jurnal_'+Date.now()),sh=ss.getActiveSheet();sh.setName('Jurnal');var periode=(tanggal&&tanggalAkhir)?fmtDateStr_(tanggal)+' s/d '+fmtDateStr_(tanggalAkhir):(tanggal?fmtDateStr_(tanggal):'Semua');var hd=['No','Tanggal','Kelas','Mapel','Jam Ke','Materi','Kendala','Kehadiran'];var dt=[['JURNAL MENGAJAR'],[(pr.Nama_Sekolah||''),(pr.Alamat||'')],['Periode: '+periode],[],['Nama Guru:',pr.Nama_Guru||''],['NIP:',pr.NIP_Guru||''],['Jabatan:',pr.Jabatan||''],['Pangkat:',pr.Pangkat||''],['Gol. Ruang:',pr.Golongan_Ruang||''],[],hd];for(var i=0;i<res.data.length;i++){var j=res.data[i];dt.push([i+1,fmtDateStr_(j.Tanggal),j.Nama_Kelas,j.Mata_Pelajaran,j.Jam_Ke||'-',j.Materi||'-',j.Kendala||'-',j.Kehadiran_Siswa||'-'])}dt.push([],['Mengetahui,','','','','','',''],['Kepala Sekolah','','','','','',''],['','','','','','','',(pr.Kota||'')+', '+fmtDateStr_(new Date())],['Guru Mata Pelajaran','','','','','',''],[pr.Kepala_Sekolah||'','','','','','','',pr.Nama_Guru||''],['NIP. '+(pr.NIP_Kepsek||''),'','','','','','','NIP. '+(pr.NIP_Guru||'')]);var hdrIdx=10;sh.getRange(1,1,dt.length,dt[0].length).setValues(dt);sh.getRange(hdrIdx+1,1,1,hd.length).setFontWeight('bold').setBackground('#1A2332').setFontColor('#ffffff');sh.setFrozenRows(1);for(var i=0;i<dt[0].length;i++)sh.autoResizeColumn(i+1);SpreadsheetApp.flush();var url='https://www.googleapis.com/drive/v3/files/'+ss.getId()+'/export?mimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';var resp=UrlFetchApp.fetch(url,{headers:{Authorization:'Bearer '+ScriptApp.getOAuthToken()},muteHttpExceptions:true});if(resp.getResponseCode()!==200)throw new Error('Gagal export: '+resp.getContentText());var b64=Utilities.base64Encode(resp.getBlob().getBytes());DriveApp.getFileById(ss.getId()).setTrashed(true);return{ok:true,data:b64,fileName:'Jurnal_'+kn.replace(/\s+/g,'_')+'.xlsx'}}catch(e){return{ok:false,msg:e.message}}}
+
+// === NILAI BATCH ===
+function apiSaveNilaiBatch(t, records) {
+  var s = getSession_(t);
+  if (!s) return { ok: false, msg: 'Unauthorized' };
+  if (!records || !records.length) return { ok: false, msg: 'Tidak ada data' };
+  try {
+    var sh = getSheet_('Nilai');
+    for (var i = 0; i < records.length; i++) {
+      var r = records[i];
+      sh.appendRow([uuid_(), r.Tanggal || new Date(), r.Siswa_ID, r.Kelas_ID, r.Mata_Pelajaran, r.Kategori, r.Bab || '', r.Tujuan_Pembelajaran || '', r.Bentuk_Penugasan || '', Number(r.Nilai) || 0, Number(r.KKM) || 75, r.Remedial || '']);
+    }
+    addLog_(s.userId, 'SAVE_NILAI_BATCH', 'Simpan ' + records.length + ' nilai batch');
+    return { ok: true, msg: records.length + ' nilai berhasil disimpan' };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+
+// === NOTIFIKASI ===
+function apiGetNotifications(t) {
+  var s = getSession_(t);
+  if (!s) return { ok: false, msg: 'Unauthorized' };
+  try {
+    var notif = [], sw = getAllRows_('Data_Siswa'), nl = getAllRows_('Nilai'), ab = getAllRows_('Absensi');
+    for (var i = 0; i < sw.length; i++) {
+      var hn = false;
+      for (var j = 0; j < nl.length; j++) { if (nl[j].Siswa_ID === sw[i].ID) { hn = true; break; } }
+      if (!hn) notif.push({ type: 'warning', msg: sw[i].Nama_Siswa + ' belum memiliki nilai', icon: 'fa-exclamation-triangle' });
+    }
+    for (var i = 0; i < sw.length; i++) {
+      var tot = 0, abs = 0;
+      for (var j = 0; j < ab.length; j++) {
+        if (ab[j].Siswa_ID === sw[i].ID) { tot++; if (ab[j].Status !== 'Hadir') abs++; }
+      }
+      if (tot > 0 && (abs / tot) > 0.3) notif.push({ type: 'danger', msg: sw[i].Nama_Siswa + ' absensi ' + Math.round(abs/tot*100) + '% tidak hadir', icon: 'fa-user-graduate' });
+    }
+    return { ok: true, data: notif.slice(0, 20) };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+
+// === BACKUP DATABASE ===
+function apiBackupData(t) {
+  var s = getSession_(t);
+  if (!s) return { ok: false, msg: 'Unauthorized' };
+  try {
+    var sheets = ['Data_Kelas', 'Data_Siswa', 'Jadwal_Mengajar', 'Absensi', 'Nilai', 'Jurnal_Mengajar', 'Profil_Sekolah', 'Settings', 'Users'];
+    var backup = {};
+    for (var i = 0; i < sheets.length; i++) backup[sheets[i]] = getAllRows_(sheets[i]);
+    backup._meta = { exportedAt: new Date().toISOString(), exportedBy: s.username };
+    var json = JSON.stringify(backup);
+    var b64 = Utilities.base64Encode(Utilities.newBlob(json).getBytes());
+    addLog_(s.userId, 'BACKUP', 'Backup database');
+    return { ok: true, data: b64, fileName: 'Backup_TD_' + new Date().toISOString().slice(0, 10) + '.json' };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+function apiRestoreData(t, b64) {
+  var s = getSession_(t);
+  if (!s) return { ok: false, msg: 'Unauthorized' };
+  try {
+    var json = Utilities.newBlob(Utilities.base64Decode(b64)).getDataAsString();
+    var backup = JSON.parse(json);
+    var sheets = ['Data_Kelas', 'Data_Siswa', 'Jadwal_Mengajar', 'Absensi', 'Nilai', 'Jurnal_Mengajar'];
+    var restored = 0;
+    for (var i = 0; i < sheets.length; i++) {
+      var data = backup[sheets[i]];
+      if (!data || !data.length) continue;
+      var sh = getSheet_(sheets[i]); if (!sh) continue;
+      var hd = Object.keys(data[0]); sh.clear(); sh.appendRow(hd);
+      for (var j = 0; j < data.length; j++) {
+        var row = [];
+        for (var k = 0; k < hd.length; k++) row.push(data[j][hd[k]] || '');
+        sh.appendRow(row); restored++;
+      }
+    }
+    addLog_(s.userId, 'RESTORE', 'Restore ' + restored + ' baris');
+    return { ok: true, msg: restored + ' baris data berhasil direstore' };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+
+// === RAPOR PDF ===
+function apiDownloadPdfRapor(t, siswaId, semester) {
+  var s = getSession_(t);
+  if (!s) return { ok: false, msg: 'Unauthorized' };
+  try {
+    var pr = getProfil_(), sw = getAllRows_('Data_Siswa'), kl = getAllRows_('Data_Kelas'), nl = getAllRows_('Nilai'), ab = getAllRows_('Absensi');
+    var siswa = null;
+    for (var i = 0; i < sw.length; i++) { if (sw[i].ID === siswaId) { siswa = sw[i]; break; } }
+    if (!siswa) return { ok: false, msg: 'Siswa tidak ditemukan' };
+    var kelasName = '-';
+    for (var i = 0; i < kl.length; i++) { if (kl[i].ID === siswa.Kelas_ID) { kelasName = kl[i].Nama_Kelas; break; } }
+    var nilaiSiswa = [];
+    for (var i = 0; i < nl.length; i++) {
+      if (nl[i].Siswa_ID === siswaId) {
+        if (!semester || !siswa.Tanggal) { nilaiSiswa.push(nl[i]); continue; }
+        var t = new Date(nl[i].Tanggal);
+        var sem = t.getMonth() < 6 ? 2 : 1;
+        if (sem == semester) nilaiSiswa.push(nl[i]);
+      }
+    }
+    var totalAbsen = 0, totalHadir = 0;
+    for (var i = 0; i < ab.length; i++) {
+      if (ab[i].Siswa_ID === siswaId) { totalAbsen++; if (ab[i].Status === 'Hadir') totalHadir++; }
+    }
+    var doc = DocumentApp.create('Rapor_' + Date.now());
+    var body = doc.getBody();
+    body.setMarginLeft(60).setMarginRight(60).setMarginTop(50).setMarginBottom(50);
+    if (pr.Nama_Sekolah) body.appendParagraph(pr.Nama_Sekolah).setHeading(DocumentApp.ParagraphHeading.HEADING1).setAlignment(DocumentApp.TextAlignment.CENTER);
+    body.appendParagraph('LAPORAN HASIL BELAJAR SISWA').setHeading(DocumentApp.ParagraphHeading.HEADING2).setAlignment(DocumentApp.TextAlignment.CENTER);
+    body.appendHorizontalRule();
+    body.appendParagraph('Nama: ' + (siswa.Nama_Siswa || '-')).setFontSize(11);
+    body.appendParagraph('NIS / NISN: ' + (siswa.NIS || '-') + ' / ' + (siswa.NISN || '-')).setFontSize(11);
+    body.appendParagraph('Kelas: ' + kelasName).setFontSize(11);
+    body.appendParagraph('Semester: ' + (semester || '-')).setFontSize(11);
+    body.appendParagraph('Kehadiran: ' + totalHadir + '/' + totalAbsen + ' hadir').setFontSize(11);
+    body.appendParagraph('');
+    var hdNilai = ['No', 'Mapel', 'Kategori', 'Nilai', 'KKM', 'Status'];
+    var tblData2 = [hdNilai];
+    for (var ri = 0; ri < nilaiSiswa.length; ri++) {
+      var n = nilaiSiswa[ri], nv = Number(n.Nilai) || 0, km = Number(n.KKM) || 75;
+      tblData2.push([ri + 1, n.Mata_Pelajaran || '-', n.Kategori || '-', nv, km, nv >= km ? 'Tuntas' : 'Belum Tuntas']);
+    }
+    var tbl = body.appendTable(tblData2);
+    for (var c = 0; c < hdNilai.length; c++) { var cl = tbl.getRow(0).getCell(c); cl.setBold(true).setBackgroundColor('#1A2332'); cl.editAsText().setForegroundColor('#ffffff').setFontSize(9); }
+    for (var r = 1; r <= nilaiSiswa.length; r++) {
+      for (var c = 0; c < hdNilai.length; c++) { var tc = tbl.getRow(r).getCell(c); tc.setFontSize(9); if (r % 2 === 0) tc.setBackgroundColor('#f5f5f5'); }
+    }
+    body.appendParagraph('');
+    body.appendParagraph('Dicetak pada: ' + new Date().toLocaleString('id-ID')).setFontSize(8);
+    body.appendParagraph('Oleh: ' + s.nama).setFontSize(8);
+    doc.saveAndClose();
+    var pdfBlob = DriveApp.getFileById(doc.getId()).getBlob().getAs('application/pdf');
+    DriveApp.getFileById(doc.getId()).setTrashed(true);
+    return { ok: true, data: Utilities.base64Encode(pdfBlob.getBytes()), fileName: 'Rapor_' + (siswa.Nama_Siswa || 'Siswa').replace(/\s+/g, '_') + '.pdf' };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+function apiDownloadExcelRapor(t,siswaId,semester){var s=getSession_(t);if(!s)return{ok:false,msg:'Unauthorized'};try{var pr=getProfil_(),sw=getAllRows_('Data_Siswa'),kl=getAllRows_('Data_Kelas'),nl=getAllRows_('Nilai'),ab=getAllRows_('Absensi');var siswa=null;for(var i=0;i<sw.length;i++){if(sw[i].ID===siswaId){siswa=sw[i];break}}if(!siswa)return{ok:false,msg:'Siswa tidak ditemukan'};var kn='-';for(var i=0;i<kl.length;i++){if(kl[i].ID===siswa.Kelas_ID){kn=kl[i].Nama_Kelas;break}}var nilaiSiswa=[];for(var i=0;i<nl.length;i++){if(nl[i].Siswa_ID===siswaId){if(!semester||!siswa.Tanggal){nilaiSiswa.push(nl[i]);continue}var t2=new Date(nl[i].Tanggal);var sem=t2.getMonth()<6?2:1;if(sem==semester)nilaiSiswa.push(nl[i])}}var totalAbsen=0,totalHadir=0;for(var i=0;i<ab.length;i++){if(ab[i].Siswa_ID===siswaId){totalAbsen++;if(ab[i].Status==='Hadir')totalHadir++}}var ss=SpreadsheetApp.create('Rapor_'+Date.now()),sh=ss.getActiveSheet();sh.setName('Rapor');var info=[['Nama',siswa.Nama_Siswa||'-'],['NIS/NISN',(siswa.NIS||'-')+' / '+(siswa.NISN||'-')],['Kelas',kn],['Semester',semester||'-'],['Kehadiran',totalHadir+'/'+totalAbsen+' hadir']];sh.getRange(1,1,info.length,info[0].length).setValues(info);sh.getRange(1,1,1,1).setFontWeight('bold');sh.getRange(1,2,1,1).setFontWeight('bold');var hd=['No','Mapel','Kategori','Nilai','KKM','Status'];var dt=[hd];for(var i=0;i<nilaiSiswa.length;i++){var n=nilaiSiswa[i],nv=Number(n.Nilai)||0,km=Number(n.KKM)||75;dt.push([i+1,n.Mata_Pelajaran||'-',n.Kategori||'-',nv,km,nv>=km?'Tuntas':'Belum Tuntas'])}var startRow=info.length+2;sh.getRange(startRow,1,dt.length,dt[0].length).setValues(dt);sh.getRange(startRow,1,1,dt[0].length).setFontWeight('bold').setBackground('#1A2332').setFontColor('#ffffff');sh.setFrozenRows(0);for(var i=0;i<dt[0].length;i++)sh.autoResizeColumn(i+1);SpreadsheetApp.flush();var url='https://www.googleapis.com/drive/v3/files/'+ss.getId()+'/export?mimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';var resp=UrlFetchApp.fetch(url,{headers:{Authorization:'Bearer '+ScriptApp.getOAuthToken()},muteHttpExceptions:true});if(resp.getResponseCode()!==200)throw new Error('Gagal export: '+resp.getContentText());var b64=Utilities.base64Encode(resp.getBlob().getBytes());DriveApp.getFileById(ss.getId()).setTrashed(true);return{ok:true,data:b64,fileName:'Rapor_'+(siswa.Nama_Siswa||'Siswa').replace(/\s+/g,'_')+'.xlsx'}}catch(e){return{ok:false,msg:e.message}}}
+
+// === KALENDER ===
+function apiGetKalenderEvents(t, month, year) {
+  var s = getSession_(t);
+  if (!s) return { ok: false, msg: 'Unauthorized' };
+  try {
+    var events = [], jd = getAllRows_('Jadwal_Mengajar'), ab = getAllRows_('Absensi'), kl = getAllRows_('Data_Kelas');
+    var hariMap = { 'Monday': 'Senin', 'Tuesday': 'Selasa', 'Wednesday': 'Rabu', 'Thursday': 'Kamis', 'Friday': 'Jumat', 'Saturday': 'Sabtu', 'Sunday': 'Minggu' };
+    if (month && year) {
+      var daysInMonth = new Date(year, month, 0).getDate();
+      for (var d = 1; d <= daysInMonth; d++) {
+        var dt = new Date(year, month - 1, d);
+        var dayName = hariMap[dt.toLocaleDateString('en-US', { weekday: 'long' })];
+        if (dayName === 'Minggu') continue;
+        for (var i = 0; i < jd.length; i++) {
+          if (jd[i].Hari === dayName) {
+            var kN = '-';
+            for (var j = 0; j < kl.length; j++) { if (kl[j].ID === jd[i].Kelas_ID) { kN = kl[j].Nama_Kelas; break; } }
+            if (!kN) { var idx = Number(jd[i].Kelas_ID) - 1; if (idx >= 0 && idx < kl.length) kN = kl[idx].Nama_Kelas; }
+            events.push({ date: year + '-' + String(month).padStart(2, '0') + '-' + String(d).padStart(2, '0'), title: jd[i].Mata_Pelajaran + ' - ' + kN, time: (jd[i].Jam_Mulai || '') + '-' + (jd[i].Jam_Selesai || ''), type: 'jadwal' });
+          }
+        }
+      }
+    }
+    for (var i = 0; i < ab.length; i++) {
+      var stN = '-';
+      for (var j = 0; j < kl.length; j++) { if (kl[j].ID === ab[i].Kelas_ID) { stN = kl[j].Nama_Kelas; break; } }
+      events.push({ date: ab[i].Tanggal, title: 'Absensi ' + stN + ' (' + ab[i].Status + ')', time: '', type: 'absensi' });
+    }
+    events.sort(function(a, b) { return String(a.date).localeCompare(String(b.date)); });
+    return { ok: true, data: events.slice(0, 100) };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+
+// === TEMPLATE EXCEL ===
+function apiDownloadTemplateExcel(t) {
+  var s = getSession_(t);
+  if (!s) return { ok: false, msg: 'Unauthorized' };
+  try {
+    var ss = SpreadsheetApp.create('Template_Siswa_' + Date.now());
+    var sh = ss.getActiveSheet();
+    sh.setName('Siswa');
+    var headers = ['NIS','NISN','Nama_Siswa','Jenis_Kelamin','Nama_Kelas','Alamat','Telepon','Email','Nama_Ortu'];
+    var data = [headers,['24006','12345683','Siti Aminah','P','X IPA 1','Jl. Melati No. 10','081234567891','siti@email.com','Ibu Aminah'],['24007','12345684','Budi Santoso','L','X IPA 2','Jl. Mawar No. 20','081234567892','budi@email.com','Bapak Santoso'],['24008','12345685','Dewi Rahayu','P','XI IPA 1','Jl. Anggrek No. 30','081234567893','','Ibu Rahayu']];
+    sh.getRange(1, 1, data.length, data[0].length).setValues(data);
+    sh.getRange(1, 1, 1, data[0].length).setFontWeight('bold').setBackground('#1A2332').setFontColor('#ffffff');
+    sh.setFrozenRows(1);
+    for (var i = 0; i < data[0].length; i++) sh.autoResizeColumn(i + 1);
+    SpreadsheetApp.flush();
+    var url = 'https://www.googleapis.com/drive/v3/files/' + ss.getId() + '/export?mimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    var resp = UrlFetchApp.fetch(url, { headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() }, muteHttpExceptions: true });
+    if (resp.getResponseCode() !== 200) throw new Error('Gagal export: ' + resp.getContentText());
+    var b64 = Utilities.base64Encode(resp.getBlob().getBytes());
+    DriveApp.getFileById(ss.getId()).setTrashed(true);
+    return { ok: true, data: b64, fileName: 'template_upload_siswa.xlsx' };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+
+// === TEMPLATE SURAT ===
+function apiDownloadTemplateSurat(t, type) {
+  var s = getSession_(t);
+  if (!s) return { ok: false, msg: 'Unauthorized' };
+  try {
+    var pr = getProfil_();
+    var doc = DocumentApp.create('Surat_' + Date.now());
+    var body = doc.getBody();
+    body.setMarginLeft(60).setMarginRight(60).setMarginTop(50).setMarginBottom(50);
+    if (pr.Nama_Sekolah) body.appendParagraph(pr.Nama_Sekolah).setHeading(DocumentApp.ParagraphHeading.HEADING1).setAlignment(DocumentApp.TextAlignment.CENTER);
+    if (pr.Alamat) body.appendParagraph(pr.Alamat).setAlignment(DocumentApp.TextAlignment.CENTER);
+    if (pr.NPSN) body.appendParagraph('NPSN: ' + pr.NPSN).setAlignment(DocumentApp.TextAlignment.CENTER);
+    if (pr.Telepon) body.appendParagraph('Telp: ' + pr.Telepon).setAlignment(DocumentApp.TextAlignment.CENTER);
+    body.appendHorizontalRule();
+    if (type === 'panggilan') {
+      body.appendParagraph('SURAT PANGGILAN ORANG TUA/WALI SISWA').setHeading(DocumentApp.ParagraphHeading.HEADING2).setAlignment(DocumentApp.TextAlignment.CENTER);
+      body.appendParagraph('Nomor: .... / .... / .... / ....').setAlignment(DocumentApp.TextAlignment.RIGHT).setFontSize(10);
+      body.appendParagraph('Kepada Yth.');
+      body.appendParagraph('Bapak/Ibu Orang Tua/Wali Siswa');
+      body.appendParagraph('di Tempat');
+      body.appendParagraph('');body.appendParagraph('Dengan hormat,');
+      body.appendParagraph('Kami sampaikan bahwa putra/putri Bapak/Ibu yang bernama:');
+      body.appendParagraph('Nama Siswa: ........................................').setFontSize(11);
+      body.appendParagraph('Kelas: ........................................').setFontSize(11);
+      body.appendParagraph('NIS: ........................................').setFontSize(11);
+      body.appendParagraph('');
+      body.appendParagraph('Berdasarkan hasil evaluasi pembelajaran, kami mengundang Bapak/Ibu untuk hadir pada:');
+      body.appendParagraph('Hari/Tanggal: ........................................').setFontSize(11);
+      body.appendParagraph('Waktu: ........................................').setFontSize(11);
+      body.appendParagraph('Tempat: ........................................').setFontSize(11);
+      body.appendParagraph('');body.appendParagraph('Acara: ........................................').setFontSize(11);
+      body.appendParagraph('');
+      body.appendParagraph('Demikian undangan ini disampaikan. Atas perhatian dan kerjasamanya diucapkan terima kasih.');
+      body.appendParagraph('');
+      body.appendParagraph(pr.Kota || '............, .......................').setAlignment(DocumentApp.TextAlignment.RIGHT);
+      body.appendParagraph('Kepala Sekolah').setAlignment(DocumentApp.TextAlignment.RIGHT);
+      body.appendParagraph('');body.appendParagraph('');body.appendParagraph('');
+      body.appendParagraph('(' + (pr.Kepala_Sekolah || '................') + ')').setAlignment(DocumentApp.TextAlignment.RIGHT);
+    } else if (type === 'keterangan') {
+      body.appendParagraph('SURAT KETERANGAN AKTIF BELAJAR').setHeading(DocumentApp.ParagraphHeading.HEADING2).setAlignment(DocumentApp.TextAlignment.CENTER);
+      body.appendParagraph('Nomor: .... / .... / .... / ....').setAlignment(DocumentApp.TextAlignment.RIGHT).setFontSize(10);
+      body.appendParagraph('Yang bertanda tangan di bawah ini:');
+      body.appendParagraph('Nama: ' + (pr.Kepala_Sekolah || '........................................')).setFontSize(11);
+      body.appendParagraph('Jabatan: Kepala ' + (pr.Nama_Sekolah || 'Sekolah')).setFontSize(11);body.appendParagraph('');
+      body.appendParagraph('Menerangkan bahwa:');
+      body.appendParagraph('Nama Siswa: ........................................').setFontSize(11);
+      body.appendParagraph('NIS/NISN: ........................................').setFontSize(11);
+      body.appendParagraph('Kelas: ........................................').setFontSize(11);body.appendParagraph('');
+      body.appendParagraph('Benar-benar terdaftar sebagai siswa aktif di ' + (pr.Nama_Sekolah || 'sekolah kami') + ' pada tahun ajaran .................');
+      body.appendParagraph('');body.appendParagraph('Demikian surat keterangan ini dibuat untuk dipergunakan sebagaimana mestinya.');
+    } else {
+      body.appendParagraph('TEMPLATE SURAT/TUGAS').setHeading(DocumentApp.ParagraphHeading.HEADING2).setAlignment(DocumentApp.TextAlignment.CENTER);
+      body.appendParagraph('');body.appendParagraph('Judul: ........................................').setFontSize(12).setBold(true);
+      body.appendParagraph('');body.appendParagraph('Deskripsi:').setFontSize(11).setBold(true);
+      body.appendParagraph('..............................................................................').setFontSize(11);
+      body.appendParagraph('..............................................................................').setFontSize(11);
+      body.appendParagraph('');body.appendParagraph('Deadline: ........................................').setFontSize(11);
+    }
+    doc.saveAndClose();
+    var pdfBlob = DriveApp.getFileById(doc.getId()).getBlob().getAs('application/pdf');
+    DriveApp.getFileById(doc.getId()).setTrashed(true);
+    var typeLabel = type === 'panggilan' ? 'Panggilan_Ortu' : type === 'keterangan' ? 'Aktif_Belajar' : 'Tugas';
+    return { ok: true, data: Utilities.base64Encode(pdfBlob.getBytes()), fileName: 'Surat_' + typeLabel + '.pdf' };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+
+// === KELOMPOK BELAJAR ===
+function apiGetKelompok(t, fl) {
+  var s = getSession_(t);
+  if (!s) return { ok: false, msg: 'Unauthorized' };
+  try {
+    var kl = getAllRows_('Kelompok_Belajar'), ks = getAllRows_('Data_Kelas'), sw = getAllRows_('Data_Siswa');
+    var kelasMap = {}; for (var i = 0; i < ks.length; i++) kelasMap[ks[i].ID] = ks[i].Nama_Kelas;
+    var siswaMap = {}; for (var i = 0; i < sw.length; i++) siswaMap[sw[i].ID] = sw[i].Nama_Siswa;
+    for (var i = 0; i < kl.length; i++) {
+      kl[i].Nama_Kelas = kelasMap[kl[i].Kelas_ID] || '-';
+      kl[i].Nama_Siswa = siswaMap[kl[i].Siswa_ID] || kl[i].Nama_Siswa || '-';
+    }
+    if (fl) {
+      if (fl.kelasId) kl = kl.filter(function(r){return r.Kelas_ID === fl.kelasId});
+      if (fl.kelompok) kl = kl.filter(function(r){return r.Kelompok === fl.kelompok});
+    }
+    return { ok: true, data: kl };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+
+function apiSaveKelompok(t, data) {
+  var s = getSession_(t);
+  if (!s) return { ok: false, msg: 'Unauthorized' };
+  if (!data || !data.kelasId || !data.records) return { ok: false, msg: 'Data tidak lengkap' };
+  try {
+    var sh = getSheet_('Kelompok_Belajar');
+    if (!sh) { sh = SpreadsheetApp.openById(SPREADSHEET_ID).insertSheet('Kelompok_Belajar'); sh.appendRow(['ID','Kelas_ID','Kelompok','No','Siswa_ID','NIS','Nama_Siswa','JK','Kelas_Asal','Nilai']); }
+    var ex = getAllRows_('Kelompok_Belajar');
+    var toKeep = [];
+    for (var i = 0; i < ex.length; i++) { if (ex[i].Kelas_ID !== data.kelasId) toKeep.push(ex[i]); }
+    sh.clear();
+    var hd = ['ID','Kelas_ID','Kelompok','No','Siswa_ID','NIS','Nama_Siswa','JK','Kelas_Asal','Nilai'];
+    sh.appendRow(hd);
+    for (var i = 0; i < toKeep.length; i++) { sh.appendRow([toKeep[i].ID,toKeep[i].Kelas_ID,toKeep[i].Kelompok,toKeep[i].No,toKeep[i].Siswa_ID,toKeep[i].NIS,toKeep[i].Nama_Siswa,toKeep[i].JK,toKeep[i].Kelas_Asal,toKeep[i].Nilai]); }
+    for (var i = 0; i < data.records.length; i++) { var r = data.records[i]; sh.appendRow([uuid_(), data.kelasId, r.Kelompok, r.No || '', r.Siswa_ID || '', r.NIS || '', r.Nama_Siswa || '', r.JK || '', r.Kelas_Asal || '', r.Nilai || '']); }
+    SpreadsheetApp.flush();
+    addLog_(s.userId, 'SAVE_KELOMPOK', 'Simpan kelompok ' + data.kelasId);
+    return { ok: true, msg: 'Kelompok belajar berhasil disimpan' };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+
+function apiImportKelompokExcel(t, data) {
+  var s = getSession_(t);
+  if (!s) return { ok: false, msg: 'Unauthorized' };
+  if (!data || !data.kelasId || !data.records) return { ok: false, msg: 'Data tidak lengkap' };
+  try {
+    var sh = getSheet_('Kelompok_Belajar');
+    if (!sh) { sh = SpreadsheetApp.openById(SPREADSHEET_ID).insertSheet('Kelompok_Belajar'); sh.appendRow(['ID','Kelas_ID','Kelompok','No','Siswa_ID','NIS','Nama_Siswa','JK','Kelas_Asal','Nilai']); }
+    // Match Siswa_ID from NIS or Nama_Siswa
+    var sw = getAllRows_('Data_Siswa');
+    var siswaByNIS = {}, siswaByName = {};
+    for (var i = 0; i < sw.length; i++) {
+      if (sw[i].NIS) siswaByNIS[String(sw[i].NIS).trim()] = sw[i];
+      if (sw[i].Nama_Siswa) siswaByName[String(sw[i].Nama_Siswa).trim().toLowerCase()] = sw[i];
+    }
+    for (var i = 0; i < data.records.length; i++) {
+      var r = data.records[i];
+      var matched = null;
+      if (r.NIS) matched = siswaByNIS[String(r.NIS).trim()];
+      if (!matched && r.Nama_Siswa) matched = siswaByName[String(r.Nama_Siswa).trim().toLowerCase()];
+      if (matched) r.Siswa_ID = matched.ID;
+    }
+    var ex = getAllRows_('Kelompok_Belajar');
+    var toKeep = [];
+    for (var i = 0; i < ex.length; i++) { if (ex[i].Kelas_ID !== data.kelasId) toKeep.push(ex[i]); }
+    sh.clear();
+    var hd = ['ID','Kelas_ID','Kelompok','No','Siswa_ID','NIS','Nama_Siswa','JK','Kelas_Asal','Nilai'];
+    sh.appendRow(hd);
+    for (var i = 0; i < toKeep.length; i++) { sh.appendRow([toKeep[i].ID,toKeep[i].Kelas_ID,toKeep[i].Kelompok,toKeep[i].No,toKeep[i].Siswa_ID,toKeep[i].NIS,toKeep[i].Nama_Siswa,toKeep[i].JK,toKeep[i].Kelas_Asal,toKeep[i].Nilai]); }
+    for (var i = 0; i < data.records.length; i++) { var r = data.records[i]; sh.appendRow([uuid_(), data.kelasId, r.Kelompok, r.No || '', r.Siswa_ID || '', r.NIS || '', r.Nama_Siswa || '', r.JK || '', r.Kelas_Asal || '', r.Nilai || '']); }
+    SpreadsheetApp.flush();
+    addLog_(s.userId, 'IMPORT_KELOMPOK', 'Import kelompok ' + data.kelasId + ' (' + data.records.length + ' siswa)');
+    return { ok: true, msg: data.records.length + ' data kelompok berhasil diimport' };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+
+// === LCKH ===
+function apiGetLCKH(t, fl) {
+  var s = getSession_(t); if (!s) return { ok: false, msg: 'Unauthorized' };
+  try {
+    var l = getAllRows_('LCKH');
+    if (fl) { if (fl.bulan) l = l.filter(function(r){ var d=String(r.Tanggal); return d.indexOf('/'+fl.bulan+'/')>=0||d.indexOf('-'+fl.bulan+'-')>=0 }); if (fl.tahun) l = l.filter(function(r){ var d=String(r.Tanggal); return d.indexOf('/'+fl.tahun)>=0||d.indexOf(fl.tahun)>=0 }) }
+    l.sort(function(a,b){ var da=a.Tanggal||'',db=b.Tanggal||''; if(da<db) return -1; if(da>db) return 1; return 0 });
+    return { ok: true, data: l };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+function apiSaveLCKH(t, records) {
+  var s = getSession_(t); if (!s) return { ok: false, msg: 'Unauthorized' };
+  try {
+    var sh = getSheet_('LCKH');
+    if (!sh) { sh = SpreadsheetApp.openById(SPREADSHEET_ID).insertSheet('LCKH'); sh.appendRow(['ID','No','Kegiatan','Pekerjaan','Tanggal','Jurnal_ID']); }
+    sh.clear();
+    var hd = ['ID','No','Kegiatan','Pekerjaan','Tanggal','Jurnal_ID'];
+    sh.appendRow(hd);
+    for (var i = 0; i < records.length; i++) { var r = records[i]; sh.appendRow([uuid_(), r.No||(i+1), r.Kegiatan||'', r.Pekerjaan||'', r.Tanggal||'', r.Jurnal_ID||'']); }
+    SpreadsheetApp.flush();
+    addLog_(s.userId, 'SAVE_LCKH', 'Simpan '+records.length+' LCKH');
+    return { ok: true, msg: records.length + ' LCKH disimpan' };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+function parseDateAny_(s){if(!s)return null;var d=null;if(s.indexOf('-')>=0){var p=s.split('-');if(p.length===3)d=new Date(p[0]+'-'+p[1]+'-'+p[2])}else if(s.indexOf('/')>=0){var p=s.split('/');if(p.length===3)d=new Date(p[2]+'-'+p[1]+'-'+p[0])}if(d&&!isNaN(d.getTime()))return d;return null}
+function apiGenerateLCKH(t, bulan, tahun) {
+  var s = getSession_(t); if (!s) return { ok: false, msg: 'Unauthorized' };
+  try {
+    var jurnal = getAllRows_('Jurnal_Mengajar'), kl = getAllRows_('Data_Kelas');
+    var kelasMap = {}; for (var i = 0; i < kl.length; i++) kelasMap[kl[i].ID] = kl[i].Nama_Kelas;
+    var groups = {};
+    for (var i = 0; i < jurnal.length; i++) {
+      var j = jurnal[i], d = parseDateAny_(String(j.Tanggal||'')); if (!d) continue;
+      var b = String(d.getMonth()+1).padStart(2,'0'), th = d.getFullYear();
+      if (bulan && String(b) !== String(bulan).padStart(2,'0')) continue;
+      if (tahun && String(th) !== String(tahun)) continue;
+      var kn = kelasMap[j.Kelas_ID] || j.Nama_Kelas || '-';
+      var tglKey = Utilities.formatDate(d, 'Asia/Jakarta', 'yyyy-MM-dd');
+      var mapel = j.Mata_Pelajaran||'-';
+      var key = tglKey+'|'+mapel;
+      if (!groups[key]) groups[key] = { tgl: tglKey, mapel: mapel, kelas: [], jids: [] };
+      if (groups[key].kelas.indexOf(kn)<0) groups[key].kelas.push(kn);
+      if (j.ID && groups[key].jids.indexOf(j.ID)<0) groups[key].jids.push(j.ID);
+    }
+    var records = []; var keys = Object.keys(groups).sort();
+    for (var i = 0; i < keys.length; i++) {
+      var g = groups[keys[i]];
+      records.push({
+        No: i+1, Kegiatan: 'Mengajar',
+        Pekerjaan: 'KBM di kelas '+g.kelas.join(', ')+' mapel '+g.mapel,
+        Tanggal: g.tgl,
+        Jurnal_ID: g.jids.join('|')
+      });
+    }
+    return { ok: true, data: records };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+
+// === LKB ===
+function apiGetLKB(t, fl) {
+  var s = getSession_(t); if (!s) return { ok: false, msg: 'Unauthorized' };
+  try {
+    var l = getAllRows_('LKB');
+    if (fl) { if (fl.bulan) l = l.filter(function(r){ return parseInt(r.Bulan)===parseInt(fl.bulan) }); if (fl.tahun) l = l.filter(function(r){ return parseInt(r.Tahun)===parseInt(fl.tahun) }) }
+    return { ok: true, data: l };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+function apiSaveLKB(t, records) {
+  var s = getSession_(t); if (!s) return { ok: false, msg: 'Unauthorized' };
+  try {
+    var sh = getSheet_('LKB');
+    if (!sh) { sh = SpreadsheetApp.openById(SPREADSHEET_ID).insertSheet('LKB'); sh.appendRow(['ID','No','Uraian_Tugas','Vol','Bukti_Dokumen','Bulan','Tahun']); }
+    sh.clear();
+    var hd = ['ID','No','Uraian_Tugas','Vol','Bukti_Dokumen','Bulan','Tahun'];
+    sh.appendRow(hd);
+    for (var i = 0; i < records.length; i++) { var r = records[i]; sh.appendRow([uuid_(), r.No||(i+1), r.Uraian_Tugas||'', r.Vol||0, r.Bukti_Dokumen||'', r.Bulan||'', r.Tahun||'']); }
+    SpreadsheetApp.flush();
+    addLog_(s.userId, 'SAVE_LKB', 'Simpan '+records.length+' LKB');
+    return { ok: true, msg: records.length + ' LKB disimpan' };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+function apiGenerateLKB(t, bulan, tahun) {
+  var s = getSession_(t); if (!s) return { ok: false, msg: 'Unauthorized' };
+  try {
+    var lckh = getAllRows_('LCKH');
+    var grouped = {};
+    for (var i = 0; i < lckh.length; i++) {
+      var r = lckh[i], tgl = String(r.Tanggal||'');
+      var d = parseDateAny_(tgl); if (!d) continue;
+      var b = String(d.getMonth()+1).padStart(2,'0'), th = d.getFullYear();
+      if (bulan && String(b) !== String(bulan).padStart(2,'0')) continue;
+      if (tahun && String(th) !== String(tahun)) continue;
+      var key = (r.Kegiatan||'')+'|'+(r.Pekerjaan||'');
+      if (!grouped[key]) grouped[key] = { Kegiatan: r.Kegiatan||'', Pekerjaan: r.Pekerjaan||'', count: 0 };
+      grouped[key].count++;
+    }
+    var records = []; var keys = Object.keys(grouped);
+    for (var i = 0; i < keys.length; i++) {
+      var g = grouped[keys[i]];
+      records.push({
+        No: i+1, Uraian_Tugas: g.Kegiatan+' '+g.Pekerjaan,
+        Vol: g.count, Bukti_Dokumen: 'Dokumentasi kegiatan dan presensi',
+        Bulan: bulan||'', Tahun: tahun||''
+      });
+    }
+    return { ok: true, data: records };
+  } catch (e) { return { ok: false, msg: e.message }; }
+}
+
+// === API ROUTER ===
+function apiRouter_(action, token, payload) {
+  switch (action) {
+    case 'login': return apiLogin(payload.username, payload.password);
+    case 'logout': return apiLogout(token);
+    case 'checkAuth': return apiCheckAuth(token);
+    case 'dashboard': return apiDashboard(token);
+    case 'getDashboard': return apiDashboard(token);
+    case 'getProfil': return apiGetProfil(token);
+    case 'updateProfil': return apiUpdateProfil(token, payload);
+    case 'getKelas': return apiGetKelas(token);
+    case 'addKelas': return apiAddKelas(token, payload);
+    case 'updateKelas': return apiUpdateKelas(token, payload.id, payload);
+    case 'deleteKelas': return apiDeleteKelas(token, payload.id);
+    case 'getSiswa': return apiGetSiswa(token, payload.kelasId);
+    case 'addSiswa': return apiAddSiswa(token, payload);
+    case 'updateSiswa': return apiUpdateSiswa(token, payload.id, payload);
+    case 'deleteSiswa': return apiDeleteSiswa(token, payload.id);
+    case 'uploadSiswaBatch': return apiUploadSiswaBatch(token, payload.arr);
+    case 'getJadwal': return jdGet(token);
+    case 'addJadwal': return apiAddJadwal(token, payload);
+    case 'updateJadwal': return apiUpdateJadwal(token, payload.id, payload);
+    case 'deleteJadwal': return apiDeleteJadwal(token, payload.id);
+    case 'getAbsensi': return apiGetAbsensi(token, payload);
+    case 'saveAbsensi': return apiSaveAbsensi(token, payload.recs);
+    case 'updateAbsensi': return apiUpdateAbsensi(token, payload.id, payload);
+    case 'deleteAbsensi': return apiDeleteAbsensi(token, payload.id);
+    case 'getRekapAbsensi': return apiGetRekapAbsensi(token, payload.kelasId, payload.startDate, payload.endDate);
+    case 'getNilai': return apiGetNilai(token, payload);
+    case 'addNilai': return apiAddNilai(token, payload);
+    case 'updateNilai': return apiUpdateNilai(token, payload.id, payload);
+    case 'deleteNilai': return apiDeleteNilai(token, payload.id);
+    case 'saveBatchNilai': return apiSaveNilaiBatch(token, payload);
+    case 'getJurnal': return apiGetJurnal(token, payload);
+    case 'addJurnal': return apiAddJurnal(token, payload);
+    case 'updateJurnal': return apiUpdateJurnal(token, payload.id, payload);
+    case 'deleteJurnal': return apiDeleteJurnal(token, payload.id);
+    case 'getSettings': return apiGetSettings(token);
+    case 'updateSettings': return apiUpdateSettings(token, payload);
+    case 'getLog': return apiGetLog(token);
+    case 'getNotifications': return apiGetNotifications(token);
+    case 'backupData': return apiBackupData(token);
+    case 'restoreData': return apiRestoreData(token, payload.b64);
+    case 'getKalenderEvents': return apiGetKalenderEvents(token, payload.month, payload.year);
+    case 'downloadPdfNilai': return apiDownloadPdfNilai(token, payload.kelasId, payload.kategori);
+    case 'downloadExcelNilai': return apiDownloadExcelNilai(token, payload.kelasId, payload.kategori);
+    case 'downloadPdfAbsensi': return apiDownloadPdfAbsensi(token, payload.tanggal, payload.kelasId);
+    case 'downloadExcelAbsensi': return apiDownloadExcelAbsensi(token, payload.tanggal, payload.kelasId);
+    case 'downloadPdfJurnal': return apiDownloadPdfJurnal(token, payload.kelasId, payload.tanggal, payload.tanggalAkhir);
+    case 'downloadExcelJurnal': return apiDownloadExcelJurnal(token, payload.kelasId, payload.tanggal, payload.tanggalAkhir);
+    case 'downloadPdfRapor': return apiDownloadPdfRapor(token, payload.siswaId, payload.semester);
+    case 'downloadExcelRapor': return apiDownloadExcelRapor(token, payload.siswaId, payload.semester);
+    case 'downloadPdfRekapAbsensi': return apiDownloadPdfRekapAbsensi(token, payload.kelasId, payload.startDate, payload.endDate);
+    case 'downloadExcelRekapAbsensi': return apiDownloadExcelRekapAbsensi(token, payload.kelasId, payload.startDate, payload.endDate);
+    case 'downloadTemplateExcel': return apiDownloadTemplateExcel(token);
+    case 'downloadTemplateSurat': return apiDownloadTemplateSurat(token, payload.type);
+    case 'getKelompok': return apiGetKelompok(token, payload);
+    case 'saveKelompok': return apiSaveKelompok(token, payload);
+    case 'importKelompokExcel': return apiImportKelompokExcel(token, payload);
+    case 'getLCKH': return apiGetLCKH(token, payload);
+    case 'saveLCKH': return apiSaveLCKH(token, payload.records);
+    case 'generateLCKH': return apiGenerateLCKH(token, payload.bulan, payload.tahun);
+    case 'getLKB': return apiGetLKB(token, payload);
+    case 'saveLKB': return apiSaveLKB(token, payload.records);
+    case 'generateLKB': return apiGenerateLKB(token, payload.bulan, payload.tahun);
+    default: return { ok: false, msg: 'Unknown action: ' + action };
+  }
+}
+
+// === SERVE HTML & API ===
+function doGet(e) {
+  var action = e && e.parameter && e.parameter.action;
+  if (action) {
+    var token = e.parameter.token || '';
+    var payload = {};
+    try { payload = JSON.parse(e.parameter.payload || '{}'); } catch (x) {}
+    var result = apiRouter_(action, token, payload);
+    return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+  }
+  var html = HtmlService.createHtmlOutputFromFile('Index');
+  html.setTitle('Teacher Dashboard')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+  return html;
+}
+
+function doPost(e) {
+  try {
+    var body = JSON.parse(e.postData.contents || '{}');
+    var action = body.action || '';
+    var token = body.token || '';
+    var payload = body.data || {};
+    var result = apiRouter_(action, token, payload);
+    return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+  } catch (x) {
+    return ContentService.createTextOutput(JSON.stringify({ ok: false, msg: x.message })).setMimeType(ContentService.MimeType.JSON);
+  }
+}

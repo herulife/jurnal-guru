@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script>tailwind.config={theme:{extend:{colors:{primary:{50:'#eefbf8',600:'#0D7C66',700:'#0A6352'},accent:{50:'#fffbeb',500:'#E8A317',700:'#a16207'},sidebar:{DEFAULT:'#1A2332',hover:'#243447',active:'#2D4055'},surface:{DEFAULT:'#F5F3EF',muted:'#E8E4DC'}},fontFamily:{heading:['Outfit','sans-serif'],body:['DM Sans','sans-serif']}}}}</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:#F5F3EF;color:#2D3748;overflow-x:hidden}h1,h2,h3,h4,h5,h6{font-family:'Outfit',sans-serif}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-thumb{background:#c4bfb5;border-radius:3px}
+.login-bg{background:linear-gradient(135deg,#1A2332,#0A4038 40%,#0D7C66 70%,#1A2332);background-size:400% 400%;animation:gs 12s ease infinite}@keyframes gs{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.fs{position:absolute;border-radius:50%;opacity:.08;background:#fff;animation:fu linear infinite}@keyframes fu{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:.08}90%{opacity:.08}100%{transform:translateY(-10vh) scale(1);opacity:0}}
+.sl{display:flex;align-items:center;gap:12px;padding:11px 20px;border-radius:10px;color:#94a3b8;font-size:14px;font-weight:500;transition:all .2s;cursor:pointer;border-left:3px solid transparent;margin:2px 12px}.sl:hover{background:#243447;color:#e2e8f0}.sl.ac{background:#2D4055;color:#fff;border-left-color:#E8A317}.sl i{width:20px;text-align:center;font-size:15px}
+.sc{background:#fff;border-radius:16px;padding:24px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s;border:1px solid #E8E4DC}.sc:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.08)}.sc .si{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px}.sc .sg{position:absolute;width:120px;height:120px;border-radius:50%;filter:blur(50px);opacity:.15;top:-20px;right:-20px}
+.dt{width:100%;border-collapse:separate;border-spacing:0}.dt thead th{background:#1A2332;color:#e2e8f0;padding:12px 16px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}.dt thead th:first-child{border-radius:10px 0 0 0}.dt thead th:last-child{border-radius:0 10px 0 0}.dt tbody td{padding:12px 16px;font-size:14px;border-bottom:1px solid #E8E4DC;white-space:nowrap}.dt tbody tr{background:#fff;transition:background .15s}.dt tbody tr:hover{background:#f8f6f2}.dt tbody tr:nth-child(even){background:#faf9f6}.dt tbody tr:nth-child(even):hover{background:#f0eeea}
+.bg{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}.bg-h{background:#d1fae5;color:#065f46}.bg-s{background:#fef3c7;color:#92400e}.bg-i{background:#dbeafe;color:#1e40af}.bg-a{background:#fee2e2;color:#991b1b}.bg-l{background:#e0f2fe;color:#0369a1}.bg-p{background:#fce7f3;color:#9d174d}.bg-t{background:#fee2e2;color:#991b1b}.bg-ok{background:#d1fae5;color:#065f46}.radio-pill{display:inline-flex;align-items:center;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid #d1d5db;color:#6b7280;background:#fff;transition:all .15s}.radio-pill:hover{border-color:#E8A317;color:#E8A317}.radio-pill.active{background:#E8A317;color:#fff;border-color:#E8A317}
+.mo{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}.mo.sh{opacity:1;pointer-events:auto}.mo .mb{position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px)}.mo .mx{position:relative;background:#fff;border-radius:20px;width:100%;max-width:720px;max-height:90vh;overflow-y:auto;margin:16px;transform:translateY(20px) scale(.97);transition:transform .25s;box-shadow:0 25px 60px rgba(0,0,0,.2)}.mo.sh .mx{transform:translateY(0) scale(1)}
+.to{padding:14px 20px;border-radius:12px;color:#fff;font-size:14px;font-weight:500;display:flex;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,.15);animation:ti .3s ease;min-width:280px}.to-ok{background:#059669}.to-er{background:#dc2626}.to-wr{background:#d97706}@keyframes ti{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}@keyframes too{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+.fi{width:100%;padding:10px 14px;border:2px solid #E8E4DC;border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;transition:border-color .2s,box-shadow .2s;background:#fff;outline:none}.fi:focus{border-color:#0D7C66;box-shadow:0 0 0 3px rgba(13,124,102,.12)}.fl{display:block;font-size:13px;font-weight:600;color:#4a5568;margin-bottom:6px}.fsel{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+.bt{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;border:none;transition:all .2s}.bt:active{transform:scale(.97)}.bt-p{background:#0D7C66;color:#fff}.bt-p:hover{background:#0A6352;box-shadow:0 4px 15px rgba(13,124,102,.3)}.bt-a{background:#E8A317;color:#fff}.bt-a:hover{background:#ca8a04}.bt-d{background:#dc2626;color:#fff}.bt-d:hover{background:#b91c1c}.bt-o{background:transparent;color:#4a5568;border:2px solid #E8E4DC}.bt-o:hover{border-color:#0D7C66;color:#0D7C66;background:#eefbf8}.bt-s{padding:6px 12px;font-size:12px;border-radius:8px}
+.co{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}.co.sh{opacity:1;pointer-events:auto}
+.sp{width:36px;height:36px;border:3px solid #E8E4DC;border-top-color:#0D7C66;border-radius:50%;animation:spn .7s linear infinite}@keyframes spn{to{transform:rotate(360deg)}}
+@media(max-width:768px){#sidebar{transform:translateX(-100%);position:fixed!important;z-index:90}#sidebar.op{transform:translateX(0)}#mainContent{margin-left:0!important}}
+.pe{animation:pf .3s ease}@keyframes pf{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.tw{overflow-x:auto;border-radius:12px;border:1px solid #E8E4DC}
+.drop-zone{border:2px dashed #ccc;border-radius:12px;padding:32px;text-align:center;transition:all .2s;cursor:pointer}.drop-zone:hover,.drop-zone.drag{border-color:#0D7C66;background:#eefbf8}
+
+.mo .mx > div:first-child { position:sticky; top:0; z-index:2; background:#fff; border-radius:20px 20px 0 0; }
+/* DARK MODE */
+body.dark{background:#0f172a;color:#e2e8f0}body.dark .sc{background:#1e293b;border-color:#334155;color:#e2e8f0}body.dark .sc .si{background:#1a2332}body.dark .sc h3,body.dark .sc .text-gray-800{color:#f1f5f9}body.dark .sc .text-gray-500{color:#94a3b8}body.dark .dt tbody td{border-color:#334155}body.dark .dt tbody tr{background:#1e293b}body.dark .dt tbody tr:nth-child(even){background:#1a2332}body.dark .dt tbody tr:hover{background:#334155}body.dark .dt tbody tr:nth-child(even):hover{background:#2d3a4d}body.dark .fi{background:#1e293b;border-color:#334155;color:#e2e8f0}body.dark .fi:focus{border-color:#0D7C66}body.dark .fl{color:#94a3b8}body.dark .bg-white{background:#1e293b!important;border-color:#334155!important}body.dark .text-gray-800{color:#f1f5f9}body.dark .text-gray-500,body.dark .text-gray-400,body.dark .text-gray-600{color:#94a3b8}body.dark .bg-surface{background:#1a2332}body.dark .surface-muted,body.dark .border-surface-muted{border-color:#334155}body.dark .bt-o{background:transparent;color:#94a3b8;border-color:#334155}body.dark .bt-o:hover{border-color:#0D7C66;color:#0D7C66;background:#1a2332}body.dark .mo .mx{background:#1e293b}body.dark .mo .mx>div:first-child{background:#1e293b;border-color:#334155}body.dark .mo .mx #modalTitle{color:#f1f5f9}body.dark .mo .mx button.text-gray-400{color:#94a3b8}body.dark .bg-white.rounded-2xl{background:#1e293b!important}body.dark .tw{border-color:#334155}body.dark header{background:#1a2332!important;border-color:#334155!important}body.dark header h1{color:#f1f5f9}body.dark #loadingOverlay{background:#0f172ab3}body.dark #loadingOverlay .text-gray-600{color:#94a3b8}body.dark .co .bg-white{background:#1e293b!important}body.dark .co h3{color:#f1f5f9}body.dark .drop-zone{border-color:#334155;color:#94a3b8}body.dark .drop-zone:hover{border-color:#0D7C66;background:#1a2332}
+/* KALENDER */
+.kal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}.kal-header{padding:8px;text-align:center;font-size:12px;font-weight:600;color:#64748b}.kal-day{min-height:80px;padding:6px;border-radius:8px;background:#fff;border:1px solid #E8E4DC;font-size:12px;vertical-align:top}.kal-day .num{font-weight:700;color:#1e293b;margin-bottom:4px;display:block}.kal-day.today{border-color:#0D7C66;background:#eefbf8}.kal-day.other{opacity:.4}.kal-ev{display:block;padding:2px 4px;border-radius:4px;margin-bottom:2px;font-size:10px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kal-ev.jadwal{background:#d1fae5;color:#065f46}.kal-ev.absensi{background:#dbeafe;color:#1e40af}body.dark .kal-day{background:#1e293b;border-color:#334155;color:#e2e8f0}body.dark .kal-day .num{color:#f1f5f9}body.dark .kal-day.today{border-color:#0D7C66;background:#0a2e2a}body.dark .kal-ev.jadwal{background:#064e3b;color:#6ee7b7}body.dark .kal-ev.absensi{background:#1e3a5f;color:#93c5fd}body.dark .kal-header{color:#94a3b8}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage" class="login-bg fixed inset-0 flex items-center justify-center z-50">
+<div class="fs" style="width:80px;height:80px;left:10%;animation-duration:14s"></div><div class="fs" style="width:50px;height:50px;left:50%;animation-duration:18s;animation-delay:3s"></div><div class="fs" style="width:120px;height:120px;left:75%;animation-duration:16s;animation-delay:5s"></div>
+<div class="relative z-10 w-full max-w-md mx-4"><div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8">
+<div class="text-center mb-8"><div class="w-16 h-16 bg-gradient-to-br from-primary-600 to-primary-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg"><i class="fas fa-graduation-cap text-white text-2xl"></i></div><h1 class="text-2xl font-bold text-gray-800">Teacher Dashboard</h1><p class="text-sm text-gray-500 mt-1">Masuk untuk mengakses sistem</p></div>
+<form onsubmit="handleLogin(event)"><div class="mb-5"><label class="fl">Username</label><div class="relative"><i class="fas fa-user absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i><input type="text" id="loginUser" class="fi pl-10" placeholder="Masukkan username" required></div></div><div class="mb-6"><label class="fl">Password</label><div class="relative"><i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i><input type="password" id="loginPass" class="fi pl-10" placeholder="Masukkan password" required><button type="button" onclick="togglePw()" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-sm bg-transparent border-none cursor-pointer"><i id="pwIcon" class="fas fa-eye"></i></button></div></div><button type="submit" id="loginBtn" class="bt bt-p w-full justify-center text-base py-3"><i class="fas fa-sign-in-alt"></i> Masuk</button></form>
+<p id="loginError" class="text-red-600 text-sm text-center mt-4 hidden"></p>
+</div></div></div>
+
+<!-- APP -->
+<div id="appPage" class="hidden">
+<aside id="sidebar" class="fixed left-0 top-0 bottom-0 w-64 bg-sidebar flex flex-col transition-transform duration-300">
+<div class="p-5 border-b border-white/10"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow"><i class="fas fa-graduation-cap text-white text-sm"></i></div><div><h2 class="text-white font-bold text-base leading-tight" id="sidebarAppName">Teacher Dashboard</h2><p class="text-gray-500 text-xs">Sistem Manajemen</p></div></div></div>
+<nav class="flex-1 py-4 overflow-y-auto">
+<p class="text-xs font-semibold text-gray-600 uppercase tracking-wider px-8 mb-2">Menu Utama</p>
+<div class="sl ac" data-page="dashboard"><i class="fas fa-th-large"></i><span>Dashboard</span></div>
+<div class="sl" data-page="siswa"><i class="fas fa-user-graduate"></i><span>Data Siswa</span></div>
+<div class="sl" data-page="kelas"><i class="fas fa-chalkboard"></i><span>Data Kelas</span></div>
+<div class="sl" data-page="jadwal"><i class="fas fa-calendar-alt"></i><span>Jadwal Mengajar</span></div>
+<p class="text-xs font-semibold text-gray-600 uppercase tracking-wider px-8 mb-2 mt-6">Akademik</p>
+<div class="sl" data-page="absensi"><i class="fas fa-clipboard-check"></i><span>Absensi</span></div>
+<div class="sl" data-page="rekapAbsensi"><i class="fas fa-chart-pie"></i><span>Rekap Absensi</span></div>
+<div class="sl" data-page="nilai"><i class="fas fa-chart-bar"></i><span>Nilai</span></div>
+<div class="sl" data-page="rekapNilai"><i class="fas fa-table-list"></i><span>Rekap Nilai</span></div>
+<div class="sl" data-page="kelompokBelajar"><i class="fas fa-layer-group"></i><span>Kelompok Belajar</span></div>
+<div class="sl" data-page="jurnal"><i class="fas fa-book-open"></i><span>Jurnal Mengajar</span></div>
+<p class="text-xs font-semibold text-gray-600 uppercase tracking-wider px-8 mb-2 mt-6">Sistem</p>
+<div class="sl" data-page="profil"><i class="fas fa-school"></i><span>Profil Sekolah</span></div>
+<div class="sl" data-page="settings"><i class="fas fa-cog"></i><span>Pengaturan</span></div>
+<div class="sl" data-page="log"><i class="fas fa-history"></i><span>Activity Log</span></div>
+<div class="sl" data-page="kalender"><i class="fas fa-calendar"></i><span>Kalender</span></div>
+<p class="text-xs font-semibold text-gray-600 uppercase tracking-wider px-8 mb-2 mt-6">Laporan Pegawai</p>
+<div class="sl" data-page="lckh" style="padding-left:36px"><i class="fas fa-clipboard-list"></i><span>LCKH</span></div>
+<div class="sl" data-page="lkb" style="padding-left:36px"><i class="fas fa-file-alt"></i><span>LKB</span></div>
+<p class="text-xs font-semibold text-gray-600 uppercase tracking-wider px-8 mb-2 mt-6">Dokumen</p>
+<div class="sl" data-page="surat"><i class="fas fa-envelope"></i><span>Template Surat</span></div>
+<div class="sl" onclick="openPanduan()"><i class="fas fa-book"></i><span>Panduan</span></div>
+</nav>
+<div class="p-4 border-t border-white/10"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-primary-700 flex items-center justify-center text-white font-bold text-sm" id="userAvatar">A</div><div class="flex-1 min-w-0"><p class="text-white text-sm font-semibold truncate" id="userName">Admin</p><p class="text-gray-500 text-xs" id="userRole">Admin</p></div><button onclick="handleLogout()" class="text-gray-500 hover:text-red-400 bg-transparent border-none cursor-pointer"><i class="fas fa-sign-out-alt"></i></button></div></div>
+</aside>
+<div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-80 hidden md:hidden" onclick="toggleSidebar()"></div>
+
+<main id="mainContent" class="transition-all duration-300" style="margin-left:256px">
+<header class="sticky top-0 z-40 bg-surface/80 backdrop-blur-lg border-b border-surface-muted px-6 py-3 flex items-center justify-between"><div class="flex items-center gap-3"><button onclick="toggleSidebar()" class="md:hidden w-9 h-9 rounded-lg bg-white border border-surface-muted flex items-center justify-center text-gray-600 cursor-pointer"><i class="fas fa-bars text-sm"></i></button><h1 class="text-lg font-bold text-gray-800" id="pageTitle">Dashboard</h1></div><div class="flex items-center gap-2"><span class="text-xs text-gray-500" id="headerDate"></span><button onclick="toggleDark()" class="w-9 h-9 rounded-lg bg-white border border-surface-muted flex items-center justify-center text-gray-600 cursor-pointer" title="Mode Gelap"><i id="darkIcon" class="fas fa-moon text-sm"></i></button><div class="relative"><button onclick="toggleNotif()" class="w-9 h-9 rounded-lg bg-white border border-surface-muted flex items-center justify-center text-gray-600 cursor-pointer relative" title="Notifikasi"><i class="fas fa-bell text-sm"></i><span id="notifBadge" class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center hidden">0</span></button><div id="notifPanel" class="absolute right-0 top-12 w-80 bg-white rounded-2xl shadow-2xl border border-surface-muted hidden z-50 max-h-96 overflow-y-auto"><div class="p-3 border-b border-surface-muted font-bold text-sm text-gray-800">Notifikasi</div><div id="notifList" class="p-2"><p class="text-xs text-gray-400 text-center py-4">Tidak ada notifikasi</p></div></div></div></div></header>
+<div id="loadingOverlay" class="hidden fixed inset-0 bg-white/60 backdrop-blur-sm z-50 flex items-center justify-center"><div class="text-center"><div class="sp mx-auto mb-3"></div><p class="text-sm text-gray-600">Memuat data...</p></div></div>
+
+<!-- DASHBOARD -->
+<section id="pageDashboard" class="p-6 pe">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+<div class="sc"><div class="sg" style="background:#0D7C66"></div><div class="flex items-center justify-between mb-3"><div class="si bg-primary-50 text-primary-700"><i class="fas fa-user-graduate"></i></div><span class="text-xs text-gray-400">Total</span></div><p class="text-3xl font-bold text-gray-800" id="statSiswa">0</p><p class="text-sm text-gray-500 mt-1">Siswa Terdaftar</p></div>
+<div class="sc"><div class="sg" style="background:#E8A317"></div><div class="flex items-center justify-between mb-3"><div class="si bg-accent-50 text-accent-700"><i class="fas fa-chalkboard"></i></div><span class="text-xs text-gray-400">Aktif</span></div><p class="text-3xl font-bold text-gray-800" id="statKelas">0</p><p class="text-sm text-gray-500 mt-1">Kelas</p></div>
+<div class="sc"><div class="sg" style="background:#059669"></div><div class="flex items-center justify-between mb-3"><div class="si bg-green-50 text-green-700"><i class="fas fa-clipboard-check"></i></div><span class="text-xs text-gray-400">Hari ini</span></div><p class="text-3xl font-bold text-gray-800" id="statAbsen">0</p><p class="text-sm text-gray-500 mt-1">Absensi Dicatat</p></div>
+<div class="sc"><div class="sg" style="background:#7c3aed"></div><div class="flex items-center justify-between mb-3"><div class="si bg-purple-50 text-purple-700"><i class="fas fa-chart-line"></i></div><span class="text-xs text-gray-400">Rata-rata</span></div><p class="text-3xl font-bold text-gray-800" id="statNilai">0</p><p class="text-sm text-gray-500 mt-1">Nilai Keseluruhan</p></div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div class="bg-white rounded-2xl p-6 border border-surface-muted"><h3 class="font-bold text-gray-800 mb-4">Distribusi Siswa per Kelas</h3><div style="height:280px"><canvas id="chartKelas"></canvas></div></div>
+<div class="bg-white rounded-2xl p-6 border border-surface-muted"><h3 class="font-bold text-gray-800 mb-4">Ringkasan Data</h3><div class="space-y-4">
+<div class="flex items-center justify-between p-3 bg-surface rounded-xl"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-lg bg-primary-50 text-primary-700 flex items-center justify-center"><i class="fas fa-clipboard-check"></i></div><span class="text-sm font-medium">Total Absensi</span></div><span class="font-bold" id="sumAbsen">0</span></div>
+<div class="flex items-center justify-between p-3 bg-surface rounded-xl"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-lg bg-accent-50 text-accent-700 flex items-center justify-center"><i class="fas fa-chart-bar"></i></div><span class="text-sm font-medium">Total Nilai</span></div><span class="font-bold" id="sumNilai">0</span></div>
+<div class="flex items-center justify-between p-3 bg-surface rounded-xl"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center"><i class="fas fa-calendar-alt"></i></div><span class="text-sm font-medium">Tahun Ajaran</span></div><span class="font-bold" id="sumTA">-</span></div>
+<div class="flex items-center justify-between p-3 bg-surface rounded-xl"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-lg bg-red-50 text-red-700 flex items-center justify-center"><i class="fas fa-book-open"></i></div><span class="text-sm font-medium">Semester</span></div><span class="font-bold" id="sumSem">-</span></div>
+</div></div></div></section>
+
+<!-- SISWA -->
+<section id="pageSiswa" class="p-6 pe hidden">
+<div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+<div class="flex flex-wrap items-center gap-3"><select id="filterSiswaKelas" onchange="loadSiswa()" class="fi fsel w-48 text-sm"><option value="">Semua Kelas</option></select><div class="relative"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i><input type="text" id="searchSiswa" oninput="filterSiswaTable()" placeholder="Cari..." class="fi pl-9 w-48 text-sm"></div></div>
+<div class="flex gap-2"><button class="bt bt-o bt-s" onclick="dlTemplate()"><i class="fas fa-download"></i> Template CSV</button><button class="bt bt-o bt-s" onclick="dlTemplateExcel()"><i class="fas fa-download"></i> Template Excel</button><button class="bt bt-a" onclick="openUploadModal()"><i class="fas fa-upload"></i> Upload Data</button><button class="bt bt-p" onclick="openSiswaModal()"><i class="fas fa-plus"></i> Tambah</button></div>
+</div>
+<div class="tw"><table class="dt"><thead><tr><th width="30"><input type="checkbox" id="siswaCbAll" onchange="toggleAll('siswa')"></th><th>No</th><th>NIS</th><th>NISN</th><th>Nama Siswa</th><th>L/P</th><th>Kelas</th><th>Telepon</th><th>Ortu</th><th>Aksi</th></tr></thead><tbody id="tbodySiswa"><tr><td colspan="10" class="text-center text-gray-400 py-8">Belum ada data</td></tr></tbody></table></div>
+<div class="flex flex-wrap items-center justify-between gap-3 mt-4"><div class="flex items-center gap-2 text-xs text-gray-500"><span>Baris/halaman:</span><select id="siswaPageSize" onchange="A.swPage=1;loadSiswa()" class="fi fsel w-16 text-xs py-1"><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option></select></div><div class="flex items-center gap-2" id="siswaPagination"></div><div class="flex items-center gap-2"><button class="bt bt-s bt-d text-xs" onclick="bulkDelete('siswa')"><i class="fas fa-trash"></i> Hapus terpilih</button></div></div>
+</section>
+
+<!-- KELAS -->
+<section id="pageKelas" class="p-6 pe hidden">
+<div class="flex items-center justify-between mb-5"><p class="text-sm text-gray-500" id="kelasCount">0 kelas</p><button class="bt bt-p" onclick="openKelasModal()"><i class="fas fa-plus"></i> Tambah Kelas</button></div>
+<div class="tw"><table class="dt"><thead><tr><th width="30"><input type="checkbox" id="kelasCbAll" onchange="toggleAll('kelas')"></th><th>No</th><th>Nama Kelas</th><th>Tingkat</th><th>Jurusan</th><th>Tahun Ajaran</th><th>Wali Kelas</th><th>Jml</th><th>Aksi</th></tr></thead><tbody id="tbodyKelas"><tr><td colspan="9" class="text-center text-gray-400 py-8">Belum ada data</td></tr></tbody></table></div>
+<div class="flex flex-wrap items-center justify-between gap-3 mt-4"><div class="flex items-center gap-2 text-xs text-gray-500"><span>Baris/halaman:</span><select id="kelasPageSize" onchange="A.klPage=1;loadKelas()" class="fi fsel w-16 text-xs py-1"><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option></select></div><div class="flex items-center gap-2" id="kelasPagination"></div><div class="flex items-center gap-2"><button class="bt bt-s bt-d text-xs" onclick="bulkDelete('kelas')"><i class="fas fa-trash"></i> Hapus terpilih</button></div></div>
+</section>
+
+<!-- JADWAL -->
+<section id="pageJadwal" class="p-6 pe hidden">
+<div class="flex flex-wrap items-center justify-between gap-4 mb-5"><select id="filterJadwalHari" onchange="loadJadwal()" class="fi fsel w-40 text-sm"><option value="">Semua Hari</option><option>Senin</option><option>Selasa</option><option>Rabu</option><option>Kamis</option><option>Jumat</option><option>Sabtu</option></select><button class="bt bt-p" onclick="openJadwalModal()"><i class="fas fa-plus"></i> Tambah Jadwal</button></div>
+<div class="tw"><table class="dt"><thead><tr><th width="30"><input type="checkbox" id="jadwalCbAll" onchange="toggleAll('jadwal')"></th><th>No</th><th>Hari</th><th>Jam</th><th>Mapel</th><th>Kelas</th><th>Ruangan</th><th>Aksi</th></tr></thead><tbody id="tbodyJadwal"><tr><td colspan="8" class="text-center text-gray-400 py-8">Belum ada data</td></tr></tbody></table></div>
+<div class="flex flex-wrap items-center justify-between gap-3 mt-4"><div class="flex items-center gap-2 text-xs text-gray-500"><span>Baris/halaman:</span><select id="jadwalPageSize" onchange="A.jdPage=1;loadJadwal()" class="fi fsel w-16 text-xs py-1"><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option></select></div><div class="flex items-center gap-2" id="jadwalPagination"></div><div class="flex items-center gap-2"><button class="bt bt-s bt-d text-xs" onclick="bulkDelete('jadwal')"><i class="fas fa-trash"></i> Hapus terpilih</button></div></div>
+</section>
+
+<!-- ABSENSI -->
+<section id="pageAbsensi" class="p-6 pe hidden">
+<div class="bg-white rounded-2xl p-6 border border-surface-muted mb-6"><h3 class="font-bold text-gray-800 mb-4">Input Absensi</h3><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"><div><label class="fl">Tanggal</label><input type="date" id="absenTanggal" class="fi text-sm"></div><div><label class="fl">Kelas</label><select id="absenKelas" onchange="loadAbsenSiswa()" class="fi fsel text-sm"><option value="">Pilih Kelas</option></select></div><div><label class="fl">Mata Pelajaran</label><input type="text" id="absenMapel" class="fi text-sm" placeholder="Contoh: Matematika"></div><div class="flex items-end"><button class="bt bt-p w-full justify-center" onclick="saveAbsensi()"><i class="fas fa-save"></i> Simpan</button></div></div></div>
+<div class="bg-white rounded-2xl p-6 border border-surface-muted mb-6"><h3 class="font-bold text-gray-800 mb-4">Daftar Siswa</h3><div id="absenSiswaList" class="space-y-2"><p class="text-sm text-gray-400 text-center py-4">Pilih kelas terlebih dahulu</p></div></div>
+<div class="bg-white rounded-2xl p-6 border border-surface-muted"><div class="flex flex-wrap items-center justify-between gap-3 mb-4"><h3 class="font-bold text-gray-800">Riwayat Absensi</h3><div class="flex gap-2"><button class="bt bt-a bt-s" onclick="downloadPdfAbsensi()"><i class="fas fa-file-pdf"></i> PDF</button><button class="bt bt-a bt-s" onclick="downloadExcelAbsensi()"><i class="fas fa-file-excel"></i> Excel</button></div></div>
+<div class="flex flex-wrap gap-3 mb-4"><input type="date" id="filterAbsenTanggal" onchange="loadAbsensi()" class="fi w-44 text-sm"><select id="filterAbsenKelas" onchange="loadAbsensi()" class="fi fsel w-48 text-sm"><option value="">Semua Kelas</option></select><label class="cursor-pointer text-xs text-gray-600 hover:text-blue-600 ml-auto flex items-center gap-1" onclick="A.abSort=A.abSort==='asc'?'desc':'asc';loadAbsensi()"><i class="fas fa-sort-alpha-'+A.abSort+(A.abSort==='asc'?'-up':'-down')+'"></i> <span id="abSortLabel">'+(A.abSort==='asc'?'A-Z':'Z-A')+'</span></label></div>
+<div class="tw"><table class="dt"><thead><tr><th width="30"><input type="checkbox" id="absenCbAll" onchange="toggleAll('absen')"></th><th>No</th><th>Tanggal</th><th>Siswa</th><th>Kelas</th><th>Mapel</th><th>Status</th><th>Keterangan</th><th>Aksi</th></tr></thead><tbody id="tbodyAbsensi"><tr><td colspan="9" class="text-center text-gray-400 py-8">Belum ada data</td></tr></tbody></table></div>
+<div class="flex flex-wrap items-center justify-between gap-3 mt-4"><div class="flex items-center gap-2 text-xs text-gray-500"><span>Baris/halaman:</span><select id="absenPageSize" onchange="A.abPage=1;loadAbsensi()" class="fi fsel w-16 text-xs py-1"><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option></select></div><div class="flex items-center gap-2" id="absenPagination"></div><div class="flex items-center gap-2"><button class="bt bt-s bt-d text-xs" onclick="deleteSelectedAbsensi()"><i class="fas fa-trash"></i> Hapus terpilih</button></div></div></div>
+</section>
+
+<!-- REKAP ABSENSI -->
+<section id="pageRekapAbsensi" class="p-6 pe hidden">
+<div class="bg-white rounded-2xl p-6 border border-surface-muted mb-6"><h3 class="font-bold text-gray-800 mb-4">Filter Rekap Absensi</h3><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"><div><label class="fl">Kelas</label><select id="rekapAbsenKelas" onchange="loadRekapAbsensi()" class="fi fsel text-sm"><option value="">Semua Kelas</option></select></div><div><label class="fl">Tanggal Mulai</label><input type="date" id="rekapAbsenStart" class="fi text-sm"></div><div><label class="fl">Tanggal Selesai</label><input type="date" id="rekapAbsenEnd" class="fi text-sm"></div><div class="flex items-end"><button class="bt bt-p w-full justify-center" onclick="loadRekapAbsensi()"><i class="fas fa-search"></i> Tampilkan</button></div><div class="flex items-end gap-2"><button class="bt bt-a flex-1 justify-center" onclick="downloadPdfRekapAbsensi()"><i class="fas fa-file-pdf"></i> PDF</button><button class="bt bt-a flex-1 justify-center" onclick="downloadExcelRekapAbsensi()"><i class="fas fa-file-excel"></i> Excel</button></div></div></div>
+<div class="bg-white rounded-2xl p-6 border border-surface-muted"><div class="flex items-center justify-between gap-3 mb-4"><h3 class="font-bold text-gray-800">Rekap Absensi Siswa</h3><span id="rekapAbsenInfo" class="text-xs text-gray-500"></span></div>
+<div class="tw"><table class="dt"><thead><tr><th>No</th><th>NIS</th><th>Nama Siswa</th><th>Kelas</th><th>Total</th><th>Hadir</th><th>Sakit</th><th>Izin</th><th>Alpha</th><th>%</th></tr></thead><tbody id="tbodyRekapAbsensi"><tr><td colspan="10" class="text-center text-gray-400 py-8">Pilih kelas dan klik Tampilkan</td></tr></tbody></table></div>
+<div class="flex flex-wrap items-center justify-between gap-3 mt-4"><div class="flex items-center gap-2 text-xs text-gray-500"><span>Baris/halaman:</span><select id="rekapPageSize" onchange="A.rkPage=1;renderRekapAbsensi()" class="fi fsel w-16 text-xs py-1"><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option></select></div><div class="flex items-center gap-2" id="rekapPagination"></div></div></div>
+</section>
+
+<!-- NILAI -->
+<section id="pageNilai" class="p-6 pe hidden">
+<div class="bg-white rounded-2xl p-6 border border-surface-muted mb-6"><h3 class="font-bold text-gray-800 mb-4">Input Nilai Batch (Satu Kelas)</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-4"><div><label class="fl">Kelas</label><select id="batchNilaiKelas" onchange="loadBatchNilaiSiswa()" class="fi fsel text-sm"><option value="">Pilih Kelas</option></select></div><div><label class="fl">Mapel</label><input type="text" id="batchNilaiMapel" class="fi text-sm" placeholder="Matematika"></div><div><label class="fl">Kategori</label><select id="batchNilaiKategori" class="fi fsel text-sm"><option>Pengetahuan</option><option>Keterampilan</option><option>Ulangan</option><option>Tugas</option></select></div><div><label class="fl">KKM</label><input type="number" id="batchNilaiKKM" class="fi text-sm" value="75" min="0" max="100"></div><div><label class="fl">Bab</label><input type="text" id="batchNilaiBab" class="fi text-sm" placeholder="Bab 1"></div></div>
+<div id="batchNilaiList" class="space-y-2 mb-4"><p class="text-sm text-gray-400 text-center py-4">Pilih kelas terlebih dahulu</p></div>
+<button class="bt bt-p" onclick="saveBatchNilai()"><i class="fas fa-save"></i> Simpan Semua Nilai</button>
+</div>
+<div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+<div class="flex flex-wrap items-center gap-3"><select id="filterNilaiKelas" onchange="loadNilai()" class="fi fsel w-48 text-sm"><option value="">Semua Kelas</option></select><input type="text" id="filterNilaiMapel" oninput="loadNilai()" placeholder="Filter mapel..." class="fi w-40 text-sm"><select id="filterNilaiKategori" onchange="loadNilai()" class="fi fsel w-40 text-sm"><option value="">Semua Kategori</option><option>Pengetahuan</option><option>Keterampilan</option><option>Ulangan</option><option>Tugas</option></select></div>
+<div class="flex gap-2"><button class="bt bt-a bt-s" onclick="downloadPdfNilai()"><i class="fas fa-file-pdf"></i> PDF Nilai</button><button class="bt bt-a bt-s" onclick="downloadExcelNilai()"><i class="fas fa-file-excel"></i> Excel Nilai</button><button class="bt bt-a bt-s" onclick="downloadPdfRapor()"><i class="fas fa-file-pdf"></i> PDF Rapor</button><button class="bt bt-a bt-s" onclick="downloadExcelRapor()"><i class="fas fa-file-excel"></i> Excel Rapor</button><button class="bt bt-p" onclick="openNilaiModal()"><i class="fas fa-plus"></i> Tambah</button></div>
+</div>
+<div class="tw"><table class="dt"><thead><tr><th width="30"><input type="checkbox" id="nilaiCbAll" onchange="toggleAll('nilai')"></th><th>No</th><th>Siswa</th><th>Kelas</th><th>Mapel</th><th>Kategori</th><th>Nilai</th><th>KKM</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="tbodyNilai"><tr><td colspan="10" class="text-center text-gray-400 py-8">Belum ada data</td></tr></tbody></table></div>
+<div class="flex flex-wrap items-center justify-between gap-3 mt-4"><div class="flex items-center gap-2 text-xs text-gray-500"><span>Baris/halaman:</span><select id="nilaiPageSize" onchange="A.nlPage=1;loadNilai()" class="fi fsel w-16 text-xs py-1"><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option></select></div><div class="flex items-center gap-2" id="nilaiPagination"></div><div class="flex items-center gap-2"><button class="bt bt-s bt-d text-xs" onclick="bulkDelete('nilai')"><i class="fas fa-trash"></i> Hapus terpilih</button></div></div>
+</section>
+
+<section id="pageRekapNilai" class="p-6 pe hidden">
+<div class="bg-white rounded-2xl p-6 border border-surface-muted mb-6"><h3 class="font-bold text-gray-800 mb-4"><i class="fas fa-table-list mr-2 text-primary-600"></i>Rekap Nilai</h3><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"><div><label class="fl">Kelas</label><select id="rekapNilaiKelas" onchange="loadRekapNilai()" class="fi fsel text-sm"><option value="">Semua Kelas</option></select></div><div><label class="fl">Mapel</label><input type="text" id="rekapNilaiMapel" placeholder="Filter mapel..." class="fi text-sm"></div><div><label class="fl">Kategori</label><select id="rekapNilaiKategori" onchange="loadRekapNilai()" class="fi fsel text-sm"><option value="">Semua</option><option>Pengetahuan</option><option>Keterampilan</option><option>Ulangan</option><option>Tugas</option></select></div><div class="flex items-end"><button class="bt bt-p w-full justify-center" onclick="loadRekapNilai()"><i class="fas fa-search"></i> Tampilkan</button></div><div class="flex items-end gap-2"><button class="bt bt-a flex-1 justify-center" onclick="cetakRekapNilaiPDF()"><i class="fas fa-file-pdf"></i> PDF</button><button class="bt bt-a flex-1 justify-center" onclick="exportRekapNilaiExcel()"><i class="fas fa-file-excel"></i> Excel</button></div></div></div>
+<div class="bg-white rounded-2xl p-6 border border-surface-muted"><div class="flex items-center justify-between gap-3 mb-4"><h3 class="font-bold text-gray-800">Rekap Nilai Siswa</h3><span id="rekapNilaiInfo" class="text-xs text-gray-500"></span></div>
+<div class="tw overflow-x-auto"><table class="dt" id="rekapNilaiTable"><thead id="theadRekapNilai"><tr><th>No</th><th>Nama Siswa</th><th>Bab</th></tr></thead><tbody id="tbodyRekapNilai"><tr><td colspan="3" class="text-center text-gray-400 py-8">Pilih kelas dan klik Tampilkan</td></tr></tbody></table></div>
+</div>
+</section>
+
+<!-- KELOMPOK BELAJAR -->
+<section id="pageKelompokBelajar" class="p-6 pe hidden">
+<div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+<div class="flex flex-wrap items-center gap-3">
+<select id="kbKelas" onchange="loadKelompok()" class="fi fsel w-48 text-sm"><option value="">Pilih Kelas</option></select>
+<button class="bt bt-p bt-s" onclick="autoGenerateKelompok()"><i class="fas fa-magic"></i> Auto Generate</button>
+<button class="bt bt-a bt-s" onclick="saveKelompok()"><i class="fas fa-save"></i> Simpan Perubahan</button>
+<button class="bt bt-a bt-s" onclick="cetakKelompokPDF()"><i class="fas fa-file-pdf"></i> Cetak PDF</button>
+<button class="bt bt-o bt-s" onclick="document.getElementById('kbExcelInput').click()"><i class="fas fa-file-excel"></i> Import Excel</button>
+<input type="file" id="kbExcelInput" accept=".xlsx" class="hidden" onchange="importExcelKelompok(this)">
+<button class="bt bt-d bt-s" onclick="resetKelompok()"><i class="fas fa-trash"></i> Reset</button>
+</div>
+<span id="kbInfo" class="text-xs text-gray-500"></span>
+</div>
+
+<div id="kelompokCards" class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6"></div>
+</section>
+
+<!-- LCKH -->
+<section id="pageLckh" class="p-6 pe hidden">
+<div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+<div class="flex flex-wrap items-center gap-3">
+<select id="lckhBulan" onchange="loadLCKH()" class="fi fsel w-36 text-sm"><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select>
+<select id="lckhTahun" onchange="loadLCKH()" class="fi fsel w-28 text-sm"><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option></select>
+<button class="bt bt-p bt-s" onclick="generateLCKH()"><i class="fas fa-magic"></i> Generate dari Jurnal</button>
+<button class="bt bt-a bt-s" onclick="saveLCKH()"><i class="fas fa-save"></i> Simpan</button>
+<button class="bt bt-o bt-s" onclick="addLCKHRow()"><i class="fas fa-plus"></i> Tambah Baris</button>
+<button class="bt bt-d bt-s" onclick="deleteSelectedLCKH()"><i class="fas fa-trash"></i> Hapus Terpilih</button>
+<button class="bt bt-a bt-s" onclick="cetakLCKHPDF()"><i class="fas fa-file-pdf"></i> Cetak PDF</button>
+<button class="bt bt-a bt-s" onclick="exportLCKHExcel()"><i class="fas fa-file-excel"></i> Export Excel</button>
+</div>
+<span id="lckhInfo" class="text-xs text-gray-500"></span>
+</div>
+<div class="bg-white rounded-2xl border border-surface-muted overflow-hidden">
+<div class="tw rounded-none border-0"><table class="dt"><thead><tr><th width="36"><input type="checkbox" id="chkAllLCKH" onchange="toggleAllLCKH(this)"></th><th width="36">No</th><th>Kegiatan</th><th>Pekerjaan</th><th width="150">Tanggal</th><th width="80"></th></tr></thead><tbody id="tbodyLCKH"><tr><td colspan="6" class="text-center text-gray-400 py-8">Pilih bulan & tahun, klik Generate</td></tr></tbody></table></div>
+<div class="flex items-center justify-between px-3 py-2 bg-gray-50 border-t border-surface-muted"><div class="flex items-center gap-2 text-xs text-gray-500"><span>Baris/halaman:</span><select id="lckhPageSize" onchange="applyLCKHPaging()" class="fi fsel w-16 text-xs py-1"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option></select></div><div class="flex items-center gap-2" id="lckhPagination"></div></div>
+</div>
+</section>
+
+<!-- LKB -->
+<section id="pageLkb" class="p-6 pe hidden">
+<div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+<div class="flex flex-wrap items-center gap-3">
+<select id="lkbBulan" onchange="loadLKB()" class="fi fsel w-36 text-sm"><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select>
+<select id="lkbTahun" onchange="loadLKB()" class="fi fsel w-28 text-sm"><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option></select>
+<button class="bt bt-p bt-s" onclick="generateLKB()"><i class="fas fa-magic"></i> Generate dari LCKH</button>
+<button class="bt bt-a bt-s" onclick="saveLKB()"><i class="fas fa-save"></i> Simpan</button>
+<button class="bt bt-o bt-s" onclick="addLKBRow()"><i class="fas fa-plus"></i> Tambah Baris</button>
+<button class="bt bt-d bt-s" onclick="deleteSelectedLKB()"><i class="fas fa-trash"></i> Hapus Terpilih</button>
+<button class="bt bt-a bt-s" onclick="cetakLKBPDF()"><i class="fas fa-file-pdf"></i> Cetak PDF</button>
+<button class="bt bt-a bt-s" onclick="exportLKBExcel()"><i class="fas fa-file-excel"></i> Export Excel</button>
+</div>
+<span id="lkbInfo" class="text-xs text-gray-500"></span>
+</div>
+<div class="bg-white rounded-2xl border border-surface-muted overflow-hidden">
+<div class="tw rounded-none border-0"><table class="dt"><thead><tr><th width="36"><input type="checkbox" id="chkAllLKB" onchange="toggleAllLKB(this)"></th><th width="36">No</th><th>Uraian Tugas / Kegiatan</th><th width="70">Vol</th><th>Bukti Dokumen</th><th width="80"></th></tr></thead><tbody id="tbodyLKB"><tr><td colspan="6" class="text-center text-gray-400 py-8">Pilih bulan & tahun, klik Generate dari LCKH</td></tr></tbody></table></div>
+<div class="flex items-center justify-between px-3 py-2 bg-gray-50 border-t border-surface-muted"><div class="flex items-center gap-2 text-xs text-gray-500"><span>Baris/halaman:</span><select id="lkbPageSize" onchange="applyLKBPaging()" class="fi fsel w-16 text-xs py-1"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option></select></div><div class="flex items-center gap-2" id="lkbPagination"></div></div>
+</div>
+</section>
+
+<!-- MODAL EDIT LCKH -->
+<div id="modalEditLCKH" class="fixed inset-0 bg-black/40 z-90 hidden items-center justify-center" onclick="if(event.target===this)closeModal('modalEditLCKH')">
+<div class="bg-white rounded-2xl p-6 w-full max-w-lg mx-4 shadow-xl"><h3 class="font-bold text-gray-800 text-lg mb-4">Edit LCKH</h3>
+<div class="space-y-4">
+<div><label class="fl">Kegiatan</label><input type="text" id="mLCKHkeg" class="fi"></div>
+<div><label class="fl">Pekerjaan</label><input type="text" id="mLCKHpek" class="fi"></div>
+<div><label class="fl">Tanggal</label><input type="date" id="mLCKHtgl" class="fi"></div>
+</div>
+<div class="flex justify-end gap-3 mt-6"><button class="bt bt-o" onclick="closeModal('modalEditLCKH')">Batal</button><button class="bt bt-p" onclick="saveEditLCKH()">Simpan</button></div>
+</div></div>
+
+<!-- MODAL EDIT LKB -->
+<div id="modalEditLKB" class="fixed inset-0 bg-black/40 z-90 hidden items-center justify-center" onclick="if(event.target===this)closeModal('modalEditLKB')">
+<div class="bg-white rounded-2xl p-6 w-full max-w-lg mx-4 shadow-xl"><h3 class="font-bold text-gray-800 text-lg mb-4">Edit LKB</h3>
+<div class="space-y-4">
+<div><label class="fl">Uraian Tugas / Kegiatan</label><input type="text" id="mLKBuraian" class="fi"></div>
+<div><label class="fl">Volume</label><input type="number" id="mLKBvol" class="fi"></div>
+<div><label class="fl">Bukti Dokumen</label><input type="text" id="mLKBbukti" class="fi"></div>
+</div>
+<div class="flex justify-end gap-3 mt-6"><button class="bt bt-o" onclick="closeModal('modalEditLKB')">Batal</button><button class="bt bt-p" onclick="saveEditLKB()">Simpan</button></div>
+</div></div>
+
+<!-- JURNAL -->
+<section id="pageJurnal" class="p-6 pe hidden">
+<div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+<div class="flex flex-wrap items-center gap-3"><select id="filterJurnalKelas" onchange="loadJurnal()" class="fi fsel w-48 text-sm"><option value="">Semua Kelas</option></select><input type="date" id="filterJurnalTanggal" onchange="loadJurnal()" class="fi w-40 text-sm" title="Tanggal"><span class="text-xs text-gray-500">s/d</span><input type="date" id="filterJurnalTanggal2" onchange="loadJurnal()" class="fi w-40 text-sm" title="Tanggal s/d"></div>
+<div class="flex gap-2"><button class="bt bt-a bt-s" onclick="cetakJurnalPDF()"><i class="fas fa-file-pdf"></i> PDF</button><button class="bt bt-a bt-s" onclick="exportJurnalExcel()"><i class="fas fa-file-excel"></i> Excel</button><button class="bt bt-p" onclick="openJurnalModal()"><i class="fas fa-plus"></i> Tambah</button></div>
+</div>
+<div class="tw"><table class="dt"><thead><tr><th width="30"><input type="checkbox" id="jurnalCbAll" onchange="toggleAll('jurnal')"></th><th>No</th><th>Tanggal</th><th>Kelas</th><th>Mapel</th><th>Jam Ke</th><th>Materi</th><th>Kendala</th><th>Aksi</th></tr></thead><tbody id="tbodyJurnal"><tr><td colspan="9" class="text-center text-gray-400 py-8">Belum ada data</td></tr></tbody></table></div>
+<div class="flex flex-wrap items-center justify-between gap-3 mt-4"><div class="flex items-center gap-2 text-xs text-gray-500"><span>Baris/halaman:</span><select id="jurnalPageSize" onchange="A.jrPage=1;loadJurnal()" class="fi fsel w-16 text-xs py-1"><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option></select></div><div class="flex items-center gap-2" id="jurnalPagination"></div><div class="flex items-center gap-2"><button class="bt bt-s bt-d text-xs" onclick="bulkDelete('jurnal')"><i class="fas fa-trash"></i> Hapus terpilih</button></div></div>
+</section>
+
+<!-- KALENDER -->
+<section id="pageKalender" class="p-6 pe hidden">
+<div class="bg-white rounded-2xl p-6 border border-surface-muted"><div class="flex flex-wrap items-center justify-between gap-3 mb-4"><h3 class="font-bold text-gray-800">Kalender Akademik</h3><div class="flex items-center gap-2"><button class="bt bt-o bt-s" onclick="prevMonth()"><i class="fas fa-chevron-left"></i></button><span id="kalMonthLabel" class="font-bold text-sm w-36 text-center"></span><button class="bt bt-o bt-s" onclick="nextMonth()"><i class="fas fa-chevron-right"></i></button></div></div><div id="kalGrid" class="kal-grid"></div><div class="mt-4 flex gap-4 text-xs text-gray-500"><span><span class="inline-block w-3 h-3 rounded bg-green-100 align-middle mr-1"></span> Jadwal</span><span><span class="inline-block w-3 h-3 rounded bg-blue-100 align-middle mr-1"></span> Absensi</span></div></div>
+</section>
+
+<!-- SURAT -->
+<section id="pageSurat" class="p-6 pe hidden">
+<div class="bg-white rounded-2xl p-6 border border-surface-muted max-w-xl"><h3 class="font-bold text-gray-800 mb-4">Template Surat / Dokumen</h3><p class="text-sm text-gray-500 mb-6">Pilih template surat yang ingin diunduh. Dokumen akan di-generate dengan kop surat dari Profil Sekolah.</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div class="sc cursor-pointer" onclick="downloadSurat('panggilan')"><div class="sg" style="background:#dc2626"></div><div class="flex items-center gap-3 mb-2"><div class="si bg-red-50 text-red-600"><i class="fas fa-file-alt"></i></div><span class="font-semibold text-sm">Surat Panggilan</span></div><p class="text-xs text-gray-400">Undangan orang tua/wali siswa</p></div><div class="sc cursor-pointer" onclick="downloadSurat('keterangan')"><div class="sg" style="background:#2563eb"></div><div class="flex items-center gap-3 mb-2"><div class="si bg-blue-50 text-blue-600"><i class="fas fa-file-alt"></i></div><span class="font-semibold text-sm">Aktif Belajar</span></div><p class="text-xs text-gray-400">Surat keterangan aktif belajar</p></div><div class="sc cursor-pointer" onclick="downloadSurat('tugas')"><div class="sg" style="background:#7c3aed"></div><div class="flex items-center gap-3 mb-2"><div class="si bg-purple-50 text-purple-600"><i class="fas fa-tasks"></i></div><span class="font-semibold text-sm">Tugas/PR</span></div><p class="text-xs text-gray-400">Template penugasan untuk siswa</p></div></div></div>
+</section>
+
+<!-- PROFIL -->
+<section id="pageProfil" class="p-6 pe hidden">
+<div class="bg-white rounded-2xl p-6 border border-surface-muted max-w-3xl"><h3 class="font-bold text-gray-800 mb-6">Informasi Sekolah</h3>
+<form onsubmit="saveProfil(event)"><input type="hidden" id="profilId"><div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+<div class="sm:col-span-2"><label class="fl">Nama Sekolah</label><input type="text" id="profilNama" class="fi" required></div><div class="sm:col-span-2"><label class="fl">Alamat</label><textarea id="profilAlamat" class="fi" rows="2"></textarea></div>
+<div><label class="fl">NPSN</label><input type="text" id="profilNPSN" class="fi"></div><div><label class="fl">Kota</label><input type="text" id="profilKota" class="fi"></div>
+<div><label class="fl">Provinsi</label><input type="text" id="profilProvinsi" class="fi"></div><div><label class="fl">Telepon</label><input type="text" id="profilTelepon" class="fi"></div>
+<div><label class="fl">Kepala Sekolah</label><input type="text" id="profilKepsek" class="fi"></div><div><label class="fl">NIP Kepala Sekolah</label><input type="text" id="profilNIPKepsek" class="fi"></div>
+<div><label class="fl">Nama Guru</label><input type="text" id="profilGuru" class="fi"></div><div><label class="fl">NIP Guru</label><input type="text" id="profilNIPGuru" class="fi"></div>
+<div><label class="fl">Jabatan</label><input type="text" id="profilJabatan" class="fi" placeholder="Guru Mapel"></div><div><label class="fl">Pangkat</label><input type="text" id="profilPangkat" class="fi" placeholder="Penata Muda Tk.I"></div>
+<div><label class="fl">Golongan Ruang</label><input type="text" id="profilGolRuang" class="fi" placeholder="III/b"></div>
+<div class="sm:col-span-2"><label class="fl">Logo URL</label><input type="text" id="profilLogo" class="fi" placeholder="https://..."></div>
+</div><div class="mt-6"><button type="submit" class="bt bt-p"><i class="fas fa-save"></i> Simpan Profil</button></div></form></div></section>
+
+<!-- SETTINGS -->
+<section id="pageSettings" class="p-6 pe hidden">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div class="bg-white rounded-2xl p-6 border border-surface-muted"><h3 class="font-bold text-gray-800 mb-6">Pengaturan</h3>
+<form onsubmit="saveSettings(event)"><div class="space-y-5">
+<div><label class="fl">Nama Aplikasi</label><input type="text" id="setAppName" class="fi"></div>
+<div class="grid grid-cols-2 gap-5"><div><label class="fl">Tahun Ajaran</label><input type="text" id="setTahunAjaran" class="fi" placeholder="2024/2025"></div><div><label class="fl">Semester</label><select id="setSemester" class="fi fsel"><option value="1">Semester 1</option><option value="2">Semester 2</option></select></div></div>
+<div><label class="fl">KKM Default</label><input type="number" id="setKKM" class="fi" min="0" max="100"></div>
+</div><div class="mt-6"><button type="submit" class="bt bt-p"><i class="fas fa-save"></i> Simpan</button></div></form></div>
+<div class="bg-white rounded-2xl p-6 border border-surface-muted"><h3 class="font-bold text-gray-800 mb-6">Backup & Restore Database</h3><p class="text-sm text-gray-500 mb-4">Backup menyimpan seluruh data (Kelas, Siswa, Nilai, Absensi, Jurnal, dll) dalam format JSON.</p><div class="flex flex-wrap gap-3"><button class="bt bt-a" onclick="doBackup()"><i class="fas fa-download"></i> Download Backup</button><button class="bt bt-o" onclick="document.getElementById('restoreInput').click()"><i class="fas fa-upload"></i> Restore Data</button><input type="file" id="restoreInput" accept=".json" class="hidden" onchange="doRestore(this)"></div></div>
+</div></section>
+
+<!-- LOG -->
+<section id="pageLog" class="p-6 pe hidden">
+<div class="tw"><table class="dt"><thead><tr><th>No</th><th>Waktu</th><th>User</th><th>Aksi</th><th>Deskripsi</th></tr></thead><tbody id="tbodyLog"><tr><td colspan="5" class="text-center text-gray-400 py-8">Belum ada data</td></tr></tbody></table></div></section>
+</main></div>
+
+<!-- MODAL -->
+<div id="modalOverlay" class="mo"><div class="mb" onclick="closeModal()"></div><div class="mx"><div class="flex items-center justify-between p-5 border-b border-surface-muted"><h3 id="modalTitle" class="font-bold text-lg text-gray-800"></h3><button onclick="closeModal()" class="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 bg-transparent border-none cursor-pointer"><i class="fas fa-times"></i></button></div><div id="modalBody" class="p-5"></div></div></div>
+<!-- CONFIRM -->
+<div id="confirmOverlay" class="co"><div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="cC()"></div><div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 text-center"><div class="w-14 h-14 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto mb-4"><i class="fas fa-exclamation-triangle text-2xl"></i></div><h3 class="font-bold text-gray-800 mb-2">Konfirmasi Hapus</h3><p class="text-sm text-gray-500 mb-6" id="confirmMsg"></p><div class="flex gap-3 justify-center"><button class="bt bt-o" onclick="cC()">Batal</button><button class="bt bt-d" onclick="eC()">Hapus</button></div></div></div>
+<!-- TOAST -->
+<div id="toastContainer" class="fixed top-4 right-4 z-[300] space-y-2"></div>
+
+<!-- ======================== JS BAGIAN 1: CORE ======================== -->
+<script>
+var A={token:localStorage.getItem('td_token')||'',user:null,page:'dashboard',dk:[],ds:[],dn:[],dj:[],djurnal:[],rekap:[],chart:null,cf:null,dark:localStorage.getItem('td_dark')==='1',kalMonth:new Date().getMonth()+1,kalYear:new Date().getFullYear(),abFilter:'',abSort:'desc',abPage:1,abAll:[],klPage:1,jdPage:1,swPage:1,nlPage:1,jrPage:1,rkPage:1,lckhPage:1,lkbPage:1};
+function gs(f){var a=[].slice.call(arguments,1);return new Promise(function(ok,no){google.script.run.withSuccessHandler(function(r){if(r===null)no(new Error('Server null: '+f));else ok(r)}).withFailureHandler(function(e){no(new Error(e.message||String(e)))})[f].apply(null,a)})}
+function sL(){document.getElementById('loadingOverlay').classList.remove('hidden')}function hL(){document.getElementById('loadingOverlay').classList.add('hidden')}
+function toast(m,t){t=t||'ok';var e=document.createElement('div');e.className='to to-'+t;var i=t==='ok'?'fa-check-circle':t==='er'?'fa-times-circle':'fa-exclamation-circle';e.innerHTML='<i class="fas '+i+'"></i><span>'+m+'</span>';document.getElementById('toastContainer').appendChild(e);setTimeout(function(){e.style.animation='too .3s ease forwards';setTimeout(function(){if(e.parentNode)e.remove()},300)},3500)}
+function sC(m,c){document.getElementById('confirmMsg').textContent=m;A.cf=c;document.getElementById('confirmOverlay').classList.add('sh')}function cC(){document.getElementById('confirmOverlay').classList.remove('sh');A.cf=null}function eC(){if(A.cf)A.cf();cC()}
+function oM(t,h){document.getElementById('modalTitle').textContent=t;document.getElementById('modalBody').innerHTML=h;document.getElementById('modalOverlay').classList.add('sh')}function cM(){document.getElementById('modalOverlay').classList.remove('sh')}
+function fD(v){if(!v)return'-';var d=new Date(v);return isNaN(d.getTime())?String(v):d.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'})}
+function fDT(v){if(!v)return'-';var d=new Date(v);return isNaN(d.getTime())?String(v):d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}
+function tISO(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function esc(s){if(s===null||s===undefined)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function togglePw(){var i=document.getElementById('loginPass'),c=document.getElementById('pwIcon');if(i.type==='password'){i.type='text';c.className='fas fa-eye-slash'}else{i.type='password';c.className='fas fa-eye'}}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('op');document.getElementById('sidebarOverlay').classList.toggle('hidden')}
+function toggleDark(){A.dark=!A.dark;localStorage.setItem('td_dark',A.dark?'1':'0');document.body.classList.toggle('dark',A.dark);document.getElementById('darkIcon').className=A.dark?'fas fa-sun text-sm':'fas fa-moon text-sm'}
+function toggleNotif(){var p=document.getElementById('notifPanel');p.classList.toggle('hidden');if(!p.classList.contains('hidden')&&!A._notifLoaded){A._notifLoaded=true;gs('apiGetNotifications',A.token).then(function(r){if(!r||!r.ok)return;var l=document.getElementById('notifList');if(!r.data.length){l.innerHTML='<p class="text-xs text-gray-400 text-center py-4">Tidak ada notifikasi</p>';return}l.innerHTML='';for(var i=0;i<r.data.length;i++){var n=r.data[i],c='text-amber-600';if(n.type==='danger')c='text-red-600';l.innerHTML+='<div class="flex items-start gap-3 p-3 hover:bg-surface rounded-xl cursor-pointer text-xs"><i class="fas '+n.icon+' '+c+' mt-0.5"></i><span class="text-gray-700">'+esc(n.msg)+'</span></div>'}}).catch(function(){})}}
+function loadNotifBadge(){gs('apiGetNotifications',A.token).then(function(r){if(r.ok&&r.data.length){document.getElementById('notifBadge').textContent=r.data.length;document.getElementById('notifBadge').classList.remove('hidden')}else{document.getElementById('notifBadge').classList.add('hidden')}}).catch(function(){})}
+
+function handleLogin(e){e.preventDefault();var b=document.getElementById('loginBtn'),er=document.getElementById('loginError');er.classList.add('hidden');b.disabled=true;b.innerHTML='<div class="sp" style="width:20px;height:20px;border-width:2px"></div> Memproses...';var u=document.getElementById('loginUser').value.trim(),p=document.getElementById('loginPass').value;gs('apiLogin',u,p).then(function(r){b.disabled=false;b.innerHTML='<i class="fas fa-sign-in-alt"></i> Masuk';if(!r||!r.ok){er.textContent=r.msg;er.classList.remove('hidden');return}A.token=r.token;A.user=r.user;localStorage.setItem('td_token',r.token);enterApp()}).catch(function(x){b.disabled=false;b.innerHTML='<i class="fas fa-sign-in-alt"></i> Masuk';er.textContent='Koneksi gagal: '+x.message;er.classList.remove('hidden')})}
+function handleLogout(){if(A.token)gs('apiLogout',A.token).catch(function(){});A.token='';A.user=null;localStorage.removeItem('td_token');document.getElementById('appPage').classList.add('hidden');document.getElementById('loginPage').classList.remove('hidden')}
+function enterApp(){document.getElementById('loginPage').classList.add('hidden');document.getElementById('appPage').classList.remove('hidden');document.body.classList.toggle('dark',A.dark);document.getElementById('darkIcon').className=A.dark?'fas fa-sun text-sm':'fas fa-moon text-sm';document.getElementById('userName').textContent=A.user.nama;document.getElementById('userRole').textContent=A.user.role;document.getElementById('userAvatar').textContent=A.user.nama.charAt(0).toUpperCase();document.getElementById('headerDate').textContent=new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});document.getElementById('absenTanggal').value=tISO();navTo('dashboard');loadNotifBadge()}
+
+var PT={dashboard:'Dashboard',siswa:'Data Siswa',kelas:'Data Kelas',jadwal:'Jadwal Mengajar',absensi:'Absensi',rekapAbsensi:'Rekap Absensi',nilai:'Nilai',rekapNilai:'Rekap Nilai',jurnal:'Jurnal Mengajar',profil:'Profil Sekolah',settings:'Pengaturan',log:'Activity Log',kalender:'Kalender Akademik',kelompokBelajar:'Kelompok Belajar',lckh:'LCKH - Catatan Kegiatan Harian',lkb:'LKB - Laporan Kinerja Bulanan',surat:'Template Surat'};
+function navTo(p){A.page=p;document.getElementById('pageTitle').textContent=PT[p]||p;var ss=document.querySelectorAll('#mainContent>section');for(var i=0;i<ss.length;i++)ss[i].classList.add('hidden');var t=document.getElementById('page'+p.charAt(0).toUpperCase()+p.slice(1));if(t){t.classList.remove('hidden');t.classList.remove('pe');void t.offsetWidth;t.classList.add('pe')}var lk=document.querySelectorAll('.sl');for(var i=0;i<lk.length;i++)lk[i].classList.toggle('ac',lk[i].getAttribute('data-page')===p);document.getElementById('sidebar').classList.remove('op');document.getElementById('sidebarOverlay').classList.add('hidden');loadPD(p)}
+document.addEventListener('click',function(e){var l=e.target.closest('.sl');if(l&&l.getAttribute('data-page'))navTo(l.getAttribute('data-page'))});
+
+function loadPD(p){switch(p){case'dashboard':loadDash();break;case'siswa':loadKOpt();loadSiswa();break;case'kelas':loadKelas();break;case'jadwal':loadKOpt();loadJadwal();break;case'absensi':loadKOpts('absenKelas',false);loadKOpts('filterAbsenKelas',true);loadAbsensi();break;case'rekapAbsensi':loadKOpts('rekapAbsenKelas',true);loadRekapAbsensi();break;case'nilai':loadKOpts('filterNilaiKelas',true);loadKOpts('batchNilaiKelas',false);loadNilai();break;case'rekapNilai':loadKOpts('rekapNilaiKelas',true);loadRekapNilai();break;case'kelompokBelajar':loadKOpts('kbKelas',true);loadKelompok();break;case'jurnal':loadKOpts('filterJurnalKelas',true);loadJurnal();break;case'profil':loadProfil();break;case'settings':loadSettings();break;case'log':loadLog();break;case'kalender':loadKalender();break;case'lckh':loadLCKH();break;case'lkb':loadLKB();break;case'surat':break}}
+
+function loadDash(){gs('apiDashboard',A.token).then(function(r){if(!r||!r.ok)return;var d=r.data;document.getElementById('statSiswa').textContent=d.totalSiswa;document.getElementById('statKelas').textContent=d.totalKelas;document.getElementById('statAbsen').textContent=d.absenHariIni;document.getElementById('statNilai').textContent=d.rataNilai;document.getElementById('sumAbsen').textContent=d.totalAbsensi;document.getElementById('sumNilai').textContent=d.totalNilai;gs('apiGetSettings',A.token).then(function(s){if(s.ok){document.getElementById('sumTA').textContent=s.data.tahun_ajaran||'-';document.getElementById('sumSem').textContent=s.data.semester?'Semester '+s.data.semester:'-';document.getElementById('sidebarAppName').textContent=s.data.app_name||'Teacher Dashboard'}}).catch(function(){});var lb=Object.keys(d.distPerKelas),vl=Object.values(d.distPerKelas),cl=['#0D7C66','#E8A317','#7c3aed','#dc2626','#059669','#2563eb','#d97706','#be185d','#4f46e5','#0d9488'];if(A.chart)A.chart.destroy();A.chart=new Chart(document.getElementById('chartKelas').getContext('2d'),{type:'bar',data:{labels:lb.length?lb:['-'],datasets:[{label:'Siswa',data:vl.length?vl:[0],backgroundColor:lb.length?lb.map(function(_,i){return cl[i%cl.length]}):['#ccc'],borderRadius:8,borderSkipped:false,maxBarThickness:50}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1},grid:{color:'#f0f0f0'}},x:{grid:{display:false}}}}})}).catch(function(e){toast('Gagal: '+e.message,'er')})}
+function loadKOpt(){gs('apiGetKelas',A.token).then(function(r){if(r&&r.ok){A.dk=r.data;pKS('filterSiswaKelas',true)}}).catch(function(){})}
+function loadKOpts(id,aa){gs('apiGetKelas',A.token).then(function(r){if(r&&r.ok){A.dk=r.data;pKS(id,aa)}}).catch(function(){})}
+function pKS(id,aa){var s=document.getElementById(id);if(!s)return;var v=s.value;s.innerHTML=aa?'<option value="">Semua Kelas</option>':'<option value="">Pilih Kelas</option>';for(var i=0;i<A.dk.length;i++){var o=document.createElement('option');o.value=A.dk[i].ID;o.textContent=A.dk[i].Nama_Kelas;s.appendChild(o)}s.value=v}
+</script>
+
+<!-- ======================== JS BAGIAN 2: CRUD ======================== -->
+<script>
+function loadKelas(){A.klPage=1;sL();gs('apiGetKelas',A.token).then(function(r){hL();if(!r||!r.ok)return;A.dk=r.data;document.getElementById('kelasCount').textContent=r.data.length+' kelas';renderKelas()}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function renderKelas(){var d=A.dk||[];pgNav('kelasPagination',d,'kl','kelasPageSize',function(pg,st){var tb=document.getElementById('tbodyKelas');if(!pg.length){tb.innerHTML='<tr><td colspan="9" class="text-center text-gray-400 py-8">-</td></tr>';return}var h='';for(var i=0;i<pg.length;i++){var k=pg[i];h+='<tr><td><input type="checkbox" class="kelasCb" value="'+k.ID+'"></td><td>'+(st+i+1)+'</td><td class="font-semibold">'+esc(k.Nama_Kelas)+'</td><td>'+esc(k.Tingkat)+'</td><td>'+esc(k.Jurusan)+'</td><td>'+esc(k.Tahun_Ajaran)+'</td><td>'+esc(k.Wali_Kelas)+'</td><td><span class="bg bg-ok">'+(k.Jumlah_Siswa||'0')+'</span></td><td><button class="bt bt-s bt-o mr-1" onclick="editKelas(\''+k.ID+'\')"><i class="fas fa-edit"></i></button><button class="bt bt-s bt-d" onclick="delKelas(\''+k.ID+'\',\''+esc(k.Nama_Kelas)+'\')"><i class="fas fa-trash"></i></button></td></tr>'}tb.innerHTML=h},'renderKelas')}
+function editKelas(id){var d=null;for(var i=0;i<A.dk.length;i++)if(A.dk[i].ID===id){d=A.dk[i];break}if(d)openKelasModal(id)}
+function openKelasModal(id){var k=id?A.dk.find(function(x){return x.ID===id}):null;var h='<form onsubmit="saveKelas(event,'+(id?"'"+id+"'":'null')+')"><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><label class="fl">Nama Kelas</label><input type="text" id="mKN" class="fi" value="'+esc(k?k.Nama_Kelas:'')+'" required></div><div><label class="fl">Tingkat</label><select id="mKT" class="fi fsel"><option value="10"'+(k&&k.Tingkat==10?' selected':'')+'>10</option><option value="11"'+(k&&k.Tingkat==11?' selected':'')+'>11</option><option value="12"'+(k&&k.Tingkat==12?' selected':'')+'>12</option></select></div><div><label class="fl">Jurusan</label><select id="mKJ" class="fi fsel"><option value="IPA"'+(k&&k.Jurusan==='IPA'?' selected':'')+'>IPA</option><option value="IPS"'+(k&&k.Jurusan==='IPS'?' selected':'')+'>IPS</option><option value="Bahasa"'+(k&&k.Jurusan==='Bahasa'?' selected':'')+'>Bahasa</option></select></div><div><label class="fl">Tahun Ajaran</label><input type="text" id="mKTA" class="fi" value="'+esc(k?k.Tahun_Ajaran:'2024/2025')+'" required></div><div class="sm:col-span-2"><label class="fl">Wali Kelas</label><input type="text" id="mKW" class="fi" value="'+esc(k?k.Wali_Kelas:'')+'"></div></div><div class="mt-5 flex gap-3 justify-end"><button type="button" class="bt bt-o" onclick="cM()">Batal</button><button type="submit" class="bt bt-p"><i class="fas fa-save"></i> Simpan</button></div></form>';oM(k?'Edit Kelas':'Tambah Kelas',h)}
+function saveKelas(e,id){e.preventDefault();var d={Nama_Kelas:document.getElementById('mKN').value.trim(),Tingkat:document.getElementById('mKT').value,Jurusan:document.getElementById('mKJ').value,Tahun_Ajaran:document.getElementById('mKTA').value.trim(),Wali_Kelas:document.getElementById('mKW').value.trim()};var p=id?gs('apiUpdateKelas',A.token,id,d):gs('apiAddKelas',A.token,d);p.then(function(r){cM();if(r&&r.ok)toast(r.msg);else toast(r.msg,'er');loadKelas()}).catch(function(e){toast('Gagal: '+e.message,'er')})}
+function delKelas(id,n){sC('Hapus kelas "'+n+'"?',function(){gs('apiDeleteKelas',A.token,id).then(function(r){if(r&&r.ok)toast(r.msg);else toast(r.msg,'er');loadKelas()}).catch(function(e){toast('Gagal: '+e.message,'er')})})}
+
+function loadSiswa(){A.swPage=1;sL();gs('apiGetSiswa',A.token,document.getElementById('filterSiswaKelas').value||null).then(function(r){hL();if(!r||!r.ok)return;A.ds=r.data;window._allSiswa=r.data.map(function(s){return s});renSis(r.data)}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function renSis(d){A.ds=d;renderSiswa()}
+function renderSiswa(){var d=A.ds||[];pgNav('siswaPagination',d,'sw','siswaPageSize',function(pg,st){var tb=document.getElementById('tbodySiswa');if(!pg.length){tb.innerHTML='<tr><td colspan="10" class="text-center text-gray-400 py-8">-</td></tr>';return}var h='';for(var i=0;i<pg.length;i++){var s=pg[i],jk=s.Jenis_Kelamin==='L'?'<span class="bg bg-l">L</span>':'<span class="bg bg-p">P</span>';h+='<tr><td><input type="checkbox" class="siswaCb" value="'+s.ID+'"></td><td>'+(st+i+1)+'</td><td>'+esc(s.NIS)+'</td><td>'+esc(s.NISN)+'</td><td class="font-semibold">'+esc(s.Nama_Siswa)+'</td><td>'+jk+'</td><td>'+esc(s.Nama_Kelas)+'</td><td>'+esc(s.Telepon)+'</td><td>'+esc(s.Nama_Ortu)+'</td><td><button class="bt bt-s bt-o mr-1" onclick="openSiswaModal(\''+s.ID+'\')"><i class="fas fa-edit"></i></button><button class="bt bt-s bt-d" onclick="delSiswa(\''+s.ID+'\',\''+esc(s.Nama_Siswa)+'\')"><i class="fas fa-trash"></i></button></td></tr>'}tb.innerHTML=h},'renderSiswa')}
+function filterSiswaTable(){var q=document.getElementById('searchSiswa').value.toLowerCase();if(!q){A.ds=window._allSiswa.map(function(s){return s})}else{A.ds=window._allSiswa.filter(function(s){return s.Nama_Siswa.toLowerCase().indexOf(q)>=0||s.NIS.toLowerCase().indexOf(q)>=0||s.NISN.toLowerCase().indexOf(q)>=0})}renderSiswa()}
+function openSiswaModal(id){var s=id?A.ds.find(function(x){return x.ID===id}):null;var ko='<option value="">Pilih Kelas</option>';for(var i=0;i<A.dk.length;i++)ko+='<option value="'+A.dk[i].ID+'"'+(s&&s.Kelas_UUID===A.dk[i].ID?' selected':'')+'>'+esc(A.dk[i].Nama_Kelas)+'</option>';var h='<form onsubmit="saveSiswa(event,'+(id?"'"+id+"'":'null')+')"><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><label class="fl">NIS</label><input type="text" id="mSNIS" class="fi" value="'+esc(s?s.NIS:'')+'" required></div><div><label class="fl">NISN</label><input type="text" id="mSNISN" class="fi" value="'+esc(s?s.NISN:'')+'" required></div><div><label class="fl">Nama</label><input type="text" id="mSNM" class="fi" value="'+esc(s?s.Nama_Siswa:'')+'" required></div><div><label class="fl">L/P</label><select id="mSJK" class="fi fsel"><option value="L"'+(s&&s.Jenis_Kelamin==='L'?' selected':'')+'>Laki-laki</option><option value="P"'+(s&&s.Jenis_Kelamin==='P'?' selected':'')+'>Perempuan</option></select></div><div><label class="fl">Kelas</label><select id="mSKL" class="fi fsel">'+ko+'</select></div><div><label class="fl">Telepon</label><input type="text" id="mSTL" class="fi" value="'+esc(s?s.Telepon:'')+'"></div><div class="sm:col-span-2"><label class="fl">Alamat</label><input type="text" id="mSAL" class="fi" value="'+esc(s?s.Alamat:'')+'"></div><div><label class="fl">Email</label><input type="email" id="mSEM" class="fi" value="'+esc(s?s.Email:'')+'"></div><div><label class="fl">Orang Tua</label><input type="text" id="mSOR" class="fi" value="'+esc(s?s.Nama_Ortu:'')+'"></div></div><div class="mt-5 flex gap-3 justify-end"><button type="button" class="bt bt-o" onclick="cM()">Batal</button><button type="submit" class="bt bt-p"><i class="fas fa-save"></i> Simpan</button></div></form>';oM(s?'Edit Siswa':'Tambah Siswa',h)}
+function saveSiswa(e,id){e.preventDefault();var d={NIS:document.getElementById('mSNIS').value.trim(),NISN:document.getElementById('mSNISN').value.trim(),Nama_Siswa:document.getElementById('mSNM').value.trim(),Jenis_Kelamin:document.getElementById('mSJK').value,Kelas_ID:document.getElementById('mSKL').value,Telepon:document.getElementById('mSTL').value.trim(),Alamat:document.getElementById('mSAL').value.trim(),Email:document.getElementById('mSEM').value.trim(),Nama_Ortu:document.getElementById('mSOR').value.trim()};var p=id?gs('apiUpdateSiswa',A.token,id,d):gs('apiAddSiswa',A.token,d);p.then(function(r){cM();if(r&&r.ok)toast(r.msg);else toast(r.msg,'er');loadSiswa()}).catch(function(e){toast('Gagal: '+e.message,'er')})}
+function delSiswa(id,n){sC('Hapus siswa "'+n+'"?',function(){gs('apiDeleteSiswa',A.token,id).then(function(r){if(r&&r.ok)toast(r.msg);else toast(r.msg,'er');loadSiswa()}).catch(function(e){toast('Gagal: '+e.message,'er')})})}
+
+function loadJadwal(){A.jdPage=1;sL();gs('jdGet',A.token).then(function(r){hL();if(!r||!r.ok)return;var d=r.data;if(!d)d=[];var hari=document.getElementById('filterJadwalHari').value;if(hari)d=d.filter(function(j){return j.Hari===hari});var ho={Senin:1,Selasa:2,Rabu:3,Kamis:4,Jumat:5,Sabtu:6};d.sort(function(a,b){return(ho[a.Hari]||9)-(ho[b.Hari]||9)||String(a.Jam_Mulai).localeCompare(String(b.Jam_Mulai))});A.dj=d;renderJadwal()}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function renderJadwal(){var d=A.dj||[];pgNav('jadwalPagination',d,'jd','jadwalPageSize',function(pg,st){var tb=document.getElementById('tbodyJadwal');if(!pg.length){tb.innerHTML='<tr><td colspan="8" class="text-center text-gray-400 py-8">-</td></tr>';return}var h='';for(var i=0;i<pg.length;i++){var j=pg[i];h+='<tr><td><input type="checkbox" class="jadwalCb" value="'+j.ID+'"></td><td>'+(st+i+1)+'</td><td><span class="bg bg-s">'+esc(j.Hari)+'</span></td><td>'+esc(j.Jam_Mulai)+' - '+esc(j.Jam_Selesai)+'</td><td class="font-semibold">'+esc(j.Mata_Pelajaran)+'</td><td>'+esc(j.Nama_Kelas)+'</td><td>'+esc(j.Ruangan)+'</td><td><button class="bt bt-s bt-o mr-1" onclick="editJadwal(\''+j.ID+'\')"><i class="fas fa-edit"></i></button><button class="bt bt-s bt-d" onclick="delJadwal(\''+j.ID+'\')"><i class="fas fa-trash"></i></button></td></tr>'}tb.innerHTML=h},'renderJadwal')}
+function jadForm(j,id){var ko='<option value="">Pilih Kelas</option>';for(var i=0;i<A.dk.length;i++)ko+='<option value="'+A.dk[i].ID+'"'+(j&&j.Kelas_ID===A.dk[i].ID?' selected':'')+'>'+esc(A.dk[i].Nama_Kelas)+'</option>';return'<form onsubmit="saveJadwal(event,'+(id?"'"+id+"'":'null')+')"><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><label class="fl">Hari</label><select id="mJH" class="fi fsel"><option value="Senin"'+(j&&j.Hari==='Senin'?' selected':'')+'>Senin</option><option value="Selasa"'+(j&&j.Hari==='Selasa'?' selected':'')+'>Selasa</option><option value="Rabu"'+(j&&j.Hari==='Rabu'?' selected':'')+'>Rabu</option><option value="Kamis"'+(j&&j.Hari==='Kamis'?' selected':'')+'>Kamis</option><option value="Jumat"'+(j&&j.Hari==='Jumat'?' selected':'')+'>Jumat</option><option value="Sabtu"'+(j&&j.Hari==='Sabtu'?' selected':'')+'>Sabtu</option></select></div><div><label class="fl">Kelas</label><select id="mJKL" class="fi fsel">'+ko+'</select></div><div><label class="fl">Mapel</label><input type="text" id="mJMP" class="fi" value="'+esc(j?j.Mata_Pelajaran:'')+'" required></div><div><label class="fl">Ruangan</label><input type="text" id="mJRG" class="fi" value="'+esc(j?j.Ruangan:'')+'"></div><div><label class="fl">Jam Mulai</label><input type="time" id="mJMS" class="fi" value="'+esc(j?j.Jam_Mulai:'')+'" required></div><div><label class="fl">Jam Selesai</label><input type="time" id="mJME" class="fi" value="'+esc(j?j.Jam_Selesai:'')+'" required></div></div><div class="mt-5 flex gap-3 justify-end"><button type="button" class="bt bt-o" onclick="cM()">Batal</button><button type="submit" class="bt bt-p"><i class="fas fa-save"></i> Simpan</button></div></form>'}
+function openJadwalModal(){oM('Tambah Jadwal',jadForm(null,null))}
+function editJadwal(id){sL();gs('jdGet',A.token).then(function(r){hL();if(!r||!r.ok)return;var j=r.data.find(function(x){return x.ID===id});if(j)oM('Edit Jadwal',jadForm(j,id))}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function saveJadwal(e,id){e.preventDefault();var d={Kelas_ID:document.getElementById('mJKL').value,Mata_Pelajaran:document.getElementById('mJMP').value.trim(),Hari:document.getElementById('mJH').value,Jam_Mulai:document.getElementById('mJMS').value,Jam_Selesai:document.getElementById('mJME').value,Ruangan:document.getElementById('mJRG').value.trim()};var p=id?gs('apiUpdateJadwal',A.token,id,d):gs('apiAddJadwal',A.token,d);p.then(function(r){cM();if(r&&r.ok)toast(r.msg);else toast(r.msg,'er');loadJadwal()}).catch(function(e){toast('Gagal: '+e.message,'er')})}
+function delJadwal(id){sC('Hapus jadwal?',function(){gs('apiDeleteJadwal',A.token,id).then(function(r){if(r&&r.ok)toast(r.msg);else toast(r.msg,'er');loadJadwal()}).catch(function(e){toast('Gagal: '+e.message,'er')})})}
+</script>
+
+<!-- ======================== JS BAGIAN 3: ABSENSI, NILAI, JURNAL ======================== -->
+<script>
+function loadAbsenSiswa(){var kid=document.getElementById('absenKelas').value,c=document.getElementById('absenSiswaList');if(!kid){c.innerHTML='<p class="text-sm text-gray-400 text-center py-4">Pilih kelas dulu</p>';return}gs('apiGetSiswa',A.token,kid).then(function(r){if(!r.ok||!r.data.length){c.innerHTML='<p class="text-sm text-gray-400 text-center py-4">Tidak ada siswa</p>';return}var sd=r.data.slice().sort(function(a,b){return(a.Nama_Siswa||'').localeCompare(b.Nama_Siswa||'')});var h='';for(var i=0;i<sd.length;i++){var s=sd[i];h+='<div class="flex flex-wrap items-center gap-3 p-3 bg-surface rounded-xl"><span class="text-sm font-semibold w-8">'+(i+1)+'</span><span class="text-sm flex-1 min-w-[120px]">'+esc(s.Nama_Siswa)+'</span><label class="text-xs cursor-pointer"><input type="radio" name="ab_'+s.ID+'" value="Hadir" checked class="mr-1"><span class="bg bg-h">H</span></label><label class="text-xs cursor-pointer"><input type="radio" name="ab_'+s.ID+'" value="Sakit" class="mr-1"><span class="bg bg-s">S</span></label><label class="text-xs cursor-pointer"><input type="radio" name="ab_'+s.ID+'" value="Izin" class="mr-1"><span class="bg bg-i">I</span></label><label class="text-xs cursor-pointer"><input type="radio" name="ab_'+s.ID+'" value="Alpa" class="mr-1"><span class="bg bg-a">A</span></label><input type="text" placeholder="Ket." class="fi w-28 text-xs py-1" id="ket_'+s.ID+'"></div>'}c.innerHTML=h}).catch(function(){c.innerHTML='<p class="text-sm text-red-400 text-center py-4">Gagal</p>'})}
+function saveAbsensi(){var tgl=document.getElementById('absenTanggal').value,kid=document.getElementById('absenKelas').value,mp=document.getElementById('absenMapel').value.trim();if(!tgl||!kid||!mp){toast('Tanggal, kelas, mapel wajib diisi','wr');return}var rd=document.querySelectorAll('[name^="ab_"]'),rc=[],sn={};for(var i=0;i<rd.length;i++){if(rd[i].checked){var sid=rd[i].name.replace('ab_','');if(!sn[sid]){sn[sid]=true;rc.push({Tanggal:tgl,Siswa_ID:sid,Kelas_ID:kid,Mata_Pelajaran:mp,Status:rd[i].value,Keterangan:document.getElementById('ket_'+sid)?document.getElementById('ket_'+sid).value.trim():''})}}}if(!rc.length){toast('Tidak ada data','wr');return}sL();gs('apiSaveAbsensi',A.token,rc).then(function(r){hL();if(r&&r.ok)toast(r.msg);else toast(r.msg,'er');loadAbsensi()}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function loadAbsensi(){var tgl=document.getElementById('filterAbsenTanggal').value,kid=document.getElementById('filterAbsenKelas').value;gs('apiGetAbsensi',A.token,{tanggal:tgl||null,kelasId:kid||null}).then(function(r){if(!r||!r.ok)return;A.abAll=r.data;renderAbsensi()}).catch(function(){})}
+function renderAbsensi(){var d=A.abAll.slice(),tb=document.getElementById('tbodyAbsensi'),pg=document.getElementById('absenPagination');if(!d.length){tb.innerHTML='<tr><td colspan="9" class="text-center text-gray-400 py-8">-</td></tr>';pg.innerHTML='';return}
+// Sort nama by abSort
+d.sort(function(a,b){var na=(a.Nama_Siswa||'').toLowerCase(),nb=(b.Nama_Siswa||'').toLowerCase(),cmp=A.abSort==='asc'?na.localeCompare(nb):nb.localeCompare(na);if(cmp!==0)return cmp;if(a.Tanggal&&b.Tanggal)return b.Tanggal.localeCompare(a.Tanggal);return 0})
+// Update sort label
+var lbl=document.getElementById('abSortLabel');if(lbl)lbl.textContent=A.abSort==='asc'?'A-Z':'Z-A'
+// Pagination
+var ps=Number(document.getElementById('absenPageSize').value)||50,tp=Math.ceil(d.length/ps),cp=Math.min(A.abPage,tp)||1;A.abPage=cp;var start=(cp-1)*ps,end=Math.min(start+ps,d.length),page=d.slice(start,end)
+// Render rows
+var h='';for(var i=0;i<page.length;i++){var a=page[i],bc='bg-'+a.Status.toLowerCase();h+='<tr><td><input type="checkbox" class="absenCb" value="'+a.ID+'"></td><td>'+(start+i+1)+'</td><td>'+fD(a.Tanggal)+'</td><td>'+esc(a.Nama_Siswa)+'</td><td>'+esc(a.Nama_Kelas)+'</td><td>'+esc(a.Mata_Pelajaran)+'</td><td><span class="bg '+bc+'">'+esc(a.Status)+'</span></td><td>'+esc(a.Keterangan)+'</td><td><button class="bt bt-s bt-o mr-1" onclick="editAbsensi(\''+a.ID+'\')"><i class="fas fa-edit"></i></button><button class="bt bt-s bt-d" onclick="deleteAbsensi(\''+a.ID+'\')"><i class="fas fa-trash"></i></button></td></tr>'}tb.innerHTML=h
+// Pagination nav
+var ph='<span class="text-xs text-gray-500">'+(start+1)+'-'+end+'/'+d.length+'</span>';ph+='<button class="bt bt-s bt-o text-xs px-2 py-1 '+(cp<=1?'opacity-30 pointer-events-none':'')+'" onclick="A.abPage='+(cp-1)+';renderAbsensi()" '+(cp<=1?'disabled':'')+'><i class="fas fa-chevron-left"></i></button>';for(var p=Math.max(1,cp-2);p<=Math.min(tp,cp+2);p++){ph+='<button class="bt bt-s text-xs px-2 py-1 '+(p===cp?'bt-p':'bt-o')+'" onclick="A.abPage='+p+';renderAbsensi()">'+p+'</button>'}ph+='<button class="bt bt-s bt-o text-xs px-2 py-1 '+(cp>=tp?'opacity-30 pointer-events-none':'')+'" onclick="A.abPage='+(cp+1)+';renderAbsensi()" '+(cp>=tp?'disabled':'')+'><i class="fas fa-chevron-right"></i></button>';pg.innerHTML=ph}
+function toggleAll(p){var c=document.getElementById(p+'CbAll').checked;document.querySelectorAll('.'+p+'Cb').forEach(function(e){e.checked=c})}
+function bulkDelete(p){var ids=[];document.querySelectorAll('.'+p+'Cb:checked').forEach(function(e){ids.push(e.value)});if(!ids.length){toast('Pilih data dulu','wr');return}if(!confirm('Hapus '+ids.length+' data?'))return;var fn={'siswa':'apiDeleteSiswa','kelas':'apiDeleteKelas','jadwal':'apiDeleteJadwal','nilai':'apiDeleteNilai','jurnal':'apiDeleteJurnal'}[p];if(!fn){toast('Tidak dapat dihapus','er');return}sL();var proms=ids.map(function(id){return new Promise(function(ok){gs(fn,A.token,id).then(function(r){ok(r)}).catch(function(){ok({ok:false})})})});Promise.all(proms).then(function(rr){hL();var ok=0;rr.forEach(function(r){if(r&&r.ok)ok++});toast(ok+'/'+ids.length+' dihapus');var lm={'siswa':'loadSiswa','kelas':'loadKelas','jadwal':'loadJadwal','nilai':'loadNilai','jurnal':'loadJurnal'}[p];if(lm)window[lm]()}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function pgNav(pid,d,stateKey,psId,renderFn,fnName){var ps=Number(document.getElementById(psId).value)||50,tp=Math.ceil(d.length/ps),cp=A[stateKey+'Page']=Math.min(A[stateKey+'Page']||1,tp)||1,st=(cp-1)*ps,en=Math.min(st+ps,d.length),pg=d.slice(st,en);renderFn(pg,st,en,d.length);var el=document.getElementById(pid);if(!el)return;var h='<span class="text-xs text-gray-500">'+(st+1)+'-'+en+'/'+d.length+'</span>';h+='<button class="bt bt-s bt-o text-xs px-2 py-1 '+(cp<=1?'opacity-30 pointer-events-none':'')+'" onclick="A.'+stateKey+'Page='+(cp-1)+';'+fnName+'()" '+(cp<=1?'disabled':'')+'><i class="fas fa-chevron-left"></i></button>';for(var p=Math.max(1,cp-2);p<=Math.min(tp,cp+2);p++)h+='<button class="bt bt-s text-xs px-2 py-1 '+(p===cp?'bt-p':'bt-o')+'" onclick="A.'+stateKey+'Page='+p+';'+fnName+'()">'+p+'</button>';h+='<button class="bt bt-s bt-o text-xs px-2 py-1 '+(cp>=tp?'opacity-30 pointer-events-none':'')+'" onclick="A.'+stateKey+'Page='+(cp+1)+';'+fnName+'()" '+(cp>=tp?'disabled':'')+'><i class="fas fa-chevron-right"></i></button>';el.innerHTML=h}
+function deleteSelectedAbsensi(){var ids=[];document.querySelectorAll('.absenCb:checked').forEach(function(e){ids.push(e.value)});if(!ids.length){toast('Pilih data dulu','wr');return}if(!confirm('Hapus '+ids.length+' data?'))return;sL();var proms=ids.map(function(id){return new Promise(function(ok){gs('apiDeleteAbsensi',A.token,id).then(function(r){ok(r)}).catch(function(){ok({ok:false})})})});Promise.all(proms).then(function(rr){hL();var ok=0;rr.forEach(function(r){if(r&&r.ok)ok++});toast(ok+'/'+ids.length+' dihapus');loadAbsensi()}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function editAbsensi(id){var d=null;for(var i=0;i<A.abAll.length;i++)if(A.abAll[i].ID===id){d=A.abAll[i];break}if(!d)return;var opt=['Hadir','Sakit','Izin','Alpha'];var os='';for(var i=0;i<opt.length;i++)os+='<option value="'+opt[i]+'"'+(d.Status===opt[i]?' selected':'')+'>'+opt[i]+'</option>';var h='<form onsubmit="saveEditAbsensi(event,\''+id+'\')"><input type="hidden" id="eaId" value="'+id+'"><div class="grid grid-cols-1 gap-4"><div><label class="fl">Tanggal</label><input type="date" id="eaTgl" class="fi" value="'+d.Tanggal+'"></div><div><label class="fl">Status</label><select id="eaSt" class="fi fsel">'+os+'</select></div><div><label class="fl">Keterangan</label><input type="text" id="eaKet" class="fi" value="'+esc(d.Keterangan)+'"></div></div><div class="mt-5 flex gap-3 justify-end"><button type="button" class="bt bt-o" onclick="cM()">Batal</button><button type="submit" class="bt bt-p"><i class="fas fa-save"></i> Simpan</button></div></form>';oM('Edit Absensi',h)}
+function saveEditAbsensi(e,id){e.preventDefault();var d={Tanggal:document.getElementById('eaTgl').value,Status:document.getElementById('eaSt').value,Keterangan:document.getElementById('eaKet').value};sL();gs('apiUpdateAbsensi',A.token,id,d).then(function(r){hL();cM();if(r&&r.ok){toast(r.msg);loadAbsensi()}else toast(r.msg,'er')}).catch(function(e2){hL();toast('Gagal: '+e2.message,'er')})}
+function deleteAbsensi(id){if(!confirm('Hapus absensi ini?'))return;sL();gs('apiDeleteAbsensi',A.token,id).then(function(r){hL();if(r&&r.ok){toast(r.msg);loadAbsensi()}else toast(r.msg,'er')}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+
+
+function loadBatchNilaiSiswa(){var kid=document.getElementById('batchNilaiKelas').value,c=document.getElementById('batchNilaiList');if(!kid){c.innerHTML='<p class="text-sm text-gray-400 text-center py-4">Pilih kelas dulu</p>';return}gs('apiGetSiswa',A.token,kid).then(function(r){if(!r.ok||!r.data.length){c.innerHTML='<p class="text-sm text-gray-400 text-center py-4">Tidak ada siswa di kelas ini</p>';return}var h='';for(var i=0;i<r.data.length;i++){var s=r.data[i],kk=document.getElementById('batchNilaiKKM').value||75;h+='<div class="flex flex-wrap items-center gap-2 p-2 bg-surface rounded-xl"><span class="text-xs font-semibold w-6">'+(i+1)+'</span><span class="text-xs flex-1 min-w-[100px]">'+esc(s.Nama_Siswa)+'</span><label class="text-xs text-gray-500 w-8">Nilai</label><input type="number" id="bn_'+s.ID+'" class="fi w-20 text-xs py-1" min="0" max="100" value="75"><label class="text-xs text-gray-500 w-8 ml-2">Ket.</label><input type="text" id="bk_'+s.ID+'" class="fi w-24 text-xs py-1" placeholder="-"></div>'}c.innerHTML=h}).catch(function(){c.innerHTML='<p class="text-sm text-red-400 text-center py-4">Gagal memuat</p>'})}
+function saveBatchNilai(){var kid=document.getElementById('batchNilaiKelas').value,mp=document.getElementById('batchNilaiMapel').value.trim(),kat=document.getElementById('batchNilaiKategori').value,bab=document.getElementById('batchNilaiBab').value.trim(),kkm=document.getElementById('batchNilaiKKM').value;if(!kid||!mp){toast('Pilih kelas dan isi mapel','wr');return}var ins=document.querySelectorAll('[id^="bn_"]'),recs=[];for(var i=0;i<ins.length;i++){var sid=ins[i].id.replace('bn_',''),nil=Number(ins[i].value)||0;recs.push({Siswa_ID:sid,Kelas_ID:kid,Mata_Pelajaran:mp,Kategori:kat,Nilai:nil,KKM:kkm,Bab:bab,Bentuk_Penugasan:'Batch',Tujuan_Pembelajaran:''})}if(!recs.length){toast('Tidak ada data','wr');return}sL();gs('apiSaveNilaiBatch',A.token,recs).then(function(r){hL();if(r&&r.ok){toast(r.msg);loadNilai()}else toast(r.msg,'er')}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function loadNilai(){A.nlPage=1;sL();var kid=document.getElementById('filterNilaiKelas').value,mp=document.getElementById('filterNilaiMapel').value.trim().toLowerCase(),kat=document.getElementById('filterNilaiKategori').value;gs('apiGetNilai',A.token,{kelasId:kid||null,kategori:kat||null}).then(function(r){hL();if(!r||!r.ok)return;A.dn=r.data;var d=r.data;if(mp)d=d.filter(function(n){return n.Mata_Pelajaran.toLowerCase().indexOf(mp)>=0});A._nilaiFiltered=d;renderNilai()}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function renderNilai(){var d=A._nilaiFiltered||[];pgNav('nilaiPagination',d,'nl','nilaiPageSize',function(pg,st){var tb=document.getElementById('tbodyNilai');if(!pg.length){tb.innerHTML='<tr><td colspan="10" class="text-center text-gray-400 py-8">-</td></tr>';return}var h='';for(var i=0;i<pg.length;i++){var n=pg[i],nv=Number(n.Nilai)||0,km=Number(n.KKM)||75,sb=nv>=km?'<span class="bg bg-ok">Tuntas</span>':'<span class="bg bg-t">Belum Tuntas</span>';h+='<tr><td><input type="checkbox" class="nilaiCb" value="'+n.ID+'"></td><td>'+(st+i+1)+'</td><td>'+esc(n.Nama_Siswa)+'</td><td>'+esc(n.Nama_Kelas)+'</td><td>'+esc(n.Mata_Pelajaran)+'</td><td>'+esc(n.Kategori)+'</td><td class="font-bold">'+nv+'</td><td>'+km+'</td><td>'+sb+'</td><td><button class="bt bt-s bt-o mr-1" onclick="editNilai(\''+n.ID+'\')"><i class="fas fa-edit"></i></button><button class="bt bt-s bt-d" onclick="delNilai(\''+n.ID+'\')"><i class="fas fa-trash"></i></button></td></tr>'}tb.innerHTML=h},'renderNilai')}
+/* === REKAP NILAI === */
+var RN={nil:[],sis:null,bab:[],siswa:[],cell:{}};
+function loadRekapNilai(){
+  var kid=document.getElementById('rekapNilaiKelas').value,mp=document.getElementById('rekapNilaiMapel').value.trim().toLowerCase(),kat=document.getElementById('rekapNilaiKategori').value;
+  sL();
+  gs('apiGetNilai',A.token,{kelasId:kid||null}).then(function(r){
+    hL();if(!r||!r.ok){toast('Gagal load nilai','er');return}
+    var filtered=r.data.filter(function(n){if(mp&&(n.Mata_Pelajaran||'').toLowerCase().indexOf(mp)<0)return false;if(kat&&(n.Kategori||'')!==kat)return false;return true});
+    RN.nil=filtered;
+    buildRekapNilai();
+  }).catch(function(e){hL();toast('Gagal: '+e.message,'er')})
+}
+function buildRekapNilai(){
+  var sis={},bab={},cell={};
+  for(var i=0;i<RN.nil.length;i++){
+    var n=RN.nil[i],sid=n.Siswa_ID||'x'+i,bb=n.Bab||'Tanpa Bab';
+    sis[sid]=n.Nama_Siswa||'-';
+    bab[bb]=true;
+    var key=sid+'|'+bb;
+    if(!cell[key])cell[key]=[];
+    cell[key].push(Number(n.Nilai)||0);
+  }
+  var siswaNames=Object.keys(sis).sort(function(a,b){return(sis[a]||'').localeCompare(sis[b]||'')});
+  var babList=Object.keys(bab);
+  RN.siswa=siswaNames;RN.babes=babList;RN.cell=cell;RN.sis=sis;
+  renderRekapNilai();
+}
+function renderRekapNilai(){
+  var thead=document.getElementById('theadRekapNilai'),tb=document.getElementById('tbodyRekapNilai'),info=document.getElementById('rekapNilaiInfo');
+  if(!RN.siswa||!RN.siswa.length){
+    tb.innerHTML='<tr><td colspan="3" class="text-center text-gray-400 py-8">Tidak ada data</td></tr>';
+    thead.innerHTML='<tr><th>No</th><th>Nama Siswa</th><th>Bab</th></tr>';
+    info.textContent='';return
+  }
+  var h='<tr><th rowspan="2">No</th><th rowspan="2">Nama Siswa</th>';
+  for(var i=0;i<RN.babes.length;i++)h+='<th>'+esc(RN.babes[i])+'</th>';
+  h+='<th>Rata-rata</th></tr><tr>';
+  for(var i=0;i<RN.babes.length;i++)h+='<th class="font-normal text-[10px]">Nilai</th>';
+  h+='<th class="font-normal text-[10px]">Total</th></tr>';
+  thead.innerHTML=h;
+  var body='';
+  for(var s=0;s<RN.siswa.length;s++){
+    var sid=RN.siswa[s],sum=0,cnt=0;
+    body+='<tr><td>'+(s+1)+'</td><td class="font-semibold">'+esc(RN.sis[sid]||'-')+'</td>';
+    for(var b=0;b<RN.babes.length;b++){
+      var vals=RN.cell[sid+'|'+RN.babes[b]],v=vals&&vals.length?(vals.reduce(function(a,c){return a+c})/vals.length):'-';
+      body+='<td>'+v+'</td>';
+      if(v!='-'){sum+=Number(v)||0;cnt++}
+    }
+    var avg=cnt>0?Math.round(sum/cnt*10)/10:'-';
+    body+='<td class="font-bold">'+avg+'</td></tr>';
+  }
+  tb.innerHTML=body;
+  info.textContent=RN.siswa.length+' siswa, '+RN.babes.length+' bab';
+}
+function cetakRekapNilaiPDF(){if(!RN.siswa||!RN.siswa.length){toast('Tidak ada data untuk dicetak','wr');return}getProfilData().then(function(p){
+  var logo=p.Logo_URL||'',logoHtml=logo?'<img src="'+logo+'" style="height:70px;margin-right:12px">':'';
+  var kn=document.getElementById('rekapNilaiKelas');var kelasName=kn.options[kn.selectedIndex]?kn.options[kn.selectedIndex].text:'';
+  var h='<html><head><title>Rekap Nilai</title><style>body{font-family:Arial,sans-serif;font-size:10pt;padding:30px 40px;color:#222}table{width:100%;border-collapse:collapse;margin-top:12px;font-size:9pt}th,td{border:1px solid #555;padding:4px 5px;text-align:center;vertical-align:top}th{background:#eee;font-weight:bold}.hdr{display:flex;align-items:center;justify-content:center;margin-bottom:4px}.jdl{text-align:center;font-weight:bold;font-size:13pt;margin:3px 0}.sub{text-align:center;font-size:10pt;margin:2px 0}.ttd{display:flex;justify-content:space-between;margin-top:50px;font-size:10pt}.ttd div{text-align:center;width:45%}td.l,th.l{text-align:left}</style></head><body>';
+  h+='<div class="hdr">'+logoHtml+'<div><b style="font-size:14pt">'+esc(p.Nama_Sekolah||'')+'</b><br>'+esc(p.Alamat||'')+' - '+esc(p.Kota||'')+'</div></div><hr>';
+  h+='<div class="jdl">REKAP NILAI SISWA</div>';
+  h+='<div class="sub">Kelas: '+esc(kelasName)+'</div>';
+  h+='<table><thead><tr><th>No</th><th class="l">Nama Siswa</th>';
+  for(var i=0;i<RN.babes.length;i++)h+='<th>'+esc(RN.babes[i])+'</th>';
+  h+='<th>Rata</th></tr></thead><tbody>';
+  for(var s=0;s<RN.siswa.length;s++){
+    var sid=RN.siswa[s],sum=0,cnt=0;
+    h+='<tr><td>'+(s+1)+'</td><td class="l">'+esc(RN.sis[sid]||'-')+'</td>';
+    for(var b=0;b<RN.babes.length;b++){
+      var vals=RN.cell[sid+'|'+RN.babes[b]],v=vals&&vals.length?(vals.reduce(function(a,c){return a+c})/vals.length):'-';
+      h+='<td>'+v+'</td>';
+      if(v!='-'){sum+=Number(v);cnt++}
+    }
+    var avg=cnt>0?Math.round(sum/cnt*10)/10:'-';
+    h+='<td class="font-bold">'+avg+'</td></tr>';
+  }
+  h+='</tbody></table>';
+  h+='<div class="ttd"><div><p style="margin-bottom:50px">Mengetahui,<br>Kepala '+esc(p.Logo_URL?'Madrasah':'Sekolah')+'</p><p style="text-decoration:underline;font-weight:bold">'+esc(p.Kepala_Sekolah||'')+'</p><p>NIP. '+esc(p.NIP_Kepsek||'')+'</p></div>';
+  h+='<div><p style="margin-bottom:50px">'+esc(p.Kota||'')+', '+fmtTanggalIndo(tISO())+'<br>Guru Mata Pelajaran</p><p style="text-decoration:underline;font-weight:bold">'+esc(p.Nama_Guru||'')+'</p><p>NIP. '+esc(p.NIP_Guru||'')+'</p></div></div>';
+  h+='</body></html>';
+  var w=window.open('','_blank');w.document.write(h);w.document.close();setTimeout(function(){w.print()},500)})
+}
+function exportRekapNilaiExcel(){if(!RN.siswa||!RN.siswa.length){toast('Tidak ada data untuk di-export','er');return}var wb=XLSX.utils.book_new();var kn=document.getElementById('rekapNilaiKelas');var data=[['REKAP NILAI SISWA'],['Kelas: '+(kn.options[kn.selectedIndex]?kn.options[kn.selectedIndex].text:'')]];var hdr=['No','Nama Siswa'].concat(RN.babes).concat(['Rata-rata']);data.push(hdr);for(var s=0;s<RN.siswa.length;s++){var sid=RN.siswa[s],sum=0,cnt=0,row=[s+1,RN.sis[sid]||'-'];for(var b=0;b<RN.babes.length;b++){var vals=RN.cell[sid+'|'+RN.babes[b]],v=vals&&vals.length?(vals.reduce(function(a,c){return a+c})/vals.length):'-';row.push(v);if(v!='-'){sum+=Number(v);cnt++}}row.push(cnt>0?Math.round(sum/cnt*10)/10:'-');data.push(row)}var ws=XLSX.utils.aoa_to_sheet(data);ws['!cols']=[{wch:5},{wch:28}];XLSX.utils.book_append_sheet(wb,ws,'RekapNilai');XLSX.writeFile(wb,'RekapNilai.xlsx');toast('Excel di-download')}
+function openNilaiModal(){var ko='<option value="">Pilih Kelas</option>';for(var i=0;i<A.dk.length;i++)ko+='<option value="'+A.dk[i].ID+'">'+esc(A.dk[i].Nama_Kelas)+'</option>';var h='<form onsubmit="saveNilaiBaru(event)"><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><label class="fl">Kelas</label><select id="mNKls" class="fi fsel" onchange="loadNSList()">'+ko+'</select></div><div><label class="fl">Siswa</label><select id="mNSis" class="fi fsel"><option value="">-- Pilih kelas --</option></select></div><div><label class="fl">Mapel</label><input type="text" id="mNMap" class="fi" required></div><div><label class="fl">Kategori</label><select id="mNKat" class="fi fsel"><option>Pengetahuan</option><option>Keterampilan</option><option>Ulangan</option><option>Tugas</option></select></div><div><label class="fl">Nilai</label><input type="number" id="mNNil" class="fi" min="0" max="100" required></div><div><label class="fl">KKM</label><input type="number" id="mNKKM" class="fi" value="75" min="0" max="100" required></div><div><label class="fl">Bab</label><input type="text" id="mNBab" class="fi"></div><div><label class="fl">Bentuk Penugasan</label><input type="text" id="mNBP" class="fi" placeholder="Tertulis, Lisan, dll"></div></div><div class="mt-5 flex gap-3 justify-end"><button type="button" class="bt bt-o" onclick="cM()">Batal</button><button type="submit" class="bt bt-p"><i class="fas fa-save"></i> Simpan</button></div></form>';oM('Tambah Nilai',h)}
+function loadNSList(){var kid=document.getElementById('mNKls').value,sel=document.getElementById('mNSis');sel.innerHTML='<option value="">Memuat...</option>';if(!kid){sel.innerHTML='<option value="">-- Pilih kelas --</option>';return}gs('apiGetSiswa',A.token,kid).then(function(r){if(!r.ok||!r.data.length){sel.innerHTML='<option value="">Tidak ada siswa</option>';return}var sd=r.data.slice().sort(function(a,b){return(a.Nama_Siswa||'').localeCompare(b.Nama_Siswa||'')});sel.innerHTML='<option value="">Pilih Siswa</option>';for(var i=0;i<sd.length;i++){var o=document.createElement('option');o.value=sd[i].ID;o.textContent=sd[i].Nama_Siswa;sel.appendChild(o)}}).catch(function(){sel.innerHTML='<option value="">Gagal</option>'})}
+function saveNilaiBaru(e){e.preventDefault();var sid=document.getElementById('mNSis').value;if(!sid){toast('Pilih siswa dulu','wr');return}gs('apiAddNilai',A.token,{Siswa_ID:sid,Kelas_ID:document.getElementById('mNKls').value,Mata_Pelajaran:document.getElementById('mNMap').value.trim(),Kategori:document.getElementById('mNKat').value,Nilai:document.getElementById('mNNil').value,KKM:document.getElementById('mNKKM').value,Bab:document.getElementById('mNBab').value.trim(),Bentuk_Penugasan:document.getElementById('mNBP').value.trim()}).then(function(r){cM();if(r&&r.ok)toast(r.msg);else toast(r.msg,'er');loadNilai()}).catch(function(e){toast('Gagal: '+e.message,'er')})}
+function editNilai(id){sL();gs('apiGetNilai',A.token,{}).then(function(r){hL();if(!r||!r.ok)return;var n=r.data.find(function(x){return x.ID===id});if(!n)return;var ko='<option value="'+esc(n.Kelas_ID)+'">'+esc(n.Nama_Kelas)+'</option>';var h='<form onsubmit="saveNilaiEdit(event,\''+id+'\')"><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><label class="fl">Kelas</label><select id="mNEKls" class="fi fsel" disabled>'+ko+'</select></div><div><label class="fl">Siswa</label><select id="mNESis" class="fi fsel" disabled><option value="'+esc(n.Siswa_ID)+'">'+esc(n.Nama_Siswa)+'</option></select></div><div><label class="fl">Mapel</label><input type="text" id="mNEMap" class="fi" value="'+esc(n.Mata_Pelajaran)+'" required></div><div><label class="fl">Kategori</label><select id="mNEKat" class="fi fsel"><option value="Pengetahuan"'+(n.Kategori==='Pengetahuan'?' selected':'')+'>Pengetahuan</option><option value="Keterampilan"'+(n.Kategori==='Keterampilan'?' selected':'')+'>Keterampilan</option><option value="Ulangan"'+(n.Kategori==='Ulangan'?' selected':'')+'>Ulangan</option><option value="Tugas"'+(n.Kategori==='Tugas'?' selected':'')+'>Tugas</option></select></div><div><label class="fl">Nilai</label><input type="number" id="mNENil" class="fi" value="'+n.Nilai+'" min="0" max="100" required></div><div><label class="fl">KKM</label><input type="number" id="mNEKKM" class="fi" value="'+n.KKM+'" min="0" max="100" required></div><div><label class="fl">Bab</label><input type="text" id="mNEBab" class="fi" value="'+esc(n.Bab)+'"></div><div><label class="fl">Remedial</label><input type="text" id="mNERem" class="fi" value="'+esc(n.Remedial)+'"></div></div><div class="mt-5 flex gap-3 justify-end"><button type="button" class="bt bt-o" onclick="cM()">Batal</button><button type="submit" class="bt bt-p"><i class="fas fa-save"></i> Simpan</button></div></form>';oM('Edit Nilai',h)}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function saveNilaiEdit(e,id){e.preventDefault();gs('apiUpdateNilai',A.token,id,{Mata_Pelajaran:document.getElementById('mNEMap').value.trim(),Kategori:document.getElementById('mNEKat').value,Nilai:document.getElementById('mNENil').value,KKM:document.getElementById('mNEKKM').value,Bab:document.getElementById('mNEBab').value.trim(),Remedial:document.getElementById('mNERem').value.trim()}).then(function(r){cM();if(r&&r.ok)toast(r.msg);else toast(r.msg,'er');loadNilai()}).catch(function(e){toast('Gagal: '+e.message,'er')})}
+function delNilai(id){sC('Hapus nilai?',function(){gs('apiDeleteNilai',A.token,id).then(function(r){if(r&&r.ok)toast(r.msg);else toast(r.msg,'er');loadNilai()}).catch(function(e){toast('Gagal: '+e.message,'er')})})}
+
+function loadJurnal(){A.jrPage=1;sL();gs('apiGetJurnal',A.token,{kelasId:document.getElementById('filterJurnalKelas').value||null,tanggal:document.getElementById('filterJurnalTanggal').value||null,tanggalAkhir:document.getElementById('filterJurnalTanggal2').value||null}).then(function(r){hL();if(!r||!r.ok)return;A.djurnal=r.data;renderJurnal()}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function renderJurnal(){var d=A.djurnal||[];pgNav('jurnalPagination',d,'jr','jurnalPageSize',function(pg,st){var tb=document.getElementById('tbodyJurnal');if(!pg.length){tb.innerHTML='<tr><td colspan="9" class="text-center text-gray-400 py-8">-</td></tr>';return}var h='';for(var i=0;i<pg.length;i++){var j=pg[i];h+='<tr><td><input type="checkbox" class="jurnalCb" value="'+j.ID+'"></td><td>'+(st+i+1)+'</td><td>'+fD(j.Tanggal)+'</td><td>'+esc(j.Nama_Kelas)+'</td><td class="font-semibold">'+esc(j.Mata_Pelajaran)+'</td><td>'+esc(j.Jam_Ke)+'</td><td>'+esc(j.Materi)+'</td><td>'+esc(j.Kendala)+'</td><td><button class="bt bt-s bt-o mr-1" onclick="editJurnal(\''+j.ID+'\')"><i class="fas fa-edit"></i></button><button class="bt bt-s bt-d" onclick="delJurnal(\''+j.ID+'\')"><i class="fas fa-trash"></i></button></td></tr>'}tb.innerHTML=h},'renderJurnal')}
+function jrForm(j,id){var ko='<option value="">Pilih Kelas</option>';for(var i=0;i<A.dk.length;i++)ko+='<option value="'+A.dk[i].ID+'"'+(j&&j.Kelas_ID===A.dk[i].ID?' selected':'')+'>'+esc(A.dk[i].Nama_Kelas)+'</option>';var td=j?fD(j.Tanggal).split('/').reverse().join('-'):tISO();return'<form onsubmit="saveJurnal(event,'+(id?"'"+id+"'":'null')+')"><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><label class="fl">Tanggal</label><input type="date" id="mJrTgl" class="fi" value="'+td+'" required></div><div><label class="fl">Kelas</label><select id="mJrKls" class="fi fsel">'+ko+'</select></div><div><label class="fl">Mapel</label><input type="text" id="mJrMap" class="fi" value="'+esc(j?j.Mata_Pelajaran:'')+'" required></div><div><label class="fl">Jam Ke</label><input type="text" id="mJrJam" class="fi" value="'+esc(j?j.Jam_Ke:'')+'" placeholder="1-2"></div><div class="sm:col-span-2"><label class="fl">Materi</label><input type="text" id="mJrMat" class="fi" value="'+esc(j?j.Materi:'')+'" required></div><div class="sm:col-span-2"><label class="fl">Deskripsi</label><textarea id="mJrDesk" class="fi" rows="2">'+esc(j?j.Deskripsi:'')+'</textarea></div><div><label class="fl">Kendala</label><input type="text" id="mJrKen" class="fi" value="'+esc(j?j.Kendala:'')+'"></div><div><label class="fl">Solusi</label><input type="text" id="mJrSol" class="fi" value="'+esc(j?j.Solusi:'')+'"></div><div><label class="fl">Kehadiran</label><input type="text" id="mJrHadir" class="fi" value="'+esc(j?j.Kehadiran_Siswa:'')+'" placeholder="30/32"></div><div><label class="fl">Catatan</label><input type="text" id="mJrCat" class="fi" value="'+esc(j?j.Catatan:'')+'"></div></div><div class="mt-5 flex gap-3 justify-end"><button type="button" class="bt bt-o" onclick="cM()">Batal</button><button type="submit" class="bt bt-p"><i class="fas fa-save"></i> Simpan</button></div></form>'}
+function openJurnalModal(){oM('Tambah Jurnal',jrForm(null,null))}
+function editJurnal(id){sL();gs('apiGetJurnal',A.token,{}).then(function(r){hL();if(!r||!r.ok)return;var j=r.data.find(function(x){return x.ID===id});if(j)oM('Edit Jurnal',jrForm(j,id))}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function saveJurnal(e,id){e.preventDefault();var d={Tanggal:document.getElementById('mJrTgl').value,Kelas_ID:document.getElementById('mJrKls').value,Mata_Pelajaran:document.getElementById('mJrMap').value.trim(),Jam_Ke:document.getElementById('mJrJam').value.trim(),Materi:document.getElementById('mJrMat').value.trim(),Deskripsi:document.getElementById('mJrDesk').value.trim(),Kendala:document.getElementById('mJrKen').value.trim(),Solusi:document.getElementById('mJrSol').value.trim(),Kehadiran_Siswa:document.getElementById('mJrHadir').value.trim(),Catatan:document.getElementById('mJrCat').value.trim()};var p=id?gs('apiUpdateJurnal',A.token,id,d):gs('apiAddJurnal',A.token,d);p.then(function(r){cM();if(r&&r.ok)toast(r.msg);else toast(r.msg,'er');loadJurnal()}).catch(function(e){toast('Gagal: '+e.message,'er')})}
+function delJurnal(id){sC('Hapus jurnal?',function(){gs('apiDeleteJurnal',A.token,id).then(function(r){if(r&&r.ok)toast(r.msg);else toast(r.msg,'er');loadJurnal()}).catch(function(e){toast('Gagal: '+e.message,'er')})})}
+</script>
+
+<!-- ======================== JS BAGIAN 4: UPLOAD, PDF, PROFIL, SETTINGS, LOG, PANDUAN, INIT ======================== -->
+<script>
+/* === UPLOAD MASSAL CSV === */
+var csvParsed=[];
+
+
+
+/* === UPLOAD MODAL === */
+function openUploadModal(){
+  var ko='<option value="">Pilih Kelas</option>';
+  for(var i=0;i<A.dk.length;i++)ko+='<option value="'+A.dk[i].ID+'">'+esc(A.dk[i].Nama_Kelas)+'</option>';
+  var h='<div><div class="mb-5"><div class="flex flex-wrap gap-2"><button class="bt bt-o bt-s" onclick="dlTemplate()"><i class="fas fa-download"></i> Template CSV</button><button class="bt bt-o bt-s" onclick="dlTemplateExcel()"><i class="fas fa-download"></i> Template Excel</button></div><p class="text-xs text-gray-400 mt-2">Download template, isi data, lalu upload kembali.</p></div><div class="drop-zone" id="csvDropZone" onclick="document.getElementById(\'csvFileInput\').click()"><i class="fas fa-cloud-upload-alt text-3xl text-gray-300 mb-2"></i><p class="text-sm text-gray-500">Klik untuk pilih file CSV atau Excel (.xlsx)</p><p class="text-xs text-gray-400 mt-1">Maksimal 5MB</p></div><input type="file" id="csvFileInput" accept=".csv,.xlsx" class="hidden" onchange="handleUploadFile(this.files[0])"><div id="csvPreview" class="hidden mt-5"><h4 class="font-bold text-sm text-gray-700 mb-2">Preview Data (<span id="csvCount">0</span> baris)</h4><div class="tw max-h-60 overflow-y-auto mb-3"><table class="dt"><thead><tr><th>No</th><th>NIS</th><th>NISN</th><th>Nama</th><th>L/P</th><th>Kelas</th><th>Alamat</th><th>Telepon</th><th>Ortu</th></tr></thead><tbody id="csvTbody"></tbody></table></div><div id="csvErrors" class="hidden mb-3 p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700"><b class="block mb-1">Peringatan:</b><ul id="csvErrList" class="list-disc pl-4"></ul></div><button class="bt bt-p w-full justify-center" id="csvUploadBtn" disabled onclick="doUploadCsv()"><i class="fas fa-upload"></i> Upload ke Database</button></div></div>';
+  oM('Upload Data Siswa (CSV / Excel)',h);
+}
+function dlTemplate(){
+  var csv='NIS,NISN,Nama_Siswa,Jenis_Kelamin,Nama_Kelas,Alamat,Telepon,Email,Nama_Ortu\n24006,12345683,Siti Aminah,P,X IPA 1,"Jl. Melati No. 10",081234567891,siti@email.com,Ibu Aminah\n24007,12345684,Budi Santoso,L,X IPA 2,"Jl. Mawar No. 20",081234567892,budi@email.com,Bapak Santoso\n24008,12345685,Dewi Rahayu,P,XI IPA 1,"Jl. Anggrek No. 30",081234567893,,Ibu Rahayu\n';
+  var b=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='template_upload_siswa.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);
+  toast('Template CSV berhasil didownload','ok');
+}
+function dlTemplateExcel(){
+  sL();gs('apiDownloadTemplateExcel',A.token).then(function(r){hL();if(!r||!r.ok){toast(r.msg,'er');return}var bc=atob(r.data);var ba=new Uint8Array(bc.length);for(var i=0;i<bc.length;i++)ba[i]=bc.charCodeAt(i);var bl=new Blob([ba],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});var u=URL.createObjectURL(bl);var a=document.createElement('a');a.href=u;a.download=r.fileName||'template.xlsx';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);toast('Template Excel berhasil didownload','ok')}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function handleUploadFile(file){
+  if(!file)return;
+  if(!file.name.toLowerCase().endsWith('.csv')&&!file.name.toLowerCase().endsWith('.xlsx')){toast('File harus .csv atau .xlsx','wr');return}
+  if(file.size>5*1024*1024){toast('File maksimal 5MB','wr');return}
+  if(file.name.toLowerCase().endsWith('.csv')){handleCsvFile(file);return}
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var wb=XLSX.read(e.target.result,{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]],json=XLSX.utils.sheet_to_json(ws,{defval:''});
+      if(json.length<1){toast('File Excel kosong','wr');return}
+      var hMap={};Object.keys(json[0]).forEach(function(k,i){hMap[k.toLowerCase().trim()]=k});
+      if(hMap['nis']===undefined||hMap['nama_siswa']===undefined||hMap['nama_kelas']===undefined){toast('Kolom NIS, Nama_Siswa, Nama_Kelas wajib ada','wr');return}
+      csvParsed=[];var errs=[];
+      for(var i=0;i<json.length&&csvParsed.length<500;i++){
+        var row=json[i],nis=String(row[hMap['nis']]||'').trim(),nisn=String(row[hMap['nisn']]||'').trim(),nama=String(row[hMap['nama_siswa']]||'').trim(),jk=String(row[hMap['jenis_kelamin']]||'L').trim(),kelas=String(row[hMap['nama_kelas']]||'').trim(),alamat=String(row[hMap['alamat']]||'').trim(),telp=String(row[hMap['telepon']]||'').trim(),email=String(row[hMap['email']]||'').trim(),ortu=String(row[hMap['nama_ortu']]||'').trim();
+        if(!nis||!nama){errs.push('Baris '+(i+2)+': NIS atau Nama kosong');continue}
+        if(!jk)jk='L';
+        csvParsed.push({NIS:nis,NISN:nisn,Nama_Siswa:nama,Jenis_Kelamin:jk,Nama_Kelas:kelas,Alamat:alamat,Telepon:telp,Email:email,Nama_Ortu:ortu});
+      }
+      var tb=document.getElementById('csvTbody');document.getElementById('csvPreview').classList.remove('hidden');
+      document.getElementById('csvCount').textContent=csvParsed.length;
+      if(!csvParsed.length){tb.innerHTML='<tr><td colspan="9" class="text-center text-gray-400 py-4">Tidak ada data valid</td></tr>'}
+      else{var h='';for(var i=0;i<csvParsed.length;i++){var d=csvParsed[i];h+='<tr><td>'+(i+1)+'</td><td>'+esc(d.NIS)+'</td><td>'+esc(d.NISN)+'</td><td class="font-semibold">'+esc(d.Nama_Siswa)+'</td><td>'+esc(d.Jenis_Kelamin)+'</td><td>'+esc(d.Nama_Kelas)+'</td><td>'+esc(d.Alamat)+'</td><td>'+esc(d.Telepon)+'</td><td>'+esc(d.Nama_Ortu)+'</td></tr>'}tb.innerHTML=h}
+      var errDiv=document.getElementById('csvErrors'),errList=document.getElementById('csvErrList');
+      if(errs.length){errDiv.classList.remove('hidden');errList.innerHTML='';for(var i=0;i<errs.length;i++){var li=document.createElement('li');li.textContent=errs[i];errList.appendChild(li)}}else{errDiv.classList.add('hidden')}
+      document.getElementById('csvUploadBtn').disabled=csvParsed.length===0;
+    }catch(ex){toast('Gagal baca Excel: '+ex.message,'er')}
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function parseCSVLine(line){
+  var result=[],current='',inQuotes=false;
+  for(var i=0;i<line.length;i++){
+    var c=line[i];
+    if(inQuotes){if(c==='"'&&line[i+1]==='"'){current+='"';i++}else if(c==='"'){inQuotes=false}else{current+=c}}
+    else{if(c==='"'){inQuotes=true}else if(c===','){result.push(current.trim());current=''}else{current+=c}}
+  }
+  result.push(current.trim());return result;
+}
+
+function handleCsvFile(file){
+  if(!file)return;
+  if(!file.name.toLowerCase().endsWith('.csv')){toast('File harus berformat .csv','wr');return}
+  if(file.size>5*1024*1024){toast('File maksimal 5MB','wr');return}
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var text=e.target.result;
+    var lines=text.split(/\r?\n/).filter(function(l){return l.trim()!==''});
+    if(lines.length<2){toast('File CSV kosong atau tidak valid','wr');return}
+    var headers=parseCSVLine(lines[0]);
+    var hMap={};for(var i=0;i<headers.length;i++)hMap[headers[i].trim().toLowerCase()]=i;
+    var reqCols=['nis','nama_siswa','nama_kelas'];
+    for(var i=0;i<reqCols.length;i++){if(hMap[reqCols[i]]===undefined){toast('Kolom "'+reqCols[i]+'" tidak ditemukan di header','wr');return}}
+    csvParsed=[];var errs=[];
+    for(var i=1;i<lines.length&&csvParsed.length<500;i++){
+      var cols=parseCSVLine(lines[i]);
+      var nis=cols[hMap['nis']]||'',nisn=cols[hMap['nisn']]||'',nama=cols[hMap['nama_siswa']]||'',jk=cols[hMap['jenis_kelamin']]||'L',kelas=cols[hMap['nama_kelas']]||'',alamat=cols[hMap['alamat']]||'',telp=cols[hMap['telepon']]||'',email=cols[hMap['email']]||'',ortu=cols[hMap['nama_ortu']]||'';
+      if(!nis||!nama){errs.push('Baris '+(i+1)+': NIS atau Nama kosong, dilewati');continue}
+      csvParsed.push({NIS:nis,NISN:nisn,Nama_Siswa:nama,Jenis_Kelamin:jk,Nama_Kelas:kelas,Alamat:alamat,Telepon:telp,Email:email,Nama_Ortu:ortu});
+    }
+    // Render preview
+    var tb=document.getElementById('csvTbody');document.getElementById('csvPreview').classList.remove('hidden');
+    document.getElementById('csvCount').textContent=csvParsed.length;
+    if(!csvParsed.length){tb.innerHTML='<tr><td colspan="9" class="text-center text-gray-400 py-4">Tidak ada data valid</td></tr>'}
+    else{var h='';for(var i=0;i<csvParsed.length;i++){var d=csvParsed[i];h+='<tr><td>'+(i+1)+'</td><td>'+esc(d.NIS)+'</td><td>'+esc(d.NISN)+'</td><td class="font-semibold">'+esc(d.Nama_Siswa)+'</td><td>'+esc(d.Jenis_Kelamin)+'</td><td>'+esc(d.Nama_Kelas)+'</td><td>'+esc(d.Alamat)+'</td><td>'+esc(d.Telepon)+'</td><td>'+esc(d.Nama_Ortu)+'</td></tr>'}tb.innerHTML=h}
+    // Render errors
+    var errDiv=document.getElementById('csvErrors'),errList=document.getElementById('csvErrList');
+    if(errs.length){errDiv.classList.remove('hidden');errList.innerHTML='';for(var i=0;i<errs.length;i++){var li=document.createElement('li');li.textContent=errs[i];errList.appendChild(li)}}else{errDiv.classList.add('hidden')}
+    document.getElementById('csvUploadBtn').disabled=csvParsed.length===0;
+  };
+  reader.readAsText(file);
+}
+
+function doUploadCsv(){
+  if(!csvParsed.length)return;
+  document.getElementById('csvUploadBtn').disabled=true;document.getElementById('csvUploadBtn').innerHTML='<div class="sp" style="width:18px;height:18px;border-width:2px"></div> Mengupload...';
+  gs('apiUploadSiswaBatch',A.token,csvParsed).then(function(r){
+    if(r&&r.ok){toast(r.msg);cM();loadSiswa()}
+    else{toast(r.msg,'er');document.getElementById('csvUploadBtn').disabled=false;document.getElementById('csvUploadBtn').innerHTML='<i class="fas fa-upload"></i> Upload ke Database'}
+  }).catch(function(e){toast('Gagal: '+e.message,'er');document.getElementById('csvUploadBtn').disabled=false;document.getElementById('csvUploadBtn').innerHTML='<i class="fas fa-upload"></i> Upload ke Database'});
+}
+
+/* === PDF DOWNLOAD === */
+function downloadPdf(type){
+  var kelasId,extra={};
+  if(type==='nilai'){kelasId=document.getElementById('filterNilaiKelas').value;extra.kategori=document.getElementById('filterNilaiKategori').value}
+  else if(type==='absensi'){kelasId=document.getElementById('filterAbsenKelas').value;extra.tanggal=document.getElementById('filterAbsenTanggal').value}
+  else if(type==='jurnal'){kelasId=document.getElementById('filterJurnalKelas').value;extra.tanggal=document.getElementById('filterJurnalTanggal').value;extra.tanggalAkhir=document.getElementById('filterJurnalTanggal2').value}
+  sL();
+  var fn=type==='nilai'?'apiDownloadPdfNilai':type==='absensi'?'apiDownloadPdfAbsensi':'apiDownloadPdfJurnal';
+  var args=[A.token,kelasId||null];
+  if(type==='jurnal')args.push(extra.tanggal||null,extra.tanggalAkhir||null);
+  else if(type==='nilai')args.push(extra.kategori||null);
+  else args.push(extra.tanggal||null);
+  gs.apply(null,[fn].concat(args)).then(function(r){
+    hL();
+    if(!r||!r.ok){toast(r.msg,'er');return}
+    // Decode base64 dan download
+    var byteChars=atob(r.data);var byteNums=new Array(byteChars.length);
+    for(var i=0;i<byteChars.length;i++)byteNums[i]=byteChars.charCodeAt(i);
+    var byteArray=new Uint8Array(byteNums);var blob=new Blob([byteArray],{type:'application/pdf'});
+    var url=URL.createObjectURL(blob);var a=document.createElement('a');
+    a.href=url;a.download=r.fileName||('Laporan_'+type+'.pdf');
+    document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+    toast('PDF berhasil didownload');
+  }).catch(function(e){hL();toast('Gagal membuat PDF: '+e.message,'er')});
+}
+function downloadPdfNilai(){downloadPdf('nilai')}
+function downloadPdfAbsensi(){downloadPdf('absensi')}
+function downloadPdfJurnal(){downloadPdf('jurnal')}
+function downloadExcelNilai(){var kid=document.getElementById('filterNilaiKelas').value,kat=document.getElementById('filterNilaiKategori').value;sL();gs('apiDownloadExcelNilai',A.token,kid||null,kat||null).then(function(r){hL();if(r&&r.ok&&r.data){var bc=atob(r.data),bn=new Array(bc.length);for(var i=0;i<bc.length;i++)bn[i]=bc.charCodeAt(i);var ba=new Uint8Array(bn),bl=new Blob([ba],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),u=URL.createObjectURL(bl),a=document.createElement('a');a.href=u;a.download=r.fileName||'Nilai.xlsx';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);toast('Excel berhasil didownload')}else toast(r.msg,'er')}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function downloadExcelAbsensi(){var kid=document.getElementById('filterAbsenKelas').value,tgl=document.getElementById('filterAbsenTanggal').value;sL();gs('apiDownloadExcelAbsensi',A.token,tgl||null,kid||null).then(function(r){hL();if(r&&r.ok&&r.data){var bc=atob(r.data),bn=new Array(bc.length);for(var i=0;i<bc.length;i++)bn[i]=bc.charCodeAt(i);var ba=new Uint8Array(bn),bl=new Blob([ba],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),u=URL.createObjectURL(bl),a=document.createElement('a');a.href=u;a.download=r.fileName||'Absensi.xlsx';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);toast('Excel berhasil didownload')}else toast(r.msg,'er')}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function downloadExcelJurnal(){var kid=document.getElementById('filterJurnalKelas').value,tgl=document.getElementById('filterJurnalTanggal').value,tgl2=document.getElementById('filterJurnalTanggal2').value;sL();gs('apiDownloadExcelJurnal',A.token,kid||null,tgl||null,tgl2||null).then(function(r){hL();if(r&&r.ok&&r.data){var bc=atob(r.data),bn=new Array(bc.length);for(var i=0;i<bc.length;i++)bn[i]=bc.charCodeAt(i);var ba=new Uint8Array(bn),bl=new Blob([ba],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),u=URL.createObjectURL(bl),a=document.createElement('a');a.href=u;a.download=r.fileName||'Jurnal.xlsx';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);toast('Excel berhasil didownload')}else toast(r.msg,'er')}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function loadRekapAbsensi(){var kid=document.getElementById('rekapAbsenKelas').value,sd=document.getElementById('rekapAbsenStart').value,ed=document.getElementById('rekapAbsenEnd').value;gs('apiGetRekapAbsensi',A.token,kid||null,sd||null,ed||null).then(function(r){if(!r||!r.ok)return;A.rekap=r.data.slice().sort(function(a,b){return(a.Nama_Siswa||'').localeCompare(b.Nama_Siswa||'')});renderRekapAbsensi()}).catch(function(){})}
+function renderRekapAbsensi(){var dd=A.rekap||[];pgNav('rekapPagination',dd,'rk','rekapPageSize',function(pg,st){var tb=document.getElementById('tbodyRekapAbsensi'),info=document.getElementById('rekapAbsenInfo');if(!pg.length){tb.innerHTML='<tr><td colspan="10" class="text-center text-gray-400 py-8">Tidak ada data</td></tr>';info.textContent='';return}var h='';for(var i=0;i<pg.length;i++){var a=pg[i];h+='<tr><td>'+(st+i+1)+'</td><td>'+esc(a.NIS)+'</td><td>'+esc(a.Nama_Siswa)+'</td><td>'+esc(a.Nama_Kelas)+'</td><td>'+a.Total_Hari+'</td><td class="text-green-600 font-semibold">'+a.Hadir+'</td><td class="text-yellow-600 font-semibold">'+a.Sakit+'</td><td class="text-blue-600 font-semibold">'+a.Izin+'</td><td class="text-red-600 font-semibold">'+a.Alpha+'</td><td class="font-bold">'+a.Persentase+'%</td></tr>'}tb.innerHTML=h;info.textContent='Total: '+dd.length+' siswa'},'renderRekapAbsensi')}
+function downloadPdfRekapAbsensi(){var kid=document.getElementById('rekapAbsenKelas').value,sd=document.getElementById('rekapAbsenStart').value,ed=document.getElementById('rekapAbsenEnd').value;sL();gs('apiDownloadPdfRekapAbsensi',A.token,kid||null,sd||null,ed||null).then(function(r){hL();if(r&&r.ok&&r.data){var bc=atob(r.data),bn=new Array(bc.length);for(var i=0;i<bc.length;i++)bn[i]=bc.charCodeAt(i);var ba=new Uint8Array(bn),bl=new Blob([ba],{type:'application/pdf'}),u=URL.createObjectURL(bl),a=document.createElement('a');a.href=u;a.download=r.fileName||'RekapAbsensi.pdf';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);toast('PDF berhasil didownload')}else toast(r.msg||'Gagal download','er')}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function downloadExcelRekapAbsensi(){var kid=document.getElementById('rekapAbsenKelas').value,sd=document.getElementById('rekapAbsenStart').value,ed=document.getElementById('rekapAbsenEnd').value;sL();gs('apiDownloadExcelRekapAbsensi',A.token,kid||null,sd||null,ed||null).then(function(r){hL();if(r&&r.ok&&r.data){var bc=atob(r.data),bn=new Array(bc.length);for(var i=0;i<bc.length;i++)bn[i]=bc.charCodeAt(i);var ba=new Uint8Array(bn),bl=new Blob([ba],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),u=URL.createObjectURL(bl),a=document.createElement('a');a.href=u;a.download=r.fileName||'RekapAbsensi.xlsx';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);toast('Excel berhasil didownload')}else toast(r.msg||'Gagal download','er')}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+
+/* === PROFIL === */
+function loadProfil(){gs('apiGetProfil',A.token).then(function(r){if(!r.ok||!r.data.ID)return;var d=r.data;document.getElementById('profilId').value=d.ID||'';document.getElementById('profilNama').value=d.Nama_Sekolah||'';document.getElementById('profilAlamat').value=d.Alamat||'';document.getElementById('profilNPSN').value=d.NPSN||'';document.getElementById('profilKota').value=d.Kota||'';document.getElementById('profilProvinsi').value=d.Provinsi||'';document.getElementById('profilTelepon').value=d.Telepon||'';document.getElementById('profilKepsek').value=d.Kepala_Sekolah||'';document.getElementById('profilNIPKepsek').value=d.NIP_Kepsek||'';document.getElementById('profilGuru').value=d.Nama_Guru||'';document.getElementById('profilNIPGuru').value=d.NIP_Guru||'';document.getElementById('profilJabatan').value=d.Jabatan||'';document.getElementById('profilPangkat').value=d.Pangkat||'';document.getElementById('profilGolRuang').value=d.Golongan_Ruang||'';document.getElementById('profilLogo').value=d.Logo_URL||''}).catch(function(e){toast('Gagal: '+e.message,'er')})}
+function saveProfil(e){e.preventDefault();gs('apiUpdateProfil',A.token,{ID:document.getElementById('profilId').value,Nama_Sekolah:document.getElementById('profilNama').value.trim(),Alamat:document.getElementById('profilAlamat').value.trim(),NPSN:document.getElementById('profilNPSN').value.trim(),Kota:document.getElementById('profilKota').value.trim(),Provinsi:document.getElementById('profilProvinsi').value.trim(),Telepon:document.getElementById('profilTelepon').value.trim(),Kepala_Sekolah:document.getElementById('profilKepsek').value.trim(),NIP_Kepsek:document.getElementById('profilNIPKepsek').value.trim(),Nama_Guru:document.getElementById('profilGuru').value.trim(),NIP_Guru:document.getElementById('profilNIPGuru').value.trim(),Jabatan:document.getElementById('profilJabatan').value.trim(),Pangkat:document.getElementById('profilPangkat').value.trim(),Golongan_Ruang:document.getElementById('profilGolRuang').value.trim(),Logo_URL:document.getElementById('profilLogo').value.trim()}).then(function(r){if(r&&r.ok)toast(r.msg);else toast(r.msg,'er')}).catch(function(e){toast('Gagal: '+e.message,'er')})}
+
+/* === SETTINGS === */
+function loadSettings(){gs('apiGetSettings',A.token).then(function(r){if(!r||!r.ok)return;var d=r.data;document.getElementById('setAppName').value=d.app_name||'';document.getElementById('setTahunAjaran').value=d.tahun_ajaran||'';document.getElementById('setSemester').value=d.semester||'1';document.getElementById('setKKM').value=d.kkm_default||'75'}).catch(function(e){toast('Gagal: '+e.message,'er')})}
+function saveSettings(e){e.preventDefault();var u={app_name:document.getElementById('setAppName').value.trim(),tahun_ajaran:document.getElementById('setTahunAjaran').value.trim(),semester:document.getElementById('setSemester').value,kkm_default:document.getElementById('setKKM').value};gs('apiUpdateSettings',A.token,u).then(function(r){if(r&&r.ok){toast(r.msg);document.getElementById('sidebarAppName').textContent=u.app_name||'Teacher Dashboard'}else toast(r.msg,'er')}).catch(function(e){toast('Gagal: '+e.message,'er')})}
+
+/* === LOG === */
+function loadLog(){sL();gs('apiGetLog',A.token).then(function(r){hL();if(!r||!r.ok)return;var tb=document.getElementById('tbodyLog');if(!r.data.length){tb.innerHTML='<tr><td colspan="5" class="text-center text-gray-400 py-8">-</td></tr>';return}var h='';for(var i=0;i<r.data.length;i++){var l=r.data[i];h+='<tr><td>'+(i+1)+'</td><td class="text-xs">'+fDT(l.Timestamp)+'</td><td class="text-xs text-gray-500">'+esc(l.User_ID?l.User_ID.substring(0,8)+'...':'-')+'</td><td><span class="bg bg-ok">'+esc(l.Action)+'</span></td><td class="text-sm">'+esc(l.Description)+'</td></tr>'}tb.innerHTML=h}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+
+/* === KALENDER === */
+function loadKalender(){renderKalender(A.kalMonth,A.kalYear)}
+function renderKalender(month,year){A.kalMonth=month;A.kalYear=year;var lbl=document.getElementById('kalMonthLabel');var mn=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];lbl.textContent=mn[month-1]+' '+year;var hari=['Min','Sen','Sel','Rab','Kam','Jum','Sab'];var h='';for(var i=0;i<7;i++)h+='<div class="kal-header">'+hari[i]+'</div>';var first=new Date(year,month-1,1).getDay();var daysInMonth=new Date(year,month,0).getDate();var td=new Date(),today=td.getFullYear()+'-'+String(td.getMonth()+1).padStart(2,'0')+'-'+String(td.getDate()).padStart(2,'0');sL();gs('apiGetKalenderEvents',A.token,month,year).then(function(r){hL();var events=r.ok&&r.data?r.data:[];var evMap={};for(var i=0;i<events.length;i++){var d=events[i].date;if(!evMap[d])evMap[d]=[];evMap[d].push(events[i])}var day=1;for(var i=0;i<42;i++){if(i<first||day>daysInMonth){h+='<div class="kal-day other"><span class="num">&nbsp;</span></div>'}else{var dStr=year+'-'+String(month).padStart(2,'0')+'-'+String(day).padStart(2,'0');h+='<div class="kal-day'+(dStr===today?' today':'')+'"><span class="num">'+day+'</span>';if(evMap[dStr]){for(var j=0;j<Math.min(evMap[dStr].length,3);j++){var ev=evMap[dStr][j];h+='<span class="kal-ev '+ev.type+'" title="'+esc(ev.title)+' ('+esc(ev.time)+')">'+esc(ev.title)+'</span>'}}h+='</div>';day++}}document.getElementById('kalGrid').innerHTML=h}).catch(function(e){hL();document.getElementById('kalGrid').innerHTML='<p class="text-red-400 text-sm">Gagal: '+e.message+'</p>'})}
+function prevMonth(){A.kalMonth--;if(A.kalMonth<1){A.kalMonth=12;A.kalYear--}renderKalender(A.kalMonth,A.kalYear)}
+function nextMonth(){A.kalMonth++;if(A.kalMonth>12){A.kalMonth=1;A.kalYear++}renderKalender(A.kalMonth,A.kalYear)}
+/* === BACKUP === */
+function doBackup(){sL();gs('apiBackupData',A.token).then(function(r){hL();if(!r||!r.ok){toast(r.msg,'er');return}var bc=atob(r.data);var ba=new Uint8Array(bc.length);for(var i=0;i<bc.length;i++)ba[i]=bc.charCodeAt(i);var bl=new Blob([ba],{type:'application/json'});var u=URL.createObjectURL(bl);var a=document.createElement('a');a.href=u;a.download=r.fileName||'backup.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);toast('Backup berhasil didownload')}).catch(function(e){hL();toast('Gagal backup: '+e.message,'er')})}
+function doRestore(input){if(!input.files||!input.files[0])return;var reader=new FileReader();reader.onload=function(e){sL();var txt=e.target.result;var b64=btoa(unescape(encodeURIComponent(txt)));gs('apiRestoreData',A.token,b64).then(function(r){hL();if(r&&r.ok)toast(r.msg);else toast(r.msg,'er');input.value=''}).catch(function(er){hL();toast('Gagal restore: '+er.message,'er');input.value=''})};reader.readAsText(input.files[0])}
+/* === RAPOR PDF === */
+function downloadPdfRapor(){var kid=document.getElementById('filterNilaiKelas').value;if(!kid){toast('Pilih kelas dulu di filter','wr');return}var sem=prompt('Semester (1 atau 2. Kosongkan untuk semua):','');sem=sem?parseInt(sem):null;if(sem!==null&&(sem<1||sem>2)){toast('Semester harus 1 atau 2','wr');return}sL();gs('apiGetSiswa',A.token,kid).then(function(r){if(!r.ok||!r.data.length){hL();toast('Tidak ada siswa','wr');return}var proms=[];for(var i=0;i<r.data.length;i++){proms.push(gs('apiDownloadPdfRapor',A.token,r.data[i].ID,sem))}Promise.all(proms).then(function(results){hL();var ok=0;for(var i=0;i<results.length;i++){var res=results[i];if(res.ok){var bc=atob(res.data);var ba=new Uint8Array(bc.length);for(var j=0;j<bc.length;j++)ba[j]=bc.charCodeAt(j);var bl=new Blob([ba],{type:'application/pdf'});var u=URL.createObjectURL(bl);var a=document.createElement('a');a.href=u;a.download=res.fileName||('Rapor_'+i+'.pdf');document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);ok++}}toast(ok+' rapor berhasil didownload')}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function downloadExcelRapor(){var kid=document.getElementById('filterNilaiKelas').value;if(!kid){toast('Pilih kelas dulu di filter','wr');return}var sem=prompt('Semester (1 atau 2. Kosongkan untuk semua):','');sem=sem?parseInt(sem):null;if(sem!==null&&(sem<1||sem>2)){toast('Semester harus 1 atau 2','wr');return}sL();gs('apiGetSiswa',A.token,kid).then(function(r){if(!r.ok||!r.data.length){hL();toast('Tidak ada siswa','wr');return}var proms=[];for(var i=0;i<r.data.length;i++){proms.push(gs('apiDownloadExcelRapor',A.token,r.data[i].ID,sem))}Promise.all(proms).then(function(results){hL();var ok=0;for(var i=0;i<results.length;i++){var res=results[i];if(res.ok){var bc=atob(res.data);var ba=new Uint8Array(bc.length);for(var j=0;j<bc.length;j++)ba[j]=bc.charCodeAt(j);var bl=new Blob([ba],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});var u=URL.createObjectURL(bl);var a=document.createElement('a');a.href=u;a.download=res.fileName||('Rapor_'+i+'.xlsx');document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);ok++}}toast(ok+' rapor Excel berhasil didownload')}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+/* === SURAT === */
+function downloadSurat(type){sL();gs('apiDownloadTemplateSurat',A.token,type).then(function(r){hL();if(!r||!r.ok){toast(r.msg,'er');return}var bc=atob(r.data);var ba=new Uint8Array(bc.length);for(var i=0;i<bc.length;i++)ba[i]=bc.charCodeAt(i);var bl=new Blob([ba],{type:'application/pdf'});var u=URL.createObjectURL(bl);var a=document.createElement('a');a.href=u;a.download=r.fileName||('Surat_'+type+'.pdf');document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);toast('Surat berhasil didownload')}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+/* === KELOMPOK BELAJAR === */
+var KB = {
+  siswa: [], kelompok: [],
+  label: ['A','B','C','D','E','F','G'],
+  warna: ['#0D7C66','#E8A317','#7c3aed','#dc2626','#059669','#2563eb','#d97706'],
+  grad: ['from-teal-600 to-teal-700','from-amber-500 to-amber-600','from-violet-600 to-violet-700','from-red-500 to-red-600','from-emerald-600 to-emerald-700','from-blue-600 to-blue-700','from-amber-700 to-amber-800'],
+  icon: ['fa-users','fa-star','fa-crown','fa-rocket','fa-trophy','fa-gem','fa-medal'],
+  expanded: {}
+};
+function loadKelompok(){
+  var kid=document.getElementById('kbKelas').value;
+  if(!kid){
+    document.getElementById('kelompokCards').innerHTML='<div class="col-span-full flex flex-col items-center justify-center py-16 text-gray-400"><i class="fas fa-layer-group text-5xl mb-4 opacity-30"></i><p class="text-sm">Pilih kelas untuk menampilkan kelompok belajar</p></div>';
+    document.getElementById('kbInfo').textContent='';return
+  }
+  sL();
+  gs('apiGetSiswa',A.token,kid).then(function(r){
+    if(!r||!r.ok){hL();toast('Gagal load siswa','er');return}
+    KB.siswa=r.data||[];
+    gs('apiGetKelompok',A.token,{kelasId:kid}).then(function(r2){
+      hL();KB.kelompok=(r2.ok&&r2.data)?r2.data:[];renderKelompok()
+    }).catch(function(e2){hL();toast('Gagal: '+e2.message,'er')})
+  }).catch(function(e){hL();toast('Gagal: '+e.message,'er')})
+}
+function renderKelompok(){
+  var s=KB.siswa,k=KB.kelompok;
+  var grp={};for(var i=0;i<k.length;i++){var g=k[i].Kelompok||'1';if(!grp[g])grp[g]=[];grp[g].push(k[i])}
+  var ch='';
+  for(var g=1;g<=7;g++){
+    var mem=grp[String(g)]||[],cnt=mem.length,lc=0,pc=0,tn=0;
+    var mi='';for(var i=0;i<mem.length;i++){
+      if(mem[i].JK==='L')lc++;else pc++;tn+=Number(mem[i].Nilai)||0;
+      var jkbadge=mem[i].JK==='L'?'<span class="bg bg-l" style="font-size:10px;padding:1px 6px">L</span>':'<span class="bg bg-p" style="font-size:10px;padding:1px 6px">P</span>';
+      var opts='<option value="">- Pilih -</option>';
+      for(var j=0;j<s.length;j++)opts+='<option value="'+s[j].ID+'"'+(s[j].ID===mem[i].Siswa_ID?' selected':'')+'>'+esc(s[j].Nama_Siswa)+' ('+(s[j].Jenis_Kelamin||'-')+')</option>';
+      mi+='<tr><td class="text-xs py-1.5 px-2 text-gray-400">'+(i+1)+'</td>'+
+        '<td class="text-xs py-1.5 px-1"><select class="kbMemberSel w-full text-xs border border-surface-muted rounded-lg px-1.5 py-1 bg-white" data-sid="'+mem[i].Siswa_ID+'" data-grp="'+g+'" onchange="swapMember(this)">'+opts+'</select></td>'+
+        '<td class="text-xs py-1.5 px-2 text-center">'+jkbadge+'</td>'+
+        '<td class="text-xs py-1.5 px-2 font-mono text-center">'+(Number(mem[i].Nilai)||'-')+'</td>'+
+        '<td class="text-xs py-1.5 px-1 text-right"><button class="bt-s bg-transparent border-none text-gray-300 hover:text-red-500 cursor-pointer text-sm" onclick="removeFromGroup(\''+mem[i].Siswa_ID+'\',\''+g+'\')" title="Keluarkan"><i class="fas fa-times-circle"></i></button></td></tr>'
+    }
+    var avg=cnt>0?Math.round(tn/cnt*10)/10:0;
+    var expd=KB.expanded['g'+g]!==false;
+    ch+='<div class="bg-white rounded-xl border border-surface-muted overflow-hidden shadow-sm hover:shadow-md transition-shadow">'+
+      '<div class="bg-gradient-to-r '+KB.grad[(g-1)%7]+' px-5 py-3 flex items-center justify-between cursor-pointer" onclick="toggleGroup(\''+g+'\')">'+
+      '<div class="flex items-center gap-3"><div class="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center text-white"><i class="fas '+KB.icon[(g-1)%7]+'"></i></div>'+
+      '<div><h4 class="text-white font-bold text-sm">Kelompok '+KB.label[(g-1)%7]+'</h4><p class="text-white/70 text-xs">'+cnt+' siswa</p></div></div>'+
+      '<div class="flex items-center gap-3"><div class="text-right"><div class="flex gap-2 text-xs text-white/80"><span><i class="fas fa-mars mr-0.5"></i>'+lc+'</span><span><i class="fas fa-venus mr-0.5"></i>'+pc+'</span></div><div class="text-white/60 text-[10px]">Rata '+avg+'</div></div>'+
+      '<i class="fas fa-chevron-down text-white/60 text-xs transition-transform '+(expd?'':'rotate-180')+'"></i></div></div>'+
+      '<div class="'+(expd?'':'hidden')+'">'
+    if(cnt>0){
+      ch+='<div class="overflow-x-auto"><table class="w-full"><thead><tr class="bg-gray-50 text-gray-500 text-[10px] uppercase tracking-wider"><th class="py-2 px-2 text-left w-6">#</th><th class="py-2 px-2 text-left">Siswa</th><th class="py-2 px-2 text-center w-10">JK</th><th class="py-2 px-2 text-center w-14">Nilai</th><th class="py-2 px-2 text-center w-8"></th></tr></thead><tbody>'+mi+'</tbody></table></div>'
+    } else {
+      ch+='<div class="flex flex-col items-center py-6 text-gray-400"><i class="fas fa-user-plus text-xl mb-2 opacity-40"></i><p class="text-xs">Belum ada anggota</p></div>'
+    }
+    ch+='<div class="border-t border-dashed border-surface-muted px-4 py-2.5 flex items-center justify-between bg-gray-50/50">'+
+      '<span class="text-[11px] text-gray-400">'+(cnt>=5?'<i class="fas fa-check-circle text-green-500 mr-1"></i>Sudah cukup':'<i class="fas fa-info-circle text-amber-500 mr-1"></i>'+(5-cnt)+' lagi ideal')+'</span>'+
+      '<button class="bt-s bg-transparent border-none text-primary-600 hover:text-primary-800 text-xs font-semibold cursor-pointer" onclick="addToGroup(\''+g+'\')"><i class="fas fa-plus mr-1"></i>Tambah Anggota</button></div></div></div>'
+  }
+  document.getElementById('kelompokCards').innerHTML=ch;
+  document.getElementById('kbInfo').textContent='Total '+k.length+' siswa teralokasi ke '+Object.keys(grp).length+' kelompok';
+}
+function swapMember(el){
+  var newSid=el.value,oldSid=el.getAttribute('data-sid'),g=el.getAttribute('data-grp');
+  if(newSid===oldSid)return;
+  // Remove old student from this slot
+  for(var i=0;i<KB.kelompok.length;i++){if(KB.kelompok[i].Siswa_ID===oldSid&&KB.kelompok[i].Kelompok===g){KB.kelompok.splice(i,1);break}}
+  // Remove the new student from wherever they currently are
+  for(var i=KB.kelompok.length-1;i>=0;i--){if(KB.kelompok[i].Siswa_ID===newSid)KB.kelompok.splice(i,1)}
+  // Find student data
+  var ns=null;for(var i=0;i<KB.siswa.length;i++){if(KB.siswa[i].ID===newSid){ns=KB.siswa[i];break}}
+  if(ns)KB.kelompok.push({Kelas_ID:document.getElementById('kbKelas').value,Kelompok:g,No:'',Siswa_ID:ns.ID,NIS:ns.NIS||'',Nama_Siswa:ns.Nama_Siswa,JK:ns.Jenis_Kelamin,Kelas_Asal:ns.Nama_Kelas||'',Nilai:ns.Nilai||''})
+  renderKelompok()
+}
+function toggleGroup(g){KB.expanded['g'+g]=KB.expanded['g'+g]===false?true:false;renderKelompok()}
+function removeFromGroup(sid,g){
+  for(var i=0;i<KB.kelompok.length;i++){if(KB.kelompok[i].Siswa_ID===sid&&KB.kelompok[i].Kelompok===g){KB.kelompok.splice(i,1);break}}
+  renderKelompok()
+}
+function addToGroup(g){
+  var kmap={};for(var i=0;i<KB.kelompok.length;i++)kmap[KB.kelompok[i].Siswa_ID]=true;
+  var unassigned=[];for(var i=0;i<KB.siswa.length;i++){if(!kmap[KB.siswa[i].ID])unassigned.push(KB.siswa[i])}
+  if(!unassigned.length){toast('Semua siswa sudah teralokasi','wr');return}
+  var opts='';for(var i=0;i<unassigned.length;i++)opts+='<option value="'+unassigned[i].ID+'">'+esc(unassigned[i].Nama_Siswa)+' ('+(unassigned[i].Jenis_Kelamin||'')+')</option>';
+  var h='<form onsubmit="addToGroupSubmit(event,this,\''+g+'\')"><div class="p-2"><label class="fl text-sm mb-2">Pilih siswa untuk ditambahkan ke Kelompok '+KB.label[Number(g)-1]+'</label><select id="addToGroupSel" class="fi fsel mb-4" required>'+opts+'</select><div class="flex gap-3 justify-end"><button type="button" class="bt bt-o bt-s" onclick="cM()">Batal</button><button type="submit" class="bt bt-p bt-s"><i class="fas fa-plus"></i> Tambahkan</button></div></div></form>';
+  oM('Tambah Anggota Kelompok '+KB.label[Number(g)-1],h)
+}
+function addToGroupSubmit(e,f,g){e.preventDefault();var sid=document.getElementById('addToGroupSel').value;if(!sid)return;var s=null;for(var i=0;i<KB.siswa.length;i++){if(KB.siswa[i].ID===sid){s=KB.siswa[i];break}}if(s)KB.kelompok.push({Kelas_ID:document.getElementById('kbKelas').value,Kelompok:g,No:String(KB.kelompok.filter(function(r){return r.Kelompok===g}).length+1),Siswa_ID:s.ID,NIS:s.NIS||'',Nama_Siswa:s.Nama_Siswa,JK:s.Jenis_Kelamin,Kelas_Asal:s.Nama_Kelas||'',Nilai:s.Nilai||''});cM();renderKelompok()}
+function autoGenerateKelompok(){var kid=document.getElementById('kbKelas').value;if(!kid){toast('Pilih kelas dulu','wr');return}if(!KB.siswa.length){toast('Tidak ada siswa','wr');return}var sorted=KB.siswa.slice().sort(function(a,b){return(Number(b.Nilai)||0)-(Number(a.Nilai)||0)});var groups=[[],[],[],[],[],[],[]];var grpIdx=0,forward=true;for(var i=0;i<sorted.length;i++){groups[grpIdx].push(sorted[i]);if(forward){grpIdx++;if(grpIdx>=7){grpIdx=6;forward=false}}else{grpIdx--;if(grpIdx<0){grpIdx=0;forward=true}}}for(var g=0;g<7;g++){var hasL=false;for(var i=0;i<groups[g].length;i++){if(groups[g][i].Jenis_Kelamin==='L'){hasL=true;break}}if(!hasL&&groups[g].length>0){for(var g2=0;g2<7;g2++){if(g2===g)continue;for(var i=0;i<groups[g2].length;i++){if(groups[g2][i].Jenis_Kelamin==='L'){for(var j=0;j<groups[g].length;j++){if(groups[g][j].Jenis_Kelamin==='P'){var temp=groups[g][j];groups[g][j]=groups[g2][i];groups[g2][i]=temp;hasL=true;break}}if(hasL)break}}if(hasL)break}}}KB.kelompok=[];for(var g=0;g<7;g++){for(var i=0;i<groups[g].length;i++){KB.kelompok.push({Kelas_ID:kid,Kelompok:String(g+1),No:String(i+1),Siswa_ID:groups[g][i].ID,NIS:groups[g][i].NIS||'',Nama_Siswa:groups[g][i].Nama_Siswa,JK:groups[g][i].Jenis_Kelamin,Kelas_Asal:groups[g][i].Nama_Kelas||'',Nilai:groups[g][i].Nilai||''})}}KB.expanded={};renderKelompok();toast('Kelompok berhasil digenerate')}
+function saveKelompok(){var kid=document.getElementById('kbKelas').value;if(!kid){toast('Pilih kelas dulu','wr');return}if(!KB.kelompok.length){toast('Belum ada data kelompok','wr');return}sL();gs('apiSaveKelompok',A.token,{kelasId:kid,records:KB.kelompok}).then(function(r){hL();if(r&&r.ok){toast(r.msg);loadKelompok()}else toast(r.msg,'er')}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function cetakKelompokPDF(){
+  var kid=document.getElementById('kbKelas').value;
+  if(!kid){toast('Pilih kelas dulu','wr');return}
+  if(!KB.kelompok.length){toast('Belum ada data kelompok','wr');return}
+  var sel=document.getElementById('kbKelas');
+  var namaKelas=sel.selectedOptions&&sel.selectedOptions[0]?sel.selectedOptions[0].text:kid;
+  getProfilData().then(function(p){
+    var nama=p.Nama_Sekolah||'',alamat=p.Alamat||'',kota=p.Kota||'';
+    var kepsek=p.Kepala_Sekolah||'',nipKepsek=p.NIP_Kepsek||'',guru=p.Nama_Guru||'',nipGuru=p.NIP_Guru||'';
+    var logo=p.Logo_URL||'';
+    var logoHtml=logo?'<img src="'+logo+'" style="height:70px;margin-right:12px">':'';
+    var kelompokRows={};
+    for(var i=0;i<KB.kelompok.length;i++){
+      var r=KB.kelompok[i],g=r.Kelompok||'1';
+      if(!kelompokRows[g])kelompokRows[g]=[];
+      kelompokRows[g].push(r);
+    }
+    var h='<html><head><title>Kelompok Belajar</title><style>body{font-family:Arial,sans-serif;font-size:10pt;padding:30px 40px;color:#222}.hdr{display:flex;align-items:center;justify-content:center;margin-bottom:4px;font-size:10pt}.jdl{text-align:center;font-weight:bold;font-size:13pt;margin:3px 0}.sub{text-align:center;font-size:10pt;margin:2px 0}.grp{page-break-inside:avoid;margin-top:16px}.grp table{width:100%;border-collapse:collapse;margin-top:6px}th,td{border:1px solid #555;padding:4px 5px;text-align:left;vertical-align:top;font-size:9pt}th{background:#eee;font-weight:bold}.ttd{display:flex;justify-content:space-between;margin-top:50px;font-size:10pt}.ttd div{text-align:center;width:45%}@media print{body{padding:20px 30px}}</style></head><body>';
+    h+='<div class="hdr">'+logoHtml+'<div><b style="font-size:14pt">'+esc(nama)+'</b><br>'+esc(alamat)+' - '+esc(kota)+'</div></div>';
+    h+='<hr>';
+    h+='<div class="jdl">KELOMPOK BELAJAR</div>';
+    h+='<div class="sub">Kelas: '+esc(namaKelas)+'</div>';
+    for(var g in kelompokRows){
+      var rows=kelompokRows[g],lab=KB.label[(parseInt(g)-1)]||g;
+      h+='<div class="grp"><b>Kelompok '+lab+'</b> ('+rows.length+' siswa)';
+      h+='<table><thead><tr><th width="30">No</th><th>Nama Siswa</th><th>NIS</th><th>L/P</th><th>Kelas Asal</th><th width="50">Nilai</th></tr></thead><tbody>';
+      for(var i=0;i<rows.length;i++){
+        var r=rows[i];
+        h+='<tr><td style="text-align:center">'+(r.No||(i+1))+'</td><td>'+esc(r.Nama_Siswa||'')+'</td><td>'+esc(r.NIS||'')+'</td><td style="text-align:center">'+esc(r.JK||'')+'</td><td>'+esc(r.Kelas_Asal||'')+'</td><td style="text-align:center">'+esc(r.Nilai||'')+'</td></tr>';
+      }
+      h+='</tbody></table></div>';
+    }
+    h+='<div class="ttd"><div><p style="margin-bottom:50px">Mengetahui,<br>Kepala '+esc(p.Logo_URL?'Madrasah':'Sekolah')+'</p><p style="text-decoration:underline;font-weight:bold">'+esc(kepsek)+'</p><p>NIP. '+esc(nipKepsek)+'</p></div>';
+    h+='<div><p style="margin-bottom:50px">'+esc(kota||'')+', '+fmtTanggalIndo(tISO())+'<br>Guru Mata Pelajaran</p><p style="text-decoration:underline;font-weight:bold">'+esc(guru)+'</p><p>NIP. '+esc(nipGuru)+'</p></div></div>';
+    h+='</body></html>';
+    var w=window.open('','_blank');w.document.write(h);w.document.close();setTimeout(function(){w.print()},500)
+  });
+}
+function resetKelompok(){var kid=document.getElementById('kbKelas').value;if(!kid){toast('Pilih kelas dulu','wr');return}if(!confirm('Reset semua alokasi kelompok untuk kelas ini?'))return;KB.kelompok=[];KB.expanded={};renderKelompok()}
+function importExcelKelompok(input){
+  if(!input.files||!input.files[0])return;
+  var file=input.files[0];if(!file.name.match(/\.xlsx?$/i)){toast('Pilih file .xlsx','wr');return}
+  document.getElementById('kbInfo').textContent='Membaca file...';
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var wb=XLSX.read(e.target.result,{type:'array'}),sheetNames=wb.SheetNames;
+      var kelasMap={},sel=document.getElementById('kbKelas');
+      for(var i=0;i<sel.options.length;i++){if(sel.options[i].value)kelasMap[sel.options[i].text.trim()]=sel.options[i].value}
+      var allPromises=[],importCount=0;
+      for(var si=0;si<sheetNames.length;si++){
+        var sn=sheetNames[si],ws=wb.Sheets[sn],data=XLSX.utils.sheet_to_json(ws,{defval:''});
+        if(!data.length)continue;
+        var kelasId=kelasMap[sn]||kelasMap['X '+sn]||kelasMap[sn.replace(/^X\s*/,'')]||'';
+        if(!kelasId){document.getElementById('kbInfo').textContent='Skip sheet "'+sn+'": tidak cocok dengan kelas';continue}
+        var records=[];
+        for(var i=0;i<data.length;i++){
+          var r=data[i];
+          records.push({
+            Kelompok:String(r.Kelompok||r.kelompok||'').trim(),
+            No:String(r.No||r.no||'').trim(),Siswa_ID:'',
+            NIS:String(r.NIS||r.nis||'').trim(),
+            Nama_Siswa:String(r.Nama_Siswa||r.nama_siswa||r.Nama||r.nama||'').trim(),
+            JK:String(r.JK||r.jk||r.Jenis_Kelamin||r.jenis_kelamin||'').trim(),
+            Kelas_Asal:String(r.Kelas_Asal||r.kelas_asal||sn).trim(),
+            Nilai:String(r.Nilai||r.nilai||'').trim()
+          })
+        }
+        if(records.length){importCount+=records.length;allPromises.push(gs('apiImportKelompokExcel',A.token,{kelasId:kelasId,records:records}))}
+      }
+      if(!allPromises.length){document.getElementById('kbInfo').textContent='Tidak ada data sheet yang cocok dengan kelas';input.value='';return}
+      document.getElementById('kbInfo').textContent='Mengimport '+importCount+' data ke '+allPromises.length+' kelas...';
+      Promise.all(allPromises).then(function(results){
+        var ok=0;results.forEach(function(r){if(r&&r.ok)ok++});
+        document.getElementById('kbInfo').textContent=importCount+' data diimport ('+ok+'/'+allPromises.length+' kelas berhasil)';
+        toast(importCount+' data kelompok berhasil diimport');
+        // Refresh current class
+        loadKelompok()
+      }).catch(function(err){
+        document.getElementById('kbInfo').textContent='Gagal import';
+        toast('Gagal: '+err.message,'er')
+      })
+    }catch(ex){document.getElementById('kbInfo').textContent='Gagal baca Excel';toast('Gagal baca Excel: '+ex.message,'er')}
+    input.value=''
+  };
+  reader.readAsArrayBuffer(file)
+}
+function toDateVal(v){if(!v)return'';var p=v.split('-');if(p.length===3&&p[0].length===4)return v;var p=v.split('/');if(p.length===3)return p[2]+'-'+p[1]+'-'+p[0];return v}
+/* === LCKH === */
+var LCKH = { data: [] };
+function loadLCKH(){var m=new Date().getMonth()+1,mm=('0'+m).slice(-2);if(!A.lckhInit){document.getElementById('lckhBulan').value=mm;A.lckhInit=true}A.lckhPage=1;var b=document.getElementById('lckhBulan').value,t=document.getElementById('lckhTahun').value;if(!b||!t)return;sL();gs('apiGetLCKH',A.token,{bulan:b,tahun:t}).then(function(r){hL();LCKH.data=(r.ok&&r.data)?r.data:[];renderLCKH()}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function renderLCKH(){var d=LCKH.data,tb=document.getElementById('tbodyLCKH'),info=document.getElementById('lckhInfo');document.getElementById('chkAllLCKH').checked=false;if(!d.length){tb.innerHTML='<tr><td colspan="6" class="text-center text-gray-400 py-8">Belum ada data</td></tr>';info.textContent='0 entri';document.getElementById('lckhPagination').innerHTML='';return}var allH='';for(var i=0;i<d.length;i++){var r=d[i];allH+='<tr class="lckh-row" data-idx="'+i+'"><td><input type="checkbox" class="lckh-chk" data-idx="'+i+'"></td><td class="text-xs">'+(i+1)+'</td><td><input class="fi text-xs py-1.5 w-full lckh-keg" value="'+esc(r.Kegiatan||'')+'" data-idx="'+i+'"></td><td><input class="fi text-xs py-1.5 w-full lckh-pek" value="'+esc(r.Pekerjaan||'')+'" data-idx="'+i+'"></td><td><input type="date" class="fi text-xs py-1.5 w-full lckh-tgl" value="'+toDateVal(r.Tanggal)+'" data-idx="'+i+'"></td><td class="text-center"><button class="bt-s bg-transparent border-none text-blue-500 hover:text-blue-700 cursor-pointer mr-1" onclick="editLCKHRow('+i+')" title="Edit"><i class="fas fa-edit"></i></button><button class="bt-s bg-transparent border-none text-red-400 hover:text-red-600 cursor-pointer" onclick="deleteLCKHRow('+i+')" title="Hapus"><i class="fas fa-trash-alt"></i></button></td></tr>'}tb.innerHTML=allH;info.textContent=d.length+' entri';applyLCKHPaging()}
+function applyLCKHPaging(){var ps=Number(document.getElementById('lckhPageSize').value)||25,d=LCKH.data,rs=document.querySelectorAll('#tbodyLCKH .lckh-row'),tp=Math.ceil(d.length/ps)||1;A.lckhPage=Math.min(A.lckhPage||1,tp);var cp=A.lckhPage,st=(cp-1)*ps,en=Math.min(st+ps,d.length);for(var i=0;i<rs.length;i++)rs[i].style.display=(i>=st&&i<en)?'':'none';var el=document.getElementById('lckhPagination');if(!el)return;var h='<span class="text-xs text-gray-500">'+(st+1)+'-'+en+'/'+d.length+'</span>';h+='<button class="bt bt-s bt-o text-xs px-2 py-1 '+(cp<=1?'opacity-30 pointer-events-none':'')+'" onclick="A.lckhPage='+(cp-1)+';applyLCKHPaging()" '+(cp<=1?'disabled':'')+'><i class="fas fa-chevron-left"></i></button>';for(var p=Math.max(1,cp-2);p<=Math.min(tp,cp+2);p++)h+='<button class="bt bt-s text-xs px-2 py-1 '+(p===cp?'bt-p':'bt-o')+'" onclick="A.lckhPage='+p+';applyLCKHPaging()">'+p+'</button>';h+='<button class="bt bt-s bt-o text-xs px-2 py-1 '+(cp>=tp?'opacity-30 pointer-events-none':'')+'" onclick="A.lckhPage='+(cp+1)+';applyLCKHPaging()" '+(cp>=tp?'disabled':'')+'><i class="fas fa-chevron-right"></i></button>';el.innerHTML=h}
+function getLCKHData(){var rows=[];var kegs=document.querySelectorAll('#tbodyLCKH .lckh-keg'),peks=document.querySelectorAll('#tbodyLCKH .lckh-pek'),tgls=document.querySelectorAll('#tbodyLCKH .lckh-tgl');for(var i=0;i<kegs.length;i++){rows.push({No:String(i+1),Kegiatan:kegs[i].value,Pekerjaan:peks[i].value,Tanggal:tgls[i].value})}return rows}
+function saveLCKH(){var b=document.getElementById('lckhBulan').value,t=document.getElementById('lckhTahun').value;if(!b||!t){toast('Pilih bulan & tahun','wr');return}var rows=getLCKHData();if(!rows.length){toast('Tidak ada data','wr');return}sL();gs('apiSaveLCKH',A.token,rows).then(function(r){hL();if(r&&r.ok){toast(r.msg);loadLCKH()}else toast(r.msg,'er')}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function syncLCKHDOM(){var kegs=document.querySelectorAll('#tbodyLCKH .lckh-keg'),peks=document.querySelectorAll('#tbodyLCKH .lckh-pek'),tgls=document.querySelectorAll('#tbodyLCKH .lckh-tgl');if(!kegs.length)return;for(var i=0;i<kegs.length&&i<LCKH.data.length;i++){LCKH.data[i].Kegiatan=kegs[i].value;LCKH.data[i].Pekerjaan=peks[i].value;LCKH.data[i].Tanggal=tgls[i].value}}
+function generateLCKH(){var b=document.getElementById('lckhBulan').value,t=document.getElementById('lckhTahun').value;if(!b||!t){toast('Pilih bulan & tahun','wr');return}syncLCKHDOM();sL();gs('apiGenerateLCKH',A.token,parseInt(b),parseInt(t)).then(function(r){hL();if(r&&r.ok&&r.data){var newJids={},newKeys={};for(var i=0;i<r.data.length;i++){var row=r.data[i];var parts=row.Jurnal_ID?row.Jurnal_ID.split('|'):[];for(var j=0;j<parts.length;j++)if(parts[j])newJids[parts[j]]=true;newKeys[row.Tanggal+'|'+row.Kegiatan+'|'+row.Pekerjaan]=true}var keep=[];for(var i=0;i<LCKH.data.length;i++){var row=LCKH.data[i];var jid=(row.Jurnal_ID||'').trim();if(jid){var parts=jid.split('|');var remove=false;for(var j=0;j<parts.length;j++){if(newJids[parts[j]]){remove=true;break}}if(remove)continue}else if(newKeys[row.Tanggal+'|'+row.Kegiatan+'|'+row.Pekerjaan]){continue}keep.push(row)}LCKH.data=keep;for(var i=0;i<r.data.length;i++){r.data[i].No=String(LCKH.data.length+1+i);LCKH.data.push(r.data[i])}renderLCKH();toast(r.data.length+' entri baru dari jurnal (data lama diganti)')}else toast(r.msg||'Gagal generate','er')}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function addLCKHRow(){LCKH.data.push({No:String(LCKH.data.length+1),Kegiatan:'',Pekerjaan:'',Tanggal:''});renderLCKH()}
+function deleteLCKHRow(idx){LCKH.data.splice(idx,1);renderLCKH()}
+function toggleAllLCKH(el){var cbs=document.querySelectorAll('.lckh-chk');for(var i=0;i<cbs.length;i++)cbs[i].checked=el.checked}
+function deleteSelectedLCKH(){var cbs=document.querySelectorAll('.lckh-chk:checked');if(!cbs.length){toast('Pilih baris yang akan dihapus','wr');return}if(!confirm('Hapus '+cbs.length+' baris terpilih?'))return;var idxs=[];for(var i=0;i<cbs.length;i++)idxs.push(parseInt(cbs[i].getAttribute('data-idx')));idxs.sort(function(a,b){return b-a});for(var i=0;i<idxs.length;i++)LCKH.data.splice(idxs[i],1);renderLCKH()}
+function editLCKHRow(idx){var r=LCKH.data[idx];LCKH._editIdx=idx;document.getElementById('mLCKHkeg').value=r.Kegiatan||'';document.getElementById('mLCKHpek').value=r.Pekerjaan||'';document.getElementById('mLCKHtgl').value=toDateVal(r.Tanggal);document.getElementById('modalEditLCKH').classList.remove('hidden');document.getElementById('modalEditLCKH').classList.add('flex')}
+function saveEditLCKH(){var idx=LCKH._editIdx;if(idx===undefined)return;LCKH.data[idx].Kegiatan=document.getElementById('mLCKHkeg').value;LCKH.data[idx].Pekerjaan=document.getElementById('mLCKHpek').value;LCKH.data[idx].Tanggal=document.getElementById('mLCKHtgl').value;closeModal('modalEditLCKH');renderLCKH()}
+function closeModal(id){document.getElementById(id).classList.add('hidden');document.getElementById(id).classList.remove('flex')}
+/* === LKB === */
+var LKB = { data: [] };
+function loadLKB(){var m=new Date().getMonth()+1,mm=('0'+m).slice(-2);if(!A.lkbInit){document.getElementById('lkbBulan').value=mm;A.lkbInit=true}A.lkbPage=1;var b=document.getElementById('lkbBulan').value,t=document.getElementById('lkbTahun').value;if(!b||!t)return;sL();gs('apiGetLKB',A.token,{bulan:b,tahun:t}).then(function(r){hL();LKB.data=(r.ok&&r.data)?r.data:[];renderLKB()}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function renderLKB(){var d=LKB.data,tb=document.getElementById('tbodyLKB'),info=document.getElementById('lkbInfo');document.getElementById('chkAllLKB').checked=false;if(!d.length){tb.innerHTML='<tr><td colspan="6" class="text-center text-gray-400 py-8">Belum ada data</td></tr>';info.textContent='0 entri';document.getElementById('lkbPagination').innerHTML='';return}var allH='';for(var i=0;i<d.length;i++){var r=d[i];allH+='<tr class="lkb-row" data-idx="'+i+'"><td><input type="checkbox" class="lkb-chk" data-idx="'+i+'"></td><td class="text-xs">'+(i+1)+'</td><td><input class="fi text-xs py-1.5 w-full lkb-uraian" value="'+esc(r.Uraian_Tugas||'')+'" data-idx="'+i+'"></td><td><input type="number" class="fi text-xs py-1.5 w-16 lkb-vol" value="'+(r.Vol||0)+'" data-idx="'+i+'"></td><td><input class="fi text-xs py-1.5 w-full lkb-bukti" value="'+esc(r.Bukti_Dokumen||'')+'" data-idx="'+i+'"></td><td class="text-center"><button class="bt-s bg-transparent border-none text-blue-500 hover:text-blue-700 cursor-pointer mr-1" onclick="editLKBRow('+i+')" title="Edit"><i class="fas fa-edit"></i></button><button class="bt-s bg-transparent border-none text-red-400 hover:text-red-600 cursor-pointer" onclick="deleteLKBRow('+i+')" title="Hapus"><i class="fas fa-trash-alt"></i></button></td></tr>'}tb.innerHTML=allH;info.textContent=d.length+' entri';applyLKBPaging()}
+function applyLKBPaging(){var ps=Number(document.getElementById('lkbPageSize').value)||25,d=LKB.data,rs=document.querySelectorAll('#tbodyLKB .lkb-row'),tp=Math.ceil(d.length/ps)||1;A.lkbPage=Math.min(A.lkbPage||1,tp);var cp=A.lkbPage,st=(cp-1)*ps,en=Math.min(st+ps,d.length);for(var i=0;i<rs.length;i++)rs[i].style.display=(i>=st&&i<en)?'':'none';var el=document.getElementById('lkbPagination');if(!el)return;var h='<span class="text-xs text-gray-500">'+(st+1)+'-'+en+'/'+d.length+'</span>';h+='<button class="bt bt-s bt-o text-xs px-2 py-1 '+(cp<=1?'opacity-30 pointer-events-none':'')+'" onclick="A.lkbPage='+(cp-1)+';applyLKBPaging()" '+(cp<=1?'disabled':'')+'><i class="fas fa-chevron-left"></i></button>';for(var p=Math.max(1,cp-2);p<=Math.min(tp,cp+2);p++)h+='<button class="bt bt-s text-xs px-2 py-1 '+(p===cp?'bt-p':'bt-o')+'" onclick="A.lkbPage='+p+';applyLKBPaging()">'+p+'</button>';h+='<button class="bt bt-s bt-o text-xs px-2 py-1 '+(cp>=tp?'opacity-30 pointer-events-none':'')+'" onclick="A.lkbPage='+(cp+1)+';applyLKBPaging()" '+(cp>=tp?'disabled':'')+'><i class="fas fa-chevron-right"></i></button>';el.innerHTML=h}
+function getLKBData(){var rows=[];var uraians=document.querySelectorAll('#tbodyLKB .lkb-uraian'),vols=document.querySelectorAll('#tbodyLKB .lkb-vol'),buktis=document.querySelectorAll('#tbodyLKB .lkb-bukti');for(var i=0;i<uraians.length;i++){var b=parseInt(document.getElementById('lkbBulan').value)||0,t=parseInt(document.getElementById('lkbTahun').value)||0;rows.push({No:String(i+1),Uraian_Tugas:uraians[i].value,Vol:Number(vols[i].value)||0,Bukti_Dokumen:buktis[i].value,Bulan:b,Tahun:t})}return rows}
+function saveLKB(){var b=document.getElementById('lkbBulan').value,t=document.getElementById('lkbTahun').value;if(!b||!t){toast('Pilih bulan & tahun','wr');return}var rows=getLKBData();if(!rows.length){toast('Tidak ada data','wr');return}sL();gs('apiSaveLKB',A.token,rows).then(function(r){hL();if(r&&r.ok){toast(r.msg);loadLKB()}else toast(r.msg,'er')}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function syncLKBDOM(){var uraians=document.querySelectorAll('#tbodyLKB .lkb-uraian'),vols=document.querySelectorAll('#tbodyLKB .lkb-vol'),buktis=document.querySelectorAll('#tbodyLKB .lkb-bukti');if(!uraians.length)return;var b=document.getElementById('lkbBulan').value,t=document.getElementById('lkbTahun').value;for(var i=0;i<uraians.length&&i<LKB.data.length;i++){LKB.data[i].Uraian_Tugas=uraians[i].value;LKB.data[i].Vol=Number(vols[i].value)||0;LKB.data[i].Bukti_Dokumen=buktis[i].value;LKB.data[i].Bulan=b;LKB.data[i].Tahun=t}}
+function generateLKB(){var b=document.getElementById('lkbBulan').value,t=document.getElementById('lkbTahun').value;if(!b||!t){toast('Pilih bulan & tahun','wr');return}syncLKBDOM();var existUraian={};for(var i=0;i<LKB.data.length;i++)if(LKB.data[i].Uraian_Tugas)existUraian[LKB.data[i].Uraian_Tugas]=true;sL();gs('apiGenerateLKB',A.token,parseInt(b),parseInt(t)).then(function(r){hL();if(r&&r.ok&&r.data){var added=0;for(var i=0;i<r.data.length;i++){var row=r.data[i];if(!existUraian[row.Uraian_Tugas]){row.No=String(LKB.data.length+1+added);LKB.data.push(row);added++}}renderLKB();toast(added+' entri baru ditambahkan dari LCKH')}else toast(r.msg||'Gagal generate','er')}).catch(function(e){hL();toast('Gagal: '+e.message,'er')})}
+function deleteLKBRow(idx){LKB.data.splice(idx,1);renderLKB()}
+function addLKBRow(){var b=document.getElementById('lkbBulan').value,t=document.getElementById('lkbTahun').value;LKB.data.push({No:String(LKB.data.length+1),Uraian_Tugas:'',Vol:0,Bukti_Dokumen:'',Bulan:b,Tahun:t});renderLKB()}
+function toggleAllLKB(el){var cbs=document.querySelectorAll('.lkb-chk');for(var i=0;i<cbs.length;i++)cbs[i].checked=el.checked}
+function deleteSelectedLKB(){var cbs=document.querySelectorAll('.lkb-chk:checked');if(!cbs.length){toast('Pilih baris yang akan dihapus','wr');return}if(!confirm('Hapus '+cbs.length+' baris terpilih?'))return;var idxs=[];for(var i=0;i<cbs.length;i++)idxs.push(parseInt(cbs[i].getAttribute('data-idx')));idxs.sort(function(a,b){return b-a});for(var i=0;i<idxs.length;i++)LKB.data.splice(idxs[i],1);renderLKB()}
+function editLKBRow(idx){var r=LKB.data[idx];LKB._editIdx=idx;document.getElementById('mLKBuraian').value=r.Uraian_Tugas||'';document.getElementById('mLKBvol').value=r.Vol||0;document.getElementById('mLKBbukti').value=r.Bukti_Dokumen||'';document.getElementById('modalEditLKB').classList.remove('hidden');document.getElementById('modalEditLKB').classList.add('flex')}
+function saveEditLKB(){var idx=LKB._editIdx;if(idx===undefined)return;LKB.data[idx].Uraian_Tugas=document.getElementById('mLKBuraian').value;LKB.data[idx].Vol=Number(document.getElementById('mLKBvol').value)||0;LKB.data[idx].Bukti_Dokumen=document.getElementById('mLKBbukti').value;closeModal('modalEditLKB');renderLKB()}
+
+/* === CETAK / EXPORT LCKH & LKB === */
+var _profilCache=null;
+function getProfilData(){return new Promise(function(ok){if(_profilCache){ok(_profilCache);return}gs('apiGetProfil',A.token).then(function(r){if(r.ok&&r.data.ID)_profilCache=r.data;ok(_profilCache||{})}).catch(function(){ok({})})})}
+function fmtTanggalIndo(v){if(!v)return'-';var p=v.split('-');var mn=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];if(p.length===3)return parseInt(p[2])+' '+mn[parseInt(p[1])-1]+' '+p[0];p=v.split('/');if(p.length===3)return parseInt(p[0])+' '+mn[parseInt(p[1])-1]+' '+p[2];return v}
+function getNamaBulan(n){var mn=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];return mn[parseInt(n)-1]||n}
+function cetakLCKHPDF(){getProfilData().then(function(p){var b=document.getElementById('lckhBulan').value,t=document.getElementById('lckhTahun').value;var rows=getLCKHData();if(!rows.length){toast('Tidak ada data untuk dicetak','wr');return}var nama=p.Nama_Sekolah||'',alamat=p.Alamat||'',kota=p.Kota||'';
+var kepsek=p.Kepala_Sekolah||'',nipKepsek=p.NIP_Kepsek||'',guru=p.Nama_Guru||'',nipGuru=p.NIP_Guru||'',jabatan=p.Jabatan||'',pangkat=p.Pangkat||'',golRuang=p.Golongan_Ruang||'',logo=p.Logo_URL||'';
+var logoHtml=logo?'<img src="'+logo+'" style="height:70px;margin-right:12px">':'';
+var h='<html><head><title>LCKH</title><style>body{font-family:Arial,sans-serif;font-size:11pt;padding:30px 40px;color:#222}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid #555;padding:5px 6px;text-align:left;vertical-align:top}th{background:#eee;font-weight:bold;font-size:10pt}.hdr{display:flex;align-items:center;justify-content:center;margin-bottom:4px;font-size:10pt}.jdl{text-align:center;font-weight:bold;font-size:13pt;margin:3px 0}.sub{text-align:center;font-size:10pt;margin:2px 0}.info{font-size:10pt;margin-top:10px;line-height:1.6}.info b{display:inline-block;width:130px}.ttd{display:flex;justify-content:space-between;margin-top:50px;font-size:10pt}.ttd div{text-align:center;width:45%}@media print{body{padding:20px 30px}}</style></head><body>';
+h+='<div class="hdr">'+logoHtml+'<div><b style="font-size:14pt">'+esc(nama)+'</b><br>'+esc(alamat)+' - '+esc(kota)+'</div></div>';
+h+='<hr>';
+h+='<div class="jdl">LAPORAN CATATAN KEGIATAN HARIAN (LCKH)</div>';
+h+='<div class="sub">Bulan '+getNamaBulan(b)+' '+t+'</div>';
+h+='<div class="info"><b>Nama Guru</b>: '+esc(guru)+'<br><b>NIP</b>: '+esc(nipGuru)+'<br><b>Jabatan</b>: '+esc(jabatan)+'<br><b>Pangkat</b>: '+esc(pangkat)+'<br><b>Gol. Ruang</b>: '+esc(golRuang)+'</div>';
+h+='<table><thead><tr><th width="30">No</th><th>Kegiatan</th><th>Pekerjaan</th><th width="100">Tanggal</th></tr></thead><tbody>';
+for(var i=0;i<rows.length;i++){var r=rows[i];h+='<tr><td style="text-align:center">'+(i+1)+'</td><td>'+esc(r.Kegiatan||'')+'</td><td>'+esc(r.Pekerjaan||'')+'</td><td>'+fmtTanggalIndo(r.Tanggal)+'</td></tr>'}
+h+='</tbody></table>';
+h+='<div class="ttd"><div><p style="margin-bottom:50px">Kepala '+esc(p.Logo_URL?'Madrasah':'Sekolah')+'</p><p style="text-decoration:underline;font-weight:bold">'+esc(kepsek)+'</p><p>NIP. '+esc(nipKepsek)+'</p></div>';
+h+='<div><p style="margin-bottom:50px">Guru Mata Pelajaran</p><p style="text-decoration:underline;font-weight:bold">'+esc(guru)+'</p><p>NIP. '+esc(nipGuru)+'</p></div></div>';
+h+='</body></html>';
+var w=window.open('','_blank');w.document.write(h);w.document.close();setTimeout(function(){w.print()},500)})}
+function exportLCKHExcel(){getProfilData().then(function(p){var rows=getLCKHData();if(!rows.length){toast('Tidak ada data untuk di-export','wr');return}var wb=XLSX.utils.book_new();var b=document.getElementById('lckhBulan').value,t=document.getElementById('lckhTahun').value;var data=[['LAPORAN CATATAN KEGIATAN HARIAN (LCKH)'],['Bulan: '+getNamaBulan(b)+' '+t],[],['Nama Guru:',p.Nama_Guru||''],['NIP:',p.NIP_Guru||''],['Jabatan:',p.Jabatan||''],['Pangkat:',p.Pangkat||''],['Gol. Ruang:',p.Golongan_Ruang||''],[]];data.push(['No','Kegiatan','Pekerjaan','Tanggal']);for(var i=0;i<rows.length;i++){var r=rows[i];data.push([String(i+1),r.Kegiatan||'',r.Pekerjaan||'',r.Tanggal||''])}data.push([],['Mengetahui,','','Guru Mapel,'],['',''],[p.Kepala_Sekolah||'','',p.Nama_Guru||''],['NIP. '+(p.NIP_Kepsek||''),'','NIP. '+(p.NIP_Guru||'')]);var ws=XLSX.utils.aoa_to_sheet(data);ws['!cols']=[{wch:5},{wch:30},{wch:40},{wch:16}];XLSX.utils.book_append_sheet(wb,ws,'LCKH');XLSX.writeFile(wb,'LCKH_'+b+'_'+t+'.xlsx');toast('Excel di-download')})}
+
+function cetakLKBPDF(){getProfilData().then(function(p){var b=document.getElementById('lkbBulan').value,t=document.getElementById('lkbTahun').value;var rows=getLKBData();if(!rows.length){toast('Tidak ada data untuk dicetak','wr');return}var nama=p.Nama_Sekolah||'',alamat=p.Alamat||'',kota=p.Kota||'';
+var kepsek=p.Kepala_Sekolah||'',nipKepsek=p.NIP_Kepsek||'',guru=p.Nama_Guru||'',nipGuru=p.NIP_Guru||'',jabatan=p.Jabatan||'',logo=p.Logo_URL||'';
+var logoHtml=logo?'<img src="'+logo+'" style="height:70px;margin-right:12px">':'';
+var h='<html><head><title>LKB</title><style>body{font-family:Arial,sans-serif;font-size:11pt;padding:30px 40px;color:#222}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid #555;padding:5px 6px;text-align:left;vertical-align:top}th{background:#eee;font-weight:bold;font-size:10pt}.hdr{display:flex;align-items:center;justify-content:center;margin-bottom:4px;font-size:10pt}.jdl{text-align:center;font-weight:bold;font-size:13pt;margin:3px 0}.sub{text-align:center;font-size:10pt;margin:2px 0}.info{font-size:10pt;margin-top:10px;line-height:1.6}.info b{display:inline-block;width:130px}.ttd{display:flex;justify-content:space-between;margin-top:50px;font-size:10pt}.ttd div{text-align:center;width:45%}@media print{body{padding:20px 30px}}</style></head><body>';
+h+='<div class="hdr">'+logoHtml+'<div><b style="font-size:14pt">'+esc(nama)+'</b><br>'+esc(alamat)+' - '+esc(kota)+'</div></div>';
+h+='<hr>';
+h+='<div class="jdl">LAPORAN CAPAIAN KINERJA BULANAN (LKB)</div>';
+h+='<div class="sub">Bulan '+getNamaBulan(b)+' '+t+'</div>';
+h+='<div class="info"><b>Nama</b>: '+esc(guru)+'<br><b>Jabatan</b>: '+esc(jabatan)+'<br><b>Unit Kerja</b>: '+esc(nama)+'</div>';
+h+='<table><thead><tr><th width="30">No</th><th>Uraian Tugas / Kegiatan</th><th width="50">Vol</th><th>Bukti Dokumen</th></tr></thead><tbody>';
+for(var i=0;i<rows.length;i++){var r=rows[i];h+='<tr><td style="text-align:center">'+(i+1)+'</td><td>'+esc(r.Uraian_Tugas||'')+'</td><td style="text-align:center">'+(r.Vol||0)+'</td><td>'+esc(r.Bukti_Dokumen||'')+'</td></tr>'}
+h+='</tbody></table>';
+h+='<div class="ttd"><div><p style="margin-bottom:50px">Kepala '+esc(p.Logo_URL?'Madrasah':'Sekolah')+'</p><p style="text-decoration:underline;font-weight:bold">'+esc(kepsek)+'</p><p>NIP. '+esc(nipKepsek)+'</p></div>';
+h+='<div><p style="margin-bottom:50px">Guru Mata Pelajaran</p><p style="text-decoration:underline;font-weight:bold">'+esc(guru)+'</p><p>NIP. '+esc(nipGuru)+'</p></div></div>';
+h+='</body></html>';
+var w=window.open('','_blank');w.document.write(h);w.document.close();setTimeout(function(){w.print()},500)})}
+function exportLKBExcel(){getProfilData().then(function(p){var rows=getLKBData();if(!rows.length){toast('Tidak ada data untuk di-export','wr');return}var wb=XLSX.utils.book_new();var b=document.getElementById('lkbBulan').value,t=document.getElementById('lkbTahun').value;var data=[['LAPORAN CAPAIAN KINERJA BULANAN (LKB)'],['Bulan: '+getNamaBulan(b)+' '+t],[],['Nama:',p.Nama_Guru||''],['Jabatan:',p.Jabatan||''],['Unit Kerja:',p.Nama_Sekolah||''],[]];data.push(['No','Uraian Tugas / Kegiatan','Vol','Bukti Dokumen']);for(var i=0;i<rows.length;i++){var r=rows[i];data.push([String(i+1),r.Uraian_Tugas||'',r.Vol||0,r.Bukti_Dokumen||''])}data.push([],['Mengetahui,','','Guru Mapel,'],['',''],[p.Kepala_Sekolah||'','',p.Nama_Guru||''],['NIP. '+(p.NIP_Kepsek||''),'','NIP. '+(p.NIP_Guru||'')]);var ws=XLSX.utils.aoa_to_sheet(data);ws['!cols']=[{wch:5},{wch:40},{wch:6},{wch:30}];XLSX.utils.book_append_sheet(wb,ws,'LKB');XLSX.writeFile(wb,'LKB_'+b+'_'+t+'.xlsx');toast('Excel di-download')})}
+
+/* === CETAK / EXPORT JURNAL === */
+function getJurnalPeriode(){var s=document.getElementById('filterJurnalTanggal').value,e=document.getElementById('filterJurnalTanggal2').value;if(s&&e)return fmtTanggalIndo(s)+' s/d '+fmtTanggalIndo(e);if(s)return fmtTanggalIndo(s);if(e)return 's/d '+fmtTanggalIndo(e);return 'Semua Tanggal'}
+function cetakJurnalPDF(){getProfilData().then(function(p){var rows=A.djurnal||[];if(!rows.length){toast('Tidak ada data untuk dicetak','wr');return}var nama=p.Nama_Sekolah||'',alamat=p.Alamat||'',kota=p.Kota||'';
+var kepsek=p.Kepala_Sekolah||'',nipKepsek=p.NIP_Kepsek||'',guru=p.Nama_Guru||'',nipGuru=p.NIP_Guru||'',jabatan=p.Jabatan||'',pangkat=p.Pangkat||'',golRuang=p.Golongan_Ruang||'',logo=p.Logo_URL||'';
+var logoHtml=logo?'<img src="'+logo+'" style="height:70px;margin-right:12px">':'';
+var h='<html><head><title>Jurnal Mengajar</title><style>body{font-family:Arial,sans-serif;font-size:10pt;padding:30px 40px;color:#222}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid #555;padding:4px 5px;text-align:left;vertical-align:top}th{background:#eee;font-weight:bold;font-size:9pt}.hdr{display:flex;align-items:center;justify-content:center;margin-bottom:4px;font-size:10pt}.jdl{text-align:center;font-weight:bold;font-size:13pt;margin:3px 0}.sub{text-align:center;font-size:10pt;margin:2px 0}.info{font-size:10pt;margin-top:10px;line-height:1.6}.info b{display:inline-block;width:130px}.ttd{display:flex;justify-content:space-between;margin-top:50px;font-size:10pt}.ttd div{text-align:center;width:45%}@media print{body{padding:20px 30px}}</style></head><body>';
+h+='<div class="hdr">'+logoHtml+'<div><b style="font-size:14pt">'+esc(nama)+'</b><br>'+esc(alamat)+' - '+esc(kota)+'</div></div>';
+h+='<hr>';
+h+='<div class="jdl">JURNAL MENGAJAR</div>';
+h+='<div class="sub">Periode: '+esc(getJurnalPeriode())+'</div>';
+h+='<div class="info"><b>Nama Guru</b>: '+esc(guru)+'<br><b>NIP</b>: '+esc(nipGuru)+'<br><b>Jabatan</b>: '+esc(jabatan)+'<br><b>Pangkat</b>: '+esc(pangkat)+'<br><b>Gol. Ruang</b>: '+esc(golRuang)+'</div>';
+h+='<table><thead><tr><th width="30">No</th><th>Tanggal</th><th>Kelas</th><th>Mapel</th><th width="50">Jam</th><th>Materi</th><th>Kendala</th><th width="70">Kehadiran</th></tr></thead><tbody>';
+for(var i=0;i<rows.length;i++){var r=rows[i];h+='<tr><td style="text-align:center">'+(i+1)+'</td><td>'+fmtTanggalIndo(r.Tanggal)+'</td><td>'+esc(r.Nama_Kelas||'')+'</td><td>'+esc(r.Mata_Pelajaran||'')+'</td><td style="text-align:center">'+esc(r.Jam_Ke||'-')+'</td><td>'+esc(r.Materi||'')+'</td><td>'+esc(r.Kendala||'-')+'</td><td style="text-align:center">'+esc(r.Kehadiran_Siswa||'-')+'</td></tr>'}
+h+='</tbody></table>';
+h+='<div class="ttd"><div><p style="margin-bottom:50px">Mengetahui,<br>Kepala '+esc(p.Logo_URL?'Madrasah':'Sekolah')+'</p><p style="text-decoration:underline;font-weight:bold">'+esc(kepsek)+'</p><p>NIP. '+esc(nipKepsek)+'</p></div>';
+h+='<div><p style="margin-bottom:50px">'+esc(kota||'')+', '+fmtTanggalIndo(tISO())+'<br>Guru Mata Pelajaran</p><p style="text-decoration:underline;font-weight:bold">'+esc(guru)+'</p><p>NIP. '+esc(nipGuru)+'</p></div></div>';
+h+='</body></html>';
+var w=window.open('','_blank');w.document.write(h);w.document.close();setTimeout(function(){w.print()},500)})}
+function exportJurnalExcel(){getProfilData().then(function(p){var rows=A.djurnal||[];if(!rows.length){toast('Tidak ada data untuk di-export','wr');return}var wb=XLSX.utils.book_new();var data=[['JURNAL MENGAJAR'],['Periode: '+getJurnalPeriode()],[],['Nama Guru:',p.Nama_Guru||''],['NIP:',p.NIP_Guru||''],['Jabatan:',p.Jabatan||''],['Pangkat:',p.Pangkat||''],['Gol. Ruang:',p.Golongan_Ruang||''],[]];data.push(['No','Tanggal','Kelas','Mapel','Jam Ke','Materi','Kendala','Kehadiran']);for(var i=0;i<rows.length;i++){var r=rows[i];data.push([String(i+1),r.Tanggal||'',r.Nama_Kelas||'',r.Mata_Pelajaran||'',r.Jam_Ke||'-',r.Materi||'',r.Kendala||'-',r.Kehadiran_Siswa||'-'])}data.push([],['Mengetahui,','','','','','','',''],['Kepala Sekolah','','','','','','',''],['','','','','','','',(p.Kota||'')+', '+fmtTanggalIndo(tISO())],['Guru Mata Pelajaran','','','','','','',''],[p.Kepala_Sekolah||'','','','','','','',p.Nama_Guru||''],['NIP. '+(p.NIP_Kepsek||''),'','','','','','','NIP. '+(p.NIP_Guru||'')]);var ws=XLSX.utils.aoa_to_sheet(data);ws['!cols']=[{wch:5},{wch:14},{wch:14},{wch:22},{wch:8},{wch:35},{wch:25},{wch:14}];XLSX.utils.book_append_sheet(wb,ws,'Jurnal');XLSX.writeFile(wb,'Jurnal.xlsx');toast('Excel di-download')})}
+
+/* === PANDUAN PENGGUNAAN === */
+function openPanduan(){
+  var h='<div class="space-y-6 text-sm text-gray-700 leading-relaxed">'+
+    '<div class="bg-primary-50 border border-primary-200 rounded-xl p-4"><h4 class="font-bold text-primary-800 text-base mb-1"><i class="fas fa-book mr-2"></i>Panduan Penggunaan Teacher Dashboard</h4><p class="text-primary-600">Versi 1.0 — Dokumen ini menjelaskan cara mengoperasikan seluruh fitur sistem.</p></div>'+
+
+    '<div><h4 class="font-bold text-gray-800 text-base mb-2 flex items-center gap-2"><span class="w-7 h-7 rounded-lg bg-primary-600 text-white flex items-center justify-center text-xs font-bold">1</span> Login</h4>'+
+    '<ul class="list-disc pl-10 space-y-1"><li>Buka URL deploy yang diberikan, masukkan <b>Username</b> dan <b>Password</b></li><li>Akun default: <code class="bg-gray-100 px-1 rounded">admin</code> / <code class="bg-gray-100 px-1 rounded">admin123</code></li><li>Klik <b>Masuk</b>. Jika berhasil, halaman Dashboard akan muncul</li><li>Klik ikon logout di sidebar bawah untuk keluar</li></ul></div>'+
+
+    '<div><h4 class="font-bold text-gray-800 text-base mb-2 flex items-center gap-2"><span class="w-7 h-7 rounded-lg bg-primary-600 text-white flex items-center justify-center text-xs font-bold">2</span> Dashboard</h4>'+
+    '<ul class="list-disc pl-10 space-y-1"><li>Menampilkan ringkasan: jumlah siswa, kelas, absensi hari ini, rata-rata nilai</li><li>Grafik batang distribusi siswa per kelas (otomatis update)</li><li>Info tahun ajaran dan semester diambil dari menu Pengaturan</li></ul></div>'+
+
+    '<div><h4 class="font-bold text-gray-800 text-base mb-2 flex items-center gap-2"><span class="w-7 h-7 rounded-lg bg-primary-600 text-white flex items-center justify-center text-xs font-bold">3</span> Data Kelas</h4>'+
+    '<ul class="list-disc pl-10 space-y-1"><li><b>Tambah:</b> Klik "Tambah Kelas", isi nama, tingkat (10/11/12), jurusan, tahun ajaran, wali kelas</li><li><b>Edit:</b> Klik ikon pensil pada baris data</li><li><b>Hapus:</b> Klik ikon hapus, konfirmasi di dialog yang muncul</li><li>Kolom "Jml" menampilkan jumlah siswa terkait secara otomatis</li></ul></div>'+
+
+    '<div><h4 class="font-bold text-gray-800 text-base mb-2 flex items-center gap-2"><span class="w-7 h-7 rounded-lg bg-primary-600 text-white flex items-center justify-center text-xs font-bold">4</span> Data Siswa</h4>'+
+    '<ul class="list-disc pl-10 space-y-1"><li><b>Tambah Satu:</b> Klik "Tambah", isi NIS, NISN, nama, L/P, pilih kelas, dll</li><li><b>Upload Massal CSV / Excel:</b> Klik "Upload Data" → Download Template (CSV atau Excel) → Isi data sesuai format → Upload file</li><li><b>Format:</b> <code class="bg-gray-100 px-1 rounded text-xs">NIS, NISN, Nama_Siswa, Jenis_Kelamin, Nama_Kelas, Alamat, Telepon, Email, Nama_Ortu</code></li><li><b>Penting:</b> Nama_Kelas harus <u>persis sama</u> dengan yang terdaftar di Data Kelas</li><li>Gunakan filter kelas dan kolom pencarian untuk menemukan siswa</li></ul></div>'+
+
+    '<div><h4 class="font-bold text-gray-800 text-base mb-2 flex items-center gap-2"><span class="w-7 h-7 rounded-lg bg-primary-600 text-white flex items-center justify-center text-xs font-bold">5</span> Jadwal Mengajar</h4>'+
+    '<ul class="list-disc pl-10 space-y-1"><li>Tambah jadwal: pilih hari, kelas, mapel, jam mulai & selesai, ruangan</li><li>Filter berdasarkan hari untuk mempersempit tampilan</li><li>Data otomatis diurutkan berdasarkan hari dan jam</li></ul></div>'+
+
+    '<div><h4 class="font-bold text-gray-800 text-base mb-2 flex items-center gap-2"><span class="w-7 h-7 rounded-lg bg-primary-600 text-white flex items-center justify-center text-xs font-bold">6</span> Absensi</h4>'+
+    '<ul class="list-disc pl-10 space-y-1"><li><b>Input:</b> Pilih tanggal → pilih kelas → isi nama mapel → pilih status (H/S/I/A) per siswa → klik "Simpan"</li><li>Isi keterangan opsional di kolom "Ket." jika ada (misal: sakit demam)</li><li><b>Riwayat:</b> Filter berdasarkan tanggal dan/atau kelas</li><li><b>Download PDF:</b> Set filter dulu, lalu klik "Download PDF" untuk mencetak laporan absensi</li></ul></div>'+
+
+    '<div><h4 class="font-bold text-gray-800 text-base mb-2 flex items-center gap-2"><span class="w-7 h-7 rounded-lg bg-primary-600 text-white flex items-center justify-center text-xs font-bold">7</span> Nilai</h4>'+
+    '<ul class="list-disc pl-10 space-y-1"><li><b>Tambah:</b> Pilih kelas → pilih siswa (dropdown muncul setelah kelas dipilih) → isi mapel, kategori, nilai, KKM</li><li>Kategori: Pengetahuan, Keterampilan, Ulangan, Tugas</li><li>Status "Tuntas/Belum Tuntas" otomatis dihitung dari Nilai vs KKM</li><li><b>Filter:</b> Bisa filter per kelas, kata kunci mapel, dan kategori</li><li><b>Download PDF:</b> Set filter dulu, klik "Download PDF" untuk cetak rapor nilai</li></ul></div>'+
+
+    '<div><h4 class="font-bold text-gray-800 text-base mb-2 flex items-center gap-2"><span class="w-7 h-7 rounded-lg bg-primary-600 text-white flex items-center justify-center text-xs font-bold">8</span> Jurnal Mengajar</h4>'+
+    '<ul class="list-disc pl-10 space-y-1"><li>Isi: tanggal, kelas, mapel, jam ke, materi, deskripsi kegiatan, kendala, solusi, kehadiran siswa</li><li>Filter berdasarkan kelas dan tanggal</li><li><b>Download PDF:</b> Klik "Download PDF" untuk cetak jurnal (sesuai filter aktif)</li></ul></div>'+
+
+    '<div><h4 class="font-bold text-gray-800 text-base mb-2 flex items-center gap-2"><span class="w-7 h-7 rounded-lg bg-primary-600 text-white flex items-center justify-center text-xs font-bold">9</span> Profil Sekolah</h4>'+
+    '<ul class="list-disc pl-10 space-y-1"><li>Edit informasi sekolah: nama, alamat, NPSN, kota, provinsi, telepon, kepala sekolah, guru, logo</li><li>Data profil ini yang muncul di header setiap dokumen PDF</li></ul></div>'+
+
+    '<div><h4 class="font-bold text-gray-800 text-base mb-2 flex items-center gap-2"><span class="w-7 h-7 rounded-lg bg-primary-600 text-white flex items-center justify-center text-xs font-bold">10</span> Pengaturan</h4>'+
+    '<ul class="list-disc pl-10 space-y-1"><li><b>Nama Aplikasi:</b> Mengubah nama yang tampil di sidebar</li><li><b>Tahun Ajaran & Semester:</b> Digunakan di dashboard dan dokumen PDF</li><li><b>KKM Default:</b> Nilai KKM yang otomatis terisi saat input nilai baru</li></ul></div>'+
+
+    '<div><h4 class="font-bold text-gray-800 text-base mb-2 flex items-center gap-2"><span class="w-7 h-7 rounded-lg bg-primary-600 text-white flex items-center justify-center text-xs font-bold">11</span> Activity Log</h4>'+
+    '<ul class="list-disc pl-10 space-y-1"><li>Mencatat 100 aktivitas terakhir (login, tambah, edit, hapus data)</li><li>Menampilkan waktu, user ID, jenis aksi, dan deskripsi</li></ul></div>'+
+
+    '<div class="bg-accent-50 border border-accent-200 rounded-xl p-4"><h4 class="font-bold text-accent-700 mb-1"><i class="fas fa-lightbulb mr-1"></i> Tips</h4><ul class="list-disc pl-5 text-accent-800 space-y-1"><li>Sebelum upload CSV, pastikan kelas sudah dibuat di menu Data Kelas</li><li>Gunakan filter sebelum download PDF agar laporan sesuai yang diinginkan</li><li>Sesi login berlaku 8 jam, setelah itu harus login ulang</li><li>File PDF di-generate otomatis oleh sistem dan langsung terdownload ke perangkat</li></ul></div>'+
+
+    '</div>';
+  oM('Panduan Penggunaan',h);
+}
+
+/* === INIT === */
+function init(){
+  if(!A.token){document.getElementById('loginPage').classList.remove('hidden');document.getElementById('appPage').classList.add('hidden');return}
+  gs('apiCheckAuth',A.token).then(function(r){
+    if(r&&r.ok){A.user=r.user;enterApp()}
+    else{A.token='';localStorage.removeItem('td_token');document.getElementById('loginPage').classList.remove('hidden');document.getElementById('appPage').classList.add('hidden')}
+  }).catch(function(){A.token='';localStorage.removeItem('td_token');document.getElementById('loginPage').classList.remove('hidden');document.getElementById('appPage').classList.add('hidden')});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+</script>
+
+</body>
+</html>
