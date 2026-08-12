@@ -1,9 +1,21 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { normalizePlan, canUsePro, canUsePremium } from "@/lib/useUserPlan";
+import { isAdminRole, deriveRoleLabel, ROLE_LABEL } from "@/lib/plan-helpers";
+import UserMenu from "@/components/UserMenu";
+import type { Plan } from "@/lib/useUserPlan";
 
-type MenuItem = { label: string; icon: string; href: string; adminOnly?: boolean };
+type MenuItem = {
+  label: string;
+  icon: string;
+  href: string;
+  adminOnly?: boolean;
+  minPlan?: "pro" | "premium";
+};
 
 const menuItems: { section: string; items: MenuItem[] }[] = [
   {
@@ -16,35 +28,47 @@ const menuItems: { section: string; items: MenuItem[] }[] = [
     ],
   },
   {
-    section: "Akademik",
+    section: "Presensi & Jurnal",
     items: [
       { label: "Absensi", icon: "fa-clipboard-check", href: "/absensi" },
       { label: "Rekap Absensi", icon: "fa-chart-pie", href: "/rekap-absensi" },
-      { label: "Nilai", icon: "fa-chart-bar", href: "/nilai" },
-      { label: "Rekap Nilai", icon: "fa-table-list", href: "/rekap-nilai" },
-      { label: "Kelompok Belajar", icon: "fa-layer-group", href: "/kelompok" },
-      { label: "Rapor", icon: "fa-graduation-cap", href: "/rapor" },
+      { label: "Cetak Presensi", icon: "fa-print", href: "/rekap-absensi?cetak=1" },
       { label: "Jurnal Mengajar", icon: "fa-book-open", href: "/jurnal" },
+    ],
+  },
+  {
+    section: "Akademik",
+    items: [
+      { label: "Nilai", icon: "fa-chart-bar", href: "/nilai", minPlan: "pro" },
+      { label: "Rekap Nilai", icon: "fa-table-list", href: "/rekap-nilai", minPlan: "pro" },
+      { label: "Kelompok Belajar", icon: "fa-layer-group", href: "/kelompok", minPlan: "pro" },
+    ],
+  },
+  {
+    section: "Laporan Pegawai",
+    items: [
+      { label: "LCKH", icon: "fa-clipboard-list", href: "/lckh", minPlan: "premium" },
+      { label: "LKB", icon: "fa-file-alt", href: "/lkb", minPlan: "premium" },
     ],
   },
   {
     section: "Sistem",
     items: [
-      { label: "Kalender", icon: "fa-calendar", href: "/kalender" },
-      { label: "LCKH", icon: "fa-clipboard-list", href: "/lckh", adminOnly: true },
-      { label: "LKB", icon: "fa-file-alt", href: "/lkb", adminOnly: true },
-      { label: "Template Surat", icon: "fa-envelope", href: "/surat" },
-      { label: "Langganan", icon: "fa-crown", href: "/subscription" },
+      { label: "Kelola User", icon: "fa-users-cog", href: "/users", adminOnly: true },
+      { label: "Profil Sekolah", icon: "fa-school", href: "/profil" },
       { label: "Pengaturan", icon: "fa-cog", href: "/settings" },
+      { label: "Activity Log", icon: "fa-history", href: "/log", adminOnly: true },
+      { label: "Kalender", icon: "fa-calendar", href: "/kalender" },
+      { label: "Langganan", icon: "fa-crown", href: "/subscription" },
       { label: "FAQ", icon: "fa-circle-question", href: "/faq" },
     ],
   },
   {
-    section: "Admin",
+    section: "Dokumen",
     items: [
-      { label: "Profil Sekolah", icon: "fa-school", href: "/profil", adminOnly: true },
+      { label: "Template Surat", icon: "fa-envelope", href: "/surat" },
+      { label: "Panduan", icon: "fa-book", href: "/panduan" },
       { label: "Tagihan", icon: "fa-credit-card", href: "/billing", adminOnly: true },
-      { label: "Activity Log", icon: "fa-history", href: "/log", adminOnly: true },
     ],
   },
 ];
@@ -57,17 +81,26 @@ export default function Sidebar() {
     nama: "Admin",
     role: "Admin",
   });
-  const isAdmin = user.role === "Admin";
+  const [plan, setPlan] = useState<Plan>("gratis");
+  const isAdmin = isAdminRole(user.role);
+  const roleLabel = ROLE_LABEL[deriveRoleLabel(user.role, plan)];
 
   useEffect(() => {
     fetch("/api/auth/check")
       .then((r) => r.json())
       .then((r) => {
-        if (r.ok && r.data?.user)
+        if (r.ok && r.data?.user) {
           setUser({ nama: r.data.user.nama, role: r.data.user.role });
+          setPlan(normalizePlan(r.data.user.plan));
+        }
       })
       .catch(() => {});
   }, []);
+
+  function visible(item: MenuItem): boolean {
+    if (item.adminOnly && !isAdmin) return false;
+    return true;
+  }
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -94,54 +127,56 @@ export default function Sidebar() {
             </div>
             <div>
               <h2 className="text-white font-bold text-base leading-tight">
-                Teacher Dashboard
+                Jurnal Guru
               </h2>
-              <p className="text-gray-500 text-xs">Sistem Manajemen</p>
+              <p className="text-gray-500 text-xs">Administrasi Guru &amp; Kelas</p>
             </div>
           </div>
         </div>
 
         <nav className="flex-1 py-4 overflow-y-auto">
           {menuItems
-            .filter((group) =>
-              group.items.some(
-                (item) => !item.adminOnly || isAdmin
-              )
-            )
+            .filter((group) => group.items.some(visible))
             .map((group) => {
-              const items = group.items.filter((item) => !item.adminOnly || isAdmin);
+              const items = group.items.filter(visible);
               if (items.length === 0) return null;
               return (
-              <div key={group.section}>
-                <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider px-8 mb-2 mt-4 first:mt-0">
-                  {group.section}
-                </p>
-                {items.map((item) => {
-                  const active = pathname === item.href;
-                  return (
-                    <div
-                      key={item.href}
-                      onClick={() => {
-                        router.push(item.href);
-                        setOpen(false);
-                      }}
-                      className={`flex items-center gap-3 px-6 py-2.5 mx-3 rounded-lg cursor-pointer transition-all duration-200 text-sm font-medium border-l-3 border-transparent ${
-                        active
-                          ? "bg-[#2D4055] text-white border-l-[#E8A317]"
-                          : "text-[#94a3b8] hover:bg-[#243447] hover:text-[#e2e8f0]"
-                      }`}
-                    >
-                      <i className={`fas ${item.icon} w-5 text-center text-sm`}></i>
-                      <span>{item.label}</span>
-                    </div>
-                  );
-                })}
-              </div>
+                <div key={group.section}>
+                  <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider px-8 mb-2 mt-4 first:mt-0">
+                    {group.section}
+                  </p>
+                  {items.map((item) => {
+                    const active = pathname === item.href;
+                    const locked = !isAdmin && !!item.minPlan && !(item.minPlan === "premium" ? canUsePremium(plan) : canUsePro(plan));
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setOpen(false)}
+                        aria-current={active ? "page" : undefined}
+                        aria-label={locked ? `${item.label} (terkunci, butuh upgrade)` : item.label}
+                        className={`flex items-center gap-3 px-6 py-2.5 mx-3 rounded-lg cursor-pointer transition-all duration-200 text-sm font-medium border-l-3 border-transparent ${
+                          active
+                            ? "bg-[#2D4055] text-white border-l-[#E8A317]"
+                            : "text-[#94a3b8] hover:bg-[#243447] hover:text-[#e2e8f0]"
+                        }`}
+                      >
+                        <i className={`fas ${item.icon} w-5 text-center text-sm ${locked ? "opacity-70" : ""}`}></i>
+                        <span className="flex-1">{item.label}</span>
+                        {locked && (
+                          <span className="flex items-center gap-1 text-[10px] font-bold bg-[#E8A317]/15 text-[#E8A317] px-1.5 py-0.5 rounded">
+                            <i className="fas fa-lock text-[9px]"></i> {item.minPlan === "premium" ? "49K" : "29K"}
+                          </span>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
               );
             })}
         </nav>
 
-        <div className="p-4 border-t border-white/10">
+        <div className="md:hidden p-4 border-t border-white/10">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-[#0D7C66] flex items-center justify-center text-white font-bold text-sm">
               {user.nama.charAt(0).toUpperCase()}
@@ -150,7 +185,9 @@ export default function Sidebar() {
               <p className="text-white text-sm font-semibold truncate">
                 {user.nama}
               </p>
-              <p className="text-gray-500 text-xs capitalize">{user.role}</p>
+              <p className="text-gray-500 text-xs capitalize">
+                {roleLabel}
+              </p>
             </div>
             <button
               onClick={handleLogout}
@@ -161,22 +198,27 @@ export default function Sidebar() {
             </button>
           </div>
         </div>
+        <div className="hidden md:block p-4 border-t border-white/10">
+          <UserMenu align="left" up />
+        </div>
       </aside>
 
       {/* Mobile Header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-14 bg-white border-b border-[#E8E4DC] z-20 flex items-center px-4 gap-3">
+      <div className="md:hidden fixed top-0 left-0 right-0 h-14 bg-white border-b border-[#E8E4DC] z-30 flex items-center px-4 gap-3">
         <button
           onClick={() => setOpen(true)}
           className="w-10 h-10 rounded-lg bg-[#F5F3EF] border border-[#E8E4DC] flex items-center justify-center text-gray-600 cursor-pointer"
+          aria-label="Buka menu"
         >
           <i className="fas fa-bars text-base"></i>
         </button>
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 flex-1">
           <div className="w-9 h-9 bg-gradient-to-br from-[#0D7C66] to-[#0A6352] rounded-lg flex items-center justify-center">
             <i className="fas fa-graduation-cap text-white text-sm"></i>
           </div>
           <span className="font-bold text-[15px] text-[#1A2332]">Jurnal Guru</span>
         </div>
+        <UserMenu />
       </div>
     </>
   );

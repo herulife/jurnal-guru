@@ -1,8 +1,19 @@
 {
-  "mcpServers": {
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "AGENTS.md",
+    ".agents/session-backup.md",
+    ".agents/product-marketing.md"
+  ],
+  "mcp": {
     "playwright": {
-      "command": "npx",
-      "args": ["@playwright/mcp@latest"]
+      "type": "local",
+      "command": ["npx", "@playwright/mcp@latest"]
+    }
+  },
+  "provider": {
+    "openrouter": {
+      "apiKey": "sk-or-REPLACE_VIA_ENV"
     }
   }
 }

@@ -9,7 +9,21 @@ export async function api<T = unknown>(
       headers: { "Content-Type": "application/json" },
       ...options,
     });
-    return res.json();
+    const json = (await res.json().catch(() => ({}))) as {
+      ok?: boolean;
+      data?: T;
+      msg?: string;
+    };
+    if (res.status === 401 && path !== "/api/auth/login" && path !== "/api/auth/check") {
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
+    }
+    return {
+      ok: json.ok ?? res.ok,
+      data: json.data,
+      msg: json.msg,
+    };
   } catch {
     return { ok: false, msg: "Network error" };
   }

@@ -1,4 +1,5 @@
-import { requireAuth, AuthError, addLog } from "@/lib/auth";
+import { requireAuth, scopeUserId, AuthError, addLog } from "@/lib/auth";
+import { requirePlan } from "@/lib/plans";
 import { db } from "@/db";
 import { lkb, lckh } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -8,11 +9,14 @@ import { apiError, apiOk, apiServerError } from "@/lib/utils";
 export async function GET(req: Request) {
   try {
     const session = await requireAuth();
+    await requirePlan(session.role, session.id, "premium");
     const url = new URL(req.url);
     const bulan = url.searchParams.get("bulan");
     const tahun = url.searchParams.get("tahun");
-
-    let rows = await db.select().from(lkb).all();
+    const scope = scopeUserId(session.role, session.id);
+    let rows = scope
+      ? await db.select().from(lkb).where(eq(lkb.userId, scope)).all()
+      : await db.select().from(lkb).all();
     if (bulan) rows = rows.filter((r) => String(r.bulan) === String(bulan).padStart(2, "0"));
     if (tahun) rows = rows.filter((r) => String(r.tahun) === String(tahun));
     return apiOk(rows);
@@ -26,13 +30,17 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await requireAuth();
+    await requirePlan(session.role, session.id, "premium");
     const body = await req.json();
     const records = body.records;
     const { action, bulan, tahun } = body;
+    const scope = scopeUserId(session.role, session.id);
 
     if (action === "generate") {
       // Generate dari LCKH per bulan/tahun
-      const lckhRows = await db.select().from(lckh).all();
+      const lckhRows = scope
+        ? await db.select().from(lckh).where(eq(lckh.userId, scope)).all()
+        : await db.select().from(lckh).all();
       const grouped: Record<string, { kegiatan: string; pekerjaan: string; count: number }> = {};
       for (const r of lckhRows) {
         const d = r.tanggal || "";
@@ -58,7 +66,9 @@ export async function POST(req: Request) {
     if (!Array.isArray(records)) return apiError("Data tidak lengkap");
 
     // Hapus sesuai filter bulan/tahun lalu simpan
-    let toDelete = await db.select().from(lkb).all();
+    let toDelete = scope
+      ? await db.select().from(lkb).where(eq(lkb.userId, scope)).all()
+      : await db.select().from(lkb).all();
     if (bulan) toDelete = toDelete.filter((r) => String(r.bulan) === String(bulan).padStart(2, "0"));
     if (tahun) toDelete = toDelete.filter((r) => String(r.tahun) === String(tahun));
     for (const r of toDelete) await db.delete(lkb).where(eq(lkb.id, r.id));
@@ -66,6 +76,7 @@ export async function POST(req: Request) {
     if (records.length) {
       const rows = records.map((r: Record<string, unknown>) => ({
         id: r.id && typeof r.id === "string" && r.id.startsWith("tmp-") ? uuidv4() : String(r.id || uuidv4()),
+        userId: session.id,
         no: String(r.no || ""),
         uraianTugas: String(r.uraianTugas || ""),
         vol: Number(r.vol) || 0,

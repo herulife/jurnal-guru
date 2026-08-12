@@ -1,15 +1,30 @@
-import { requireAuth, AuthError } from "@/lib/auth";
+import { requireAuth, scopeUserId, isAdminRole, AuthError } from "@/lib/auth";
 import { db } from "@/db";
 import { dataSiswa, dataKelas, absensi, nilai, settings } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { getUserPlan, canAccess } from "@/lib/plans";
+import { PLAN_RANK } from "@/lib/plan-helpers";
 import { apiError, apiOk, apiServerError, todayISO } from "@/lib/utils";
 
 export async function GET() {
   try {
     const session = await requireAuth();
-    const siswaCount = await db.select().from(dataSiswa).all();
-    const kelasCount = await db.select().from(dataKelas).all();
-    const absenAll = await db.select().from(absensi).all();
-    const nilaiAll = await db.select().from(nilai).all();
+    const scope = scopeUserId(session.role, session.id);
+    const siswaCount = scope
+      ? await db.select().from(dataSiswa).where(eq(dataSiswa.userId, scope)).all()
+      : await db.select().from(dataSiswa).all();
+    const kelasCount = scope
+      ? await db.select().from(dataKelas).where(eq(dataKelas.userId, scope)).all()
+      : await db.select().from(dataKelas).all();
+    const absenAll = scope
+      ? await db.select().from(absensi).where(eq(absensi.userId, scope)).all()
+      : await db.select().from(absensi).all();
+    const nilaiAllowed = isAdminRole(session.role) || (await canAccess(session.id, "pro"));
+    const nilaiAll = nilaiAllowed
+      ? scope
+        ? await db.select().from(nilai).where(eq(nilai.userId, scope)).all()
+        : await db.select().from(nilai).all()
+      : [];
     const setRows = await db.select().from(settings).all();
     const setMap: Record<string, string> = {};
     for (const r of setRows) setMap[r.key] = r.value || "";
@@ -41,10 +56,11 @@ export async function GET() {
       totalSiswa: siswaCount.length,
       totalKelas: kelasCount.length,
       absenHariIni,
-      rataNilai,
+      rataNilai: nilaiAllowed ? rataNilai : null,
       distPerKelas,
       totalAbsensi: absenAll.length,
-      totalNilai: nilaiAll.length,
+      totalNilai: nilaiAllowed ? nilaiAll.length : null,
+      nilaiLocked: !nilaiAllowed,
       tahunAjaran: setMap.tahun_ajaran || "-",
       semester: setMap.semester ? `Semester ${setMap.semester}` : "-",
     });

@@ -1,9 +1,10 @@
-import { requireAuth, AuthError, addLog } from "@/lib/auth";
+import { requireAuth, scopeUserId, AuthError, addLog } from "@/lib/auth";
 import { db } from "@/db";
 import { absensi, dataSiswa, dataKelas } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { apiError, apiOk, apiServerError, normDate } from "@/lib/utils";
+import { canUseKelas, canUseSiswa } from "@/lib/ownership";
 
 export async function GET(req: Request) {
   try {
@@ -11,15 +12,21 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const filterTanggal = url.searchParams.get("tanggal");
     const filterKelasId = url.searchParams.get("kelasId");
+    const scope = scopeUserId(session.role, session.id);
 
-    const siswaList = await db.select().from(dataSiswa).all();
-    const kelasList = await db.select().from(dataKelas).all();
+    const siswaList = scope
+      ? await db.select().from(dataSiswa).where(eq(dataSiswa.userId, scope)).all()
+      : await db.select().from(dataSiswa).all();
+    const kelasList = scope
+      ? await db.select().from(dataKelas).where(eq(dataKelas.userId, scope)).all()
+      : await db.select().from(dataKelas).all();
     const siswaMap: Record<string, string> = {};
     for (const s of siswaList) siswaMap[s.id] = s.namaSiswa;
     const kelasMap: Record<string, string> = {};
     for (const k of kelasList) kelasMap[k.id] = k.namaKelas || "-";
 
     const conditions = [];
+    if (scope) conditions.push(eq(absensi.userId, scope));
     if (filterTanggal) conditions.push(eq(absensi.tanggal, normDate(filterTanggal)));
     if (filterKelasId) conditions.push(eq(absensi.kelasId, filterKelasId));
 
@@ -49,9 +56,15 @@ export async function POST(req: Request) {
     if (!Array.isArray(recs) || !recs.length) {
       return apiError("Tidak ada data");
     }
-    const existing = await db.select().from(absensi).all();
+    const scope = scopeUserId(session.role, session.id);
+    const existing = scope
+      ? await db.select().from(absensi).where(eq(absensi.userId, scope)).all()
+      : await db.select().from(absensi).all();
     let saved = 0;
     for (const r of recs) {
+      if (!(await canUseSiswa(r.siswaId, scope)) || !(await canUseKelas(r.kelasId, scope))) {
+        return apiError("Siswa atau kelas tidak valid untuk akun Anda", 403);
+      }
       const found = existing.find(
         (e) =>
           e.tanggal &&

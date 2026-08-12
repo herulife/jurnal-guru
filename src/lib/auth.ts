@@ -2,9 +2,12 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { activityLog } from "@/db/schema";
+import { isAdminRole } from "@/lib/plan-helpers";
+
+export { isAdminRole };
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
@@ -64,10 +67,14 @@ export async function requireAuth(): Promise<SessionUser> {
 
 export async function requireAdmin(): Promise<SessionUser> {
   const session = await requireAuth();
-  if (session.role !== "Admin") {
-    throw new AuthError("Forbidden: Admin only");
+  if (!isAdminRole(session.role)) {
+    throw new AuthError("Forbidden: Admin only", 403);
   }
   return session;
+}
+
+export function scopeUserId(role: string, userId: string): string | null {
+  return isAdminRole(role) ? null : userId;
 }
 
 export class AuthError extends Error {
@@ -78,14 +85,22 @@ export class AuthError extends Error {
   }
 }
 
-export async function verifyCredentials(username: string, password: string) {
+export async function verifyCredentials(identifier: string, password: string) {
   const bcrypt = await import("bcryptjs");
   const user = await db
     .select()
     .from(users)
-    .where(eq(users.username, username))
+    .where(
+      or(
+        eq(users.email, identifier.toLowerCase().trim()),
+        eq(users.username, identifier.trim())
+      )
+    )
     .get();
-  if (!user) return null;
+  if (!user) {
+    await bcrypt.compare(password, "$2a$10$7QBy6m6Y1c0wU8kZzD9k2eJkQyW1P6KX9wB0sVcYr0fGt1Hq4LmG");
+    return null;
+  }
   const valid = await bcrypt.compare(password, user.passwordHash);
   if (!valid) return null;
   return {

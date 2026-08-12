@@ -39,7 +39,7 @@ export default function BillingPage() {
 
   useEffect(() => { load(); }, []);
 
-  const pending = payments.filter((p) => p.status === "pending" || p.status === "confirmed");
+  const pending = payments.filter((p) => p.status === "pending");
 
   async function action(payId: string, act: "verifikasi" | "tolak") {
     const r = await apiPatch<any>(`/api/payments/${payId}`, { status: act });
@@ -121,7 +121,7 @@ export default function BillingPage() {
             {payments.length === 0 && (
               <tr><td colSpan={4} className="px-4 py-8 text-center text-gray-400">Belum ada riwayat pembayaran.</td></tr>
             )}
-            {payments.filter((p) => p.status !== "pending" && p.status !== "confirmed").map((p) => (
+            {payments.filter((p) => p.status !== "pending").map((p) => (
               <tr key={p.id} className="border-t border-[#F0EDE6]">
                 <td className="px-4 py-3">{p.username}</td>
                 <td className="px-4 py-3 font-semibold">Rp {p.amount.toLocaleString("id-ID")}</td>

@@ -41,6 +41,7 @@ export async function POST(req: Request) {
       }
       await db.insert(dataSiswa).values({
         id: uuidv4(),
+        userId: session.id,
         nis: String(d.nis),
         nisn: String(d.nisn || ""),
         namaSiswa: String(d.namaSiswa),

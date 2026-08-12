@@ -4,12 +4,16 @@ import { useEffect, useState, useCallback } from "react";
 import { apiGet, apiPost } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
 import ExportButton from "@/components/ExportButton";
+import HeaderActions from "@/components/HeaderActions";
+import Modal from "@/components/Modal";
+import { bukaDokumen, exportXlsx, esc } from "@/lib/dokumen";
+import PlanGuard from "@/components/PlanGuard";
 
 interface Row { id: string; no: string | null; uraianTugas: string | null; vol: number; buktiDokumen: string | null; bulan: string | null; tahun: string | null; }
 
 const BULAN = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 
-export default function LKBPage() {
+function LKBPageInner() {
   const now = new Date();
   const [bulan, setBulan] = useState(String(now.getMonth() + 1).padStart(2, "0"));
   const [tahun, setTahun] = useState(String(now.getFullYear()));
@@ -19,6 +23,10 @@ export default function LKBPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [editId, setEditId] = useState<string | null>(null);
+  const [formUraian, setFormUraian] = useState("");
+  const [formVol, setFormVol] = useState<number>(0);
+  const [formBukti, setFormBukti] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -61,6 +69,51 @@ export default function LKBPage() {
     setData((prev) => prev.map((r) => (r.id === id ? { ...r, [field]: field === "vol" ? Number(value) : value } : r)));
   }
 
+  function openEdit(r: Row) {
+    setEditId(r.id);
+    setFormUraian(r.uraianTugas || "");
+    setFormVol(r.vol || 0);
+    setFormBukti(r.buktiDokumen || "");
+  }
+
+  function closeEdit() {
+    setEditId(null);
+  }
+
+  function saveEdit() {
+    if (!editId) return;
+    updateRow(editId, "uraianTugas", formUraian);
+    updateRow(editId, "vol", String(formVol));
+    updateRow(editId, "buktiDokumen", formBukti);
+    setEditId(null);
+  }
+
+  async function exportExcel() {
+    const headers = ["No", "Uraian Tugas", "Vol", "Bukti Dokumen"];
+    const rows = data.map((r, i) => [i + 1, r.uraianTugas || "", r.vol, r.buktiDokumen || ""]);
+    await exportXlsx({
+      file: `lkb-${bulan}-${tahun}.xlsx`,
+      judul: "LAPORAN KINERJA BULANAN",
+      identitas: [`:Periode~${BULAN[Number(bulan) - 1] || bulan} ${tahun}`],
+      headers,
+      rows,
+    });
+  }
+
+  async function cetakPDF() {
+    const tbody = data
+      .map(
+        (r, i) =>
+          `<tr><td class="nomer">${i + 1}</td><td>${esc(r.uraianTugas || "-")}</td><td class="nomer">${esc(r.vol)}</td><td>${esc(r.buktiDokumen || "-")}</td></tr>`
+      )
+      .join("");
+    await bukaDokumen({
+      judul: "LAPORAN KINERJA BULANAN",
+      identitas: [`:Periode~${BULAN[Number(bulan) - 1] || bulan} ${tahun}`],
+      body: `<table class="data"><thead><tr><th class="nomer">No</th><th>Uraian Tugas</th><th class="nomer">Vol</th><th>Bukti Dokumen</th></tr></thead><tbody>${tbody}</tbody></table>`,
+    });
+  }
+
   function toggleSelect(id: string) {
     setSelected((prev) => {
       const nxt = new Set(prev);
@@ -82,12 +135,16 @@ export default function LKBPage() {
 
   return (
     <div className="p-6 fade-in">
-      <header className="sticky top-0 z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
+      <header className="sticky top-14 md:top-0 z-20 md:z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
         <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">LKB</h1>
+        <div className="flex items-center gap-2">
+        <a href="/panduan#lainnya" className="doc-link" aria-label="Buka panduan"><i className="fas fa-circle-question"></i></a>
+<HeaderActions />
         <ExportButton
           fileName={`lkb-${bulan}-${tahun}`}
           title="Laporan Kinerja Bulanan"
           subtitle={`Bulan ${bulan}/${tahun}`}
+          minPlan="premium"
           columns={[
             { key: "no", label: "No" },
             { key: "uraianTugas", label: "Uraian Tugas" },
@@ -96,6 +153,7 @@ export default function LKBPage() {
           ]}
           rows={data}
         />
+        </div>
       </header>
 
       {msg && <div className="p-3 mb-4 rounded-xl border text-sm bg-emerald-50 border-emerald-200 text-emerald-700">{msg}</div>}
@@ -118,6 +176,8 @@ export default function LKBPage() {
           </div>
           <button className="btn btn-primary" onClick={generate} disabled={loading}><i className="fas fa-magic"></i> Generate dari LCKH</button>
           <button className="btn btn-accent" onClick={save} disabled={loading}><i className="fas fa-save"></i> Simpan</button>
+          <button className="btn btn-accent" onClick={cetakPDF}><i className="fas fa-print"></i> Cetak PDF</button>
+          <button className="btn btn-accent" onClick={exportExcel}><i className="fas fa-file-excel"></i> Export Excel</button>
           <button className="btn btn-outline" onClick={addRow}><i className="fas fa-plus"></i> Tambah Baris</button>
           {selected.size > 0 && <button className="btn btn-danger" onClick={deleteSelected}><i className="fas fa-trash"></i> Hapus Terpilih</button>}
         </div>
@@ -129,19 +189,20 @@ export default function LKBPage() {
           <table>
             <thead>
               <tr>
-                <th className="w-10"><input type="checkbox" checked={paginated.length > 0 && selected.size === paginated.length} onChange={toggleAll} /></th>
-                <th className="w-10">No</th><th>Uraian Tugas</th><th className="w-24">Vol</th><th>Bukti Dokumen</th>
+                <th className="w-10"><input type="checkbox" checked={paginated.length > 0 && selected.size === paginated.length} onChange={toggleAll} aria-label="Pilih semua LKB" /></th>
+                <th className="w-10">No</th><th>Uraian Tugas</th><th className="w-24">Vol</th><th>Bukti Dokumen</th><th className="w-24">Aksi</th>
               </tr>
             </thead>
             <tbody>
-              {data.length === 0 && <tr><td colSpan={5} className="text-center text-gray-400 py-8">{loading ? "Memuat..." : "Pilih bulan & tahun, klik Generate"}</td></tr>}
+              {data.length === 0 && <tr><td colSpan={6} className="text-center text-gray-400 py-8">{loading ? "Memuat..." : "Pilih bulan & tahun, klik Generate"}</td></tr>}
               {paginated.map((r, i) => (
                 <tr key={r.id}>
-                  <td><input type="checkbox" checked={selected.has(r.id)} onChange={() => toggleSelect(r.id)} /></td>
+                  <td><input type="checkbox" checked={selected.has(r.id)} onChange={() => toggleSelect(r.id)} aria-label={`Pilih LKB ${r.uraianTugas}`} /></td>
                   <td>{(page - 1) * pageSize + i + 1}</td>
-                  <td><input className="input text-sm" value={r.uraianTugas || ""} onChange={(e) => updateRow(r.id, "uraianTugas", e.target.value)} /></td>
-                  <td><input type="number" className="input text-sm" value={r.vol} onChange={(e) => updateRow(r.id, "vol", e.target.value)} /></td>
-                  <td><input className="input text-sm" value={r.buktiDokumen || ""} onChange={(e) => updateRow(r.id, "buktiDokumen", e.target.value)} /></td>
+                  <td>{r.uraianTugas || "-"}</td>
+                  <td>{r.vol}</td>
+                  <td>{r.buktiDokumen || "-"}</td>
+                  <td><button className="btn btn-sm btn-accent" onClick={() => openEdit(r)}><i className="fas fa-edit"></i> Edit</button></td>
                 </tr>
               ))}
             </tbody>
@@ -149,6 +210,29 @@ export default function LKBPage() {
         </div>
         <Pagination current={page} total={data.length} pageSize={pageSize} onChange={setPage} />
       </div>
+
+      {editId !== null && (
+        <Modal open onClose={closeEdit} title="Edit LKB">
+            <div className="p-5">
+              <div className="space-y-4">
+                <div><label className="label">Uraian Tugas / Kegiatan</label><input className="input" value={formUraian} onChange={(e) => setFormUraian(e.target.value)} placeholder="Uraian tugas/kegiatan" /></div>
+                <div><label className="label">Volume</label><input type="number" className="input" value={formVol} onChange={(e) => setFormVol(Number(e.target.value))} placeholder="Contoh: 4" /></div>
+                <div><label className="label">Bukti Dokumen</label><input className="input" value={formBukti} onChange={(e) => setFormBukti(e.target.value)} placeholder="Nama file / URL bukti" /></div>
+              </div>
+              <div className="mt-5 flex gap-3 justify-end">
+                <button className="btn btn-outline" onClick={closeEdit}>Batal</button>
+                <button className="btn btn-primary" onClick={saveEdit}><i className="fas fa-save"></i> Simpan</button>
+              </div>
+            </div>
+        </Modal>
+      )}
     </div>
+  );
+}
+export default function LKBPage() {
+  return (
+    <PlanGuard min="premium">
+      <LKBPageInner />
+    </PlanGuard>
   );
 }

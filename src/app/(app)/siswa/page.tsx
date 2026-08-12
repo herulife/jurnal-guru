@@ -3,6 +3,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
+import HeaderActions from "@/components/HeaderActions";
+import Modal from "@/components/Modal";
+import UploadModal from "@/components/UploadModal";
+import { useConfirm } from "@/components/ConfirmModal";
 
 interface Siswa {
   id: string; nis: string; nisn: string; namaSiswa: string;
@@ -19,9 +23,11 @@ export default function SiswaPage() {
   const [search, setSearch] = useState("");
   const [editData, setEditData] = useState<Siswa | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [uploadOpen, setUploadOpen] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(25);
+  const [pageSize, setPageSize] = useState(50);
   const [selected, setSelected] = useState(new Set<string>());
+  const { confirm, ConfirmComponent } = useConfirm();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -37,6 +43,23 @@ export default function SiswaPage() {
 
   useEffect(() => { setSelected(new Set()); setPage(1); }, [data.length]);
 
+  useEffect(() => { setPage(1); }, [pageSize]);
+
+  function downloadTemplate(kind: "csv" | "excel") {
+    const headers = ["NIS", "NISN", "Nama Siswa", "L/P", "Kelas", "Telepon", "Ortu"];
+    const sample = ["0012345678", "0012345689", "Contoh Nama Siswa", "L", "X IPA 1", "081234567890", "Nama Orang Tua"];
+    const csv = [headers.join(","), sample.join(",")].join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `template-siswa${kind === "excel" ? "-excel" : ""}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   const filtered = search
     ? data.filter((s) => s.namaSiswa.toLowerCase().includes(search.toLowerCase()) || s.nis.includes(search))
     : data;
@@ -51,7 +74,7 @@ export default function SiswaPage() {
     else { setSelected(new Set(paginatedData.map(d => d.id))); }
   }
   async function handleBulkDelete() {
-    if (!confirm(`Hapus ${selected.size} data?`)) return;
+    if (!(await confirm({ message: `Hapus ${selected.size} data?` }))) return;
     for (const id of selected) { await apiDelete(`/api/siswa/${id}`); }
     setSelected(new Set()); load();
   }
@@ -61,10 +84,18 @@ export default function SiswaPage() {
 
   return (
     <div className="p-6 fade-in">
-      <header className="sticky top-0 z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
+      <header className="sticky top-14 md:top-0 z-20 md:z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
         <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">Data Siswa</h1>
         <div className="flex gap-2">
-          <button className="btn btn-accent btn-sm" onClick={() => openUploadModal(kelas, load)}>
+          <a href="/panduan#data-siswa" className="doc-link" aria-label="Buka panduan"><i className="fas fa-circle-question"></i></a>
+<HeaderActions />
+          <button className="btn btn-outline btn-sm" onClick={() => downloadTemplate("csv")}>
+            <i className="fas fa-download"></i> Template CSV
+          </button>
+          <button className="btn btn-outline btn-sm" onClick={() => downloadTemplate("excel")}>
+            <i className="fas fa-download"></i> Template Excel
+          </button>
+          <button className="btn btn-accent btn-sm" onClick={() => setUploadOpen(true)}>
             <i className="fas fa-upload"></i> Upload Data
           </button>
           <button className="btn btn-primary btn-sm" onClick={openAdd}>
@@ -78,16 +109,16 @@ export default function SiswaPage() {
           <option value="">Semua Kelas</option>
           {kelas.map((k) => (<option key={k.id} value={k.id}>{k.namaKelas}</option>))}
         </select>
-        <div className="relative">
-          <i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-          <input type="text" className="input pl-9 w-48 text-sm" placeholder="Cari..." value={search} onChange={(e) => setSearch(e.target.value)} />
+        <div className="relative flex-1 min-w-[160px] max-w-xs">
+          <i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+          <input type="text" className="input pl-10 w-full text-sm" placeholder="Cari nama / NIS..." value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
       </div>
 
       {selected.size > 0 && (
         <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between">
           <span className="text-sm font-semibold text-blue-800">{selected.size} data terpilih</span>
-          <button className="btn btn-danger btn-sm" onClick={handleBulkDelete}><i className="fas fa-trash"></i> Hapus Semua</button>
+          <button className="btn btn-danger btn-sm" onClick={handleBulkDelete}><i className="fas fa-trash"></i> Hapus terpilih</button>
         </div>
       )}
 
@@ -95,7 +126,7 @@ export default function SiswaPage() {
         <table>
           <thead>
             <tr>
-              <th><input type="checkbox" checked={paginatedData.length > 0 && selected.size === paginatedData.length} onChange={toggleSelectAll} /></th>
+              <th><input type="checkbox" checked={paginatedData.length > 0 && selected.size === paginatedData.length} onChange={toggleSelectAll} aria-label="Pilih semua siswa" /></th>
               <th>No</th><th>NIS</th><th>NISN</th><th>Nama Siswa</th><th>L/P</th><th>Kelas</th><th>Telepon</th><th>Ortu</th><th>Aksi</th>
             </tr>
           </thead>
@@ -103,18 +134,18 @@ export default function SiswaPage() {
             {filtered.length === 0 && (<tr><td colSpan={10} className="text-center text-gray-400 py-8">{loading ? "Memuat..." : "Belum ada data"}</td></tr>)}
             {paginatedData.map((s, i) => (
               <tr key={s.id}>
-                <td><input type="checkbox" checked={selected.has(s.id)} onChange={() => toggleSelect(s.id)} /></td>
+                <td><input type="checkbox" checked={selected.has(s.id)} onChange={() => toggleSelect(s.id)} aria-label={`Pilih siswa ${s.namaSiswa}`} /></td>
                 <td>{(page - 1) * pageSize + i + 1}</td>
                 <td>{s.nis}</td>
                 <td>{s.nisn}</td>
                 <td className="font-semibold">{s.namaSiswa}</td>
-                <td><span className={`badge ${s.jenisKelamin === "L" ? "badge-hadir" : "badge-izin"}`}>{s.jenisKelamin}</span></td>
+                <td><span className={`badge ${s.jenisKelamin === "L" ? "badge-izin" : ""}`} style={s.jenisKelamin === "P" ? { backgroundColor: "#FCE7F3", color: "#9D174D" } : undefined}>{s.jenisKelamin}</span></td>
                 <td>{s.namaKelas}</td>
                 <td>{s.telepon}</td>
                 <td>{s.namaOrtu}</td>
                 <td>
-                  <button className="btn btn-outline btn-sm mr-1" onClick={() => openEdit(s)}><i className="fas fa-edit"></i></button>
-                  <button className="btn btn-danger btn-sm" onClick={async () => { if (confirm("Hapus?")) { await apiDelete(`/api/siswa/${s.id}`); load(); } }}><i className="fas fa-trash"></i></button>
+                  <button className="btn btn-outline btn-sm mr-1" onClick={() => openEdit(s)} aria-label="Edit siswa"><i className="fas fa-edit"></i></button>
+                  <button className="btn btn-danger btn-sm" onClick={async () => { if (await confirm({ message: "Hapus data ini?" })) { await apiDelete(`/api/siswa/${s.id}`); load(); } }} aria-label="Hapus siswa"><i className="fas fa-trash"></i></button>
                 </td>
               </tr>
             ))}
@@ -122,15 +153,23 @@ export default function SiswaPage() {
         </table>
       </div>
 
-      {filtered.length > 0 && <Pagination current={page} total={filtered.length} pageSize={pageSize} onChange={setPage} />}
+      {filtered.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 mt-4">
+          <div className="flex items-center gap-2 text-xs text-gray-500">
+            <span>Baris/halaman:</span>
+            <select className="input w-16 text-xs py-1" value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))}>
+              <option value={25}>25</option><option value={50}>50</option><option value={100}>100</option>
+            </select>
+          </div>
+          <Pagination current={page} total={filtered.length} pageSize={pageSize} onChange={setPage} />
+        </div>
+      )}
 
       {modalOpen && <SiswaModal editData={editData} kelas={kelas} onSave={load} onClose={() => setModalOpen(false)} />}
+      {uploadOpen && <UploadModal onDone={load} onClose={() => setUploadOpen(false)} />}
+      {ConfirmComponent}
     </div>
   );
-}
-
-function openUploadModal(kelas: Kelas[], onDone: () => void) {
-  (window as any).__uploadModal?.open(kelas, onDone);
 }
 
 function SiswaModal({ editData, kelas, onSave, onClose }: { editData: Siswa | null; kelas: Kelas[]; onSave: () => void; onClose: () => void }) {
@@ -151,12 +190,7 @@ function SiswaModal({ editData, kelas, onSave, onClose }: { editData: Siswa | nu
   }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content max-w-2xl" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-5 border-b border-[#E8E4DC]">
-          <h3 className="font-bold text-lg text-gray-800 font-[Outfit]">{editData ? "Edit Siswa" : "Tambah Siswa"}</h3>
-          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 bg-transparent border-none cursor-pointer"><i className="fas fa-times"></i></button>
-        </div>
+    <Modal open maxWidth="max-w-2xl" onClose={onClose} title={editData ? "Edit Siswa" : "Tambah Siswa"}>
         <form onSubmit={handleSubmit} className="p-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div><label className="label">NIS</label><input type="text" className="input" value={form.nis} onChange={(e) => setForm({...form, nis: e.target.value})} required /></div>
@@ -174,7 +208,6 @@ function SiswaModal({ editData, kelas, onSave, onClose }: { editData: Siswa | nu
             <button type="submit" className="btn btn-primary"><i className="fas fa-save"></i> Simpan</button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 }

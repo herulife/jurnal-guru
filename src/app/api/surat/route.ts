@@ -1,4 +1,4 @@
-import { requireAuth, AuthError, addLog } from "@/lib/auth";
+import { requireAdmin, requireAuth, AuthError, addLog } from "@/lib/auth";
 import { db } from "@/db";
 import { dataSurat } from "@/db/schema";
 import { desc } from "drizzle-orm";
@@ -19,7 +19,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const session = await requireAuth();
+    const session = await requireAdmin();
     const { judul, jenis, tujuan, template } = await req.json();
     if (!judul || !jenis || !template) {
       return apiError("Judul, jenis, dan template wajib diisi");

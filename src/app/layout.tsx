@@ -3,27 +3,25 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Jurnal Guru — Teacher Dashboard",
+    default: "Jurnal Guru — Administrasi Guru & Kelas",
     template: "%s — Jurnal Guru",
   },
   description:
     "Dashboard guru gratis untuk kelola absensi, nilai, jurnal mengajar, dan data siswa. Hemat waktu administrasi, rekap otomatis.",
-  metadataBase: new URL(
-    "https://teacher-dashboard-next.teacher-dashboard-app.workers.dev"
-  ),
+  metadataBase: new URL("https://benuatech.web.id/guru"),
   openGraph: {
     type: "website",
     locale: "id_ID",
     siteName: "Jurnal Guru",
-    title: "Jurnal Guru — Teacher Dashboard",
+    title: "Jurnal Guru — Administrasi Guru & Kelas",
     description:
-      "Sistem manajemen sekolah untuk guru: absensi, nilai, jurnal mengajar, dan data siswa dalam satu dashboard yang aman dan mudah digunakan.",
+      "Dashboard untuk guru: absensi, nilai, jurnal mengajar, dan data siswa dalam satu tempat yang aman dan mudah digunakan.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Jurnal Guru — Teacher Dashboard",
+    title: "Jurnal Guru — Administrasi Guru & Kelas",
     description:
-      "Sistem manajemen sekolah untuk guru: absensi, nilai, jurnal mengajar, dan data siswa dalam satu dashboard yang aman dan mudah digunakan.",
+      "Dashboard untuk guru: absensi, nilai, jurnal mengajar, dan data siswa dalam satu tempat yang aman dan mudah digunakan.",
   },
   alternates: {
     canonical: "/",
@@ -55,7 +53,6 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="shortcut icon" href="/favicon.ico" />
-        <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
       </head>
       <body>{children}</body>
     </html>

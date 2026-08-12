@@ -1,35 +1,45 @@
 import { hashPassword, addLog, createSession } from "@/lib/auth";
-import { apiError, apiResponse } from "@/lib/utils";
+import { apiError, apiResponse, apiServerError } from "@/lib/utils";
+import { rateLimited } from "@/lib/rateLimit";
 import { db } from "@/db";
-import { users, settings, profilSekolah } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { users } from "@/db/schema";
+import { eq, or } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 
 export async function POST(req: Request) {
   try {
-    const { username, password, namaLengkap } = await req.json();
+    const rl = rateLimited(req);
+    if (rl.limited) {
+      return apiError(
+        "Terlalu banyak percobaan registrasi. Silakan coba lagi beberapa menit lagi.",
+        429
+      );
+    }
+    const { username, password, namaLengkap, email } = await req.json();
+    const userEmail = (email || username || "").trim().toLowerCase();
 
-    if (!username || !password || !namaLengkap) {
-      return apiError("Username, password, dan nama lengkap wajib diisi");
+    if (!userEmail || !password || !namaLengkap) {
+      return apiError("Email, password, dan nama lengkap wajib diisi");
     }
 
-    if (username.length < 4) {
-      return apiError("Username minimal 4 karakter");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userEmail)) {
+      return apiError("Format email tidak valid");
     }
 
-    if (password.length < 6) {
-      return apiError("Password minimal 6 karakter");
+    if (password.length < 8) {
+      return apiError("Password minimal 8 karakter");
     }
 
-    // Check if username already exists
+    // Check if email already exists
     const existing = await db
       .select()
       .from(users)
-      .where(eq(users.username, username))
+      .where(or(eq(users.email, userEmail), eq(users.username, userEmail)))
       .get();
 
     if (existing) {
-      return apiError("Username sudah digunakan");
+      return apiError("Email sudah terdaftar");
     }
 
     // Create new user
@@ -38,42 +48,28 @@ export async function POST(req: Request) {
 
     await db.insert(users).values({
       id: userId,
-      username,
+      username: userEmail,
+      email: userEmail,
       passwordHash: hashedPassword,
       namaLengkap,
-      role: "guru",
-    });
-
-    // Create default profile
-    await db.insert(profilSekolah).values({
-      id: uuidv4(),
-      namaSekolah: "",
-      alamat: "",
-      npsn: "",
-      kota: "",
-      provinsi: "",
-      telepon: "",
-      kepalaSekolah: "",
-      nipKepsek: "",
-      namaGuru: namaLengkap,
-      nipGuru: "",
-      logoUrl: "",
+      role: "free",
     });
 
     // Auto login after registration
     const user = {
       id: userId,
-      username,
-      role: "guru",
+      username: userEmail,
+      email: userEmail,
+      role: "free",
       nama: namaLengkap,
     };
 
     await createSession(user);
-    await addLog(userId, "REGISTER", `${username} mendaftar`);
+    await addLog(userId, "REGISTER", `${userEmail} mendaftar`);
 
     return apiResponse(true, { user }, "Registrasi berhasil");
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : "Terjadi kesalahan";
-    return apiError(msg);
+    console.error("[REGISTER ERROR]", e);
+    return apiServerError();
   }
 }

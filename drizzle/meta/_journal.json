@@ -22,6 +22,20 @@
       "when": 1786085864050,
       "tag": "0002_kelompok_lckh_lkb",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1787000000000,
+      "tag": "0003_kalender_catatan",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1787100000000,
+      "tag": "0004_users_email",
+      "breakpoints": true
     }
   ]
 }

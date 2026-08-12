@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { payments, subscriptions, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
+import { PLANS } from "@/app/api/payments/route";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -48,6 +49,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
     if (body.status === "verifikasi" || body.status === "tolak") {
       await requireAdmin();
+      if (user.status !== "pending") {
+        return apiError("Pembayaran ini sudah diproses sebelumnya", 400);
+      }
       const verified = body.status === "verifikasi";
       await db
         .update(payments)
@@ -65,16 +69,17 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
           .where(eq(subscriptions.id, user.subscriptionId))
           .get();
         if (sub) {
+          const months = PLANS[sub.planId]?.months || 1;
           const now = new Date();
           const expires = new Date(now);
-          expires.setMonth(expires.getMonth() + 1);
+          expires.setMonth(expires.getMonth() + months);
           await db
             .update(subscriptions)
             .set({ status: "active", startedAt: now.toISOString(), expiresAt: expires.toISOString() })
             .where(eq(subscriptions.id, sub.id));
           await db
             .update(users)
-            .set({ plan: sub.planId })
+            .set({ plan: sub.planId === "sekolah" ? "premium" : sub.planId })
             .where(eq(users.id, user.userId));
         }
       }

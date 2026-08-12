@@ -29,7 +29,7 @@ function resolveDb(): AnyDb {
     // not running inside Cloudflare context
   }
 
-  const url = process.env.DATABASE_URL || process.env.NEXT_PUBLIC_DATABASE_URL;
+  const url = process.env.DATABASE_URL;
   if (url) {
     const client = createClient({ url });
     dbInstance = drizzleLibsql(client, { schema });

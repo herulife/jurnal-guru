@@ -1,14 +1,16 @@
 import Sidebar from "@/components/Sidebar";
 import UpgradeBanner from "@/components/UpgradeBanner";
+import SocialProof from "@/components/SocialProof";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#fcfbf8]">
+    <div className="min-h-screen bg-[#F5F3EF]">
       <Sidebar />
       <main className="pt-14 md:pt-0 md:ml-64 transition-all duration-300 min-h-screen">
         {children}
       </main>
       <UpgradeBanner />
+      <SocialProof />
     </div>
   );
 }

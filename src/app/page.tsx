@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
-import SocialProof from "@/components/SocialProof";
 import Navbar from "@/components/Navbar";
 import DashboardMockup from "@/components/DashboardMockup";
 
@@ -34,7 +33,7 @@ const features = [
   {
     icon: "fa-file-invoice",
     title: "Template Surat",
-    desc: "Buat surat resmi sekolah lebih cepat dari template yang sudah disiapkan.",
+    desc: "Buat surat resmi lebih cepat dari template yang sudah disiapkan.",
   },
 ];
 
@@ -315,22 +314,22 @@ export default async function Home() {
               </div>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-center gap-2 text-sm text-gray-600">
-                  <i className="fas fa-check text-[#0D7C66]"></i> Absensi digital
+                  <i className="fas fa-check text-[#0D7C66]"></i> Dashboard & data siswa/kelas
                 </li>
                 <li className="flex items-center gap-2 text-sm text-gray-600">
-                  <i className="fas fa-check text-[#0D7C66]"></i> Nilai & KKM
+                  <i className="fas fa-check text-[#0D7C66]"></i> Absensi & presensi
+                </li>
+                <li className="flex items-center gap-2 text-sm text-gray-600">
+                  <i className="fas fa-check text-[#0D7C66]"></i> Rekap & cetak presensi
                 </li>
                 <li className="flex items-center gap-2 text-sm text-gray-600">
                   <i className="fas fa-check text-[#0D7C66]"></i> Jurnal mengajar
                 </li>
                 <li className="flex items-center gap-2 text-sm text-gray-600">
-                  <i className="fas fa-check text-[#0D7C66]"></i> 1 kelas
+                  <i className="fas fa-check text-[#0D7C66]"></i> Profil sekolah
                 </li>
                 <li className="flex items-center gap-2 text-sm text-gray-400">
-                  <i className="fas fa-times text-gray-300"></i> Export PDF
-                </li>
-                <li className="flex items-center gap-2 text-sm text-gray-400">
-                  <i className="fas fa-times text-gray-300"></i> Laporan lanjutan
+                  <i className="fas fa-times text-gray-300"></i> Nilai & kelompok belajar
                 </li>
               </ul>
               <Link href="/register" className="block text-center w-full py-3 px-5 border-2 border-[#E8E4DC] text-[#1A2332] font-semibold rounded-xl hover:border-[#0D7C66] hover:text-[#0D7C66] transition-all">
@@ -345,7 +344,7 @@ export default async function Home() {
               </div>
               <div className="mb-4">
                 <p className="font-bold text-white text-lg">Pro</p>
-                <p className="text-white/70 text-sm">Untuk guru yang mengajar banyak kelas</p>
+                <p className="text-white/70 text-sm">Semua fitur Gratis + pengolahan nilai</p>
               </div>
               <div className="mb-6">
                 <span className="text-4xl font-extrabold font-[Outfit] text-white">Rp 29.000</span>
@@ -356,19 +355,16 @@ export default async function Home() {
                   <i className="fas fa-check text-[#E8A317]"></i> Semua fitur Gratis
                 </li>
                 <li className="flex items-center gap-2 text-sm text-white">
+                  <i className="fas fa-check text-[#E8A317]"></i> Nilai & KKM
+                </li>
+                <li className="flex items-center gap-2 text-sm text-white">
+                  <i className="fas fa-check text-[#E8A317]"></i> Rekap Nilai
+                </li>
+                <li className="flex items-center gap-2 text-sm text-white">
+                  <i className="fas fa-check text-[#E8A317]"></i> Generate kelompok belajar
+                </li>
+                <li className="flex items-center gap-2 text-sm text-white">
                   <i className="fas fa-check text-[#E8A317]"></i> Unlimited kelas
-                </li>
-                <li className="flex items-center gap-2 text-sm text-white">
-                  <i className="fas fa-check text-[#E8A317]"></i> Export PDF
-                </li>
-                <li className="flex items-center gap-2 text-sm text-white">
-                  <i className="fas fa-check text-[#E8A317]"></i> Laporan lanjutan
-                </li>
-                <li className="flex items-center gap-2 text-sm text-white">
-                  <i className="fas fa-check text-[#E8A317]"></i> Prioritas support
-                </li>
-                <li className="flex items-center gap-2 text-sm text-white">
-                  <i className="fas fa-check text-[#E8A317]"></i> Bonus: Template RPP
                 </li>
               </ul>
               <Link href="/checkout?plan=pro" className="block text-center w-full py-3 px-5 bg-[#E8A317] hover:bg-[#ca8a04] text-[#1A2332] font-semibold rounded-xl transition-all shadow-lg">
@@ -376,14 +372,14 @@ export default async function Home() {
               </Link>
             </div>
 
-            {/* Sekolah */}
+            {/* Premium */}
             <div className="bg-white rounded-2xl border border-[#E8E4DC] p-6">
               <div className="mb-4">
-                <p className="font-bold text-[#1A2332] text-lg">Sekolah</p>
-                <p className="text-gray-500 text-sm">Untuk sekolah & dinas pendidikan</p>
+                <p className="font-bold text-[#1A2332] text-lg">Premium</p>
+                <p className="text-gray-500 text-sm">Untuk guru berstatus pegawai</p>
               </div>
               <div className="mb-6">
-                <span className="text-4xl font-extrabold font-[Outfit] text-[#1A2332]">Rp 299.000</span>
+                <span className="text-4xl font-extrabold font-[Outfit] text-[#1A2332]">Rp 49.000</span>
                 <span className="text-gray-500 text-sm">/bulan</span>
               </div>
               <ul className="space-y-3 mb-6">
@@ -391,23 +387,20 @@ export default async function Home() {
                   <i className="fas fa-check text-[#0D7C66]"></i> Semua fitur Pro
                 </li>
                 <li className="flex items-center gap-2 text-sm text-gray-600">
-                  <i className="fas fa-check text-[#0D7C66]"></i> Multi-guru
+                  <i className="fas fa-check text-[#0D7C66]"></i> Generate LCKH
                 </li>
                 <li className="flex items-center gap-2 text-sm text-gray-600">
-                  <i className="fas fa-check text-[#0D7C66]"></i> Dashboard admin
+                  <i className="fas fa-check text-[#0D7C66]"></i> Generate LKB bagi pegawai
                 </li>
                 <li className="flex items-center gap-2 text-sm text-gray-600">
-                  <i className="fas fa-check text-[#0D7C66]"></i> Backup otomatis
+                  <i className="fas fa-check text-[#0D7C66]"></i> Ekspor laporan pegawai
                 </li>
                 <li className="flex items-center gap-2 text-sm text-gray-600">
-                  <i className="fas fa-check text-[#0D7C66]"></i> Support dedicated
-                </li>
-                <li className="flex items-center gap-2 text-sm text-gray-600">
-                  <i className="fas fa-check text-[#0D7C66]"></i> Custom domain
+                  <i className="fas fa-check text-[#0D7C66]"></i> Support prioritas
                 </li>
               </ul>
-              <Link href="/checkout?plan=sekolah" className="block text-center w-full py-3 px-5 border-2 border-[#E8E4DC] text-[#1A2332] font-semibold rounded-xl hover:border-[#0D7C66] hover:text-[#0D7C66] transition-all">
-                Hubungi Kami
+              <Link href="/checkout?plan=premium" className="block text-center w-full py-3 px-5 bg-[#1A2332] hover:bg-[#2D4055] text-white font-semibold rounded-xl transition-all">
+                Upgrade ke Premium
               </Link>
             </div>
           </div>

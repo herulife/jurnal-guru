@@ -1,0 +1,16 @@
+ALTER TABLE `data_kelas` ADD COLUMN `user_id` text;
+ALTER TABLE `data_siswa` ADD COLUMN `user_id` text;
+ALTER TABLE `jadwal_mengajar` ADD COLUMN `user_id` text;
+ALTER TABLE `jurnal_mengajar` ADD COLUMN `user_id` text;
+ALTER TABLE `nilai` ADD COLUMN `user_id` text;
+ALTER TABLE `kelompok_belajar` ADD COLUMN `user_id` text;
+ALTER TABLE `lckh` ADD COLUMN `user_id` text;
+ALTER TABLE `lkb` ADD COLUMN `user_id` text;
+UPDATE `data_kelas` SET `user_id` = 'u-admin';
+UPDATE `data_siswa` SET `user_id` = 'u-admin';
+UPDATE `jadwal_mengajar` SET `user_id` = 'u-admin';
+UPDATE `jurnal_mengajar` SET `user_id` = 'u-admin';
+UPDATE `nilai` SET `user_id` = 'u-admin';
+UPDATE `kelompok_belajar` SET `user_id` = 'u-admin';
+UPDATE `lckh` SET `user_id` = 'u-admin';
+UPDATE `lkb` SET `user_id` = 'u-admin';

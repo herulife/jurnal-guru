@@ -3,16 +3,19 @@ import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
   username: text("username").notNull().unique(),
+  email: text("email").unique(),
   passwordHash: text("password_hash").notNull(),
   namaLengkap: text("nama_lengkap").notNull(),
   role: text("role").notNull().default("admin"),
   plan: text("plan").notNull().default("gratis"),
   googleSheetsUrl: text("google_sheets_url"),
+  foto: text("foto"),
   createdAt: text("created_at").notNull().default("datetime('now')"),
 });
 
 export const profilSekolah = sqliteTable("profil_sekolah", {
   id: text("id").primaryKey(),
+  userId: text("user_id"),
   namaSekolah: text("nama_sekolah"),
   alamat: text("alamat"),
   npsn: text("npsn"),
@@ -28,6 +31,7 @@ export const profilSekolah = sqliteTable("profil_sekolah", {
 
 export const dataKelas = sqliteTable("data_kelas", {
   id: text("id").primaryKey(),
+  userId: text("user_id"),
   namaKelas: text("nama_kelas").notNull(),
   tingkat: integer("tingkat").notNull(),
   jurusan: text("jurusan"),
@@ -37,6 +41,7 @@ export const dataKelas = sqliteTable("data_kelas", {
 
 export const dataSiswa = sqliteTable("data_siswa", {
   id: text("id").primaryKey(),
+  userId: text("user_id"),
   nis: text("nis").notNull(),
   nisn: text("nisn"),
   namaSiswa: text("nama_siswa").notNull(),
@@ -50,6 +55,7 @@ export const dataSiswa = sqliteTable("data_siswa", {
 
 export const jadwalMengajar = sqliteTable("jadwal_mengajar", {
   id: text("id").primaryKey(),
+  userId: text("user_id"),
   kelasId: text("kelas_id").references(() => dataKelas.id),
   mataPelajaran: text("mata_pelajaran").notNull(),
   hari: text("hari").notNull(),
@@ -72,6 +78,7 @@ export const absensi = sqliteTable("absensi", {
 
 export const nilai = sqliteTable("nilai", {
   id: text("id").primaryKey(),
+  userId: text("user_id"),
   tanggal: text("tanggal"),
   siswaId: text("siswa_id").references(() => dataSiswa.id),
   kelasId: text("kelas_id").references(() => dataKelas.id),
@@ -87,6 +94,7 @@ export const nilai = sqliteTable("nilai", {
 
 export const jurnalMengajar = sqliteTable("jurnal_mengajar", {
   id: text("id").primaryKey(),
+  userId: text("user_id"),
   tanggal: text("tanggal"),
   kelasId: text("kelas_id").references(() => dataKelas.id),
   mataPelajaran: text("mata_pelajaran"),
@@ -116,6 +124,7 @@ export const dataSurat = sqliteTable("data_surat", {
 
 export const kelompokBelajar = sqliteTable("kelompok_belajar", {
   id: text("id").primaryKey(),
+  userId: text("user_id"),
   kelasId: text("kelas_id").references(() => dataKelas.id),
   kelompok: text("kelompok").notNull(),
   no: text("no"),
@@ -129,6 +138,7 @@ export const kelompokBelajar = sqliteTable("kelompok_belajar", {
 
 export const lckh = sqliteTable("lckh", {
   id: text("id").primaryKey(),
+  userId: text("user_id"),
   no: text("no"),
   kegiatan: text("kegiatan"),
   pekerjaan: text("pekerjaan"),
@@ -136,8 +146,18 @@ export const lckh = sqliteTable("lckh", {
   jurnalId: text("jurnal_id"),
 });
 
+export const kalenderCatatan = sqliteTable("kalender_catatan", {
+  id: text("id").primaryKey(),
+  tanggal: text("tanggal").notNull(),
+  isi: text("isi").notNull(),
+  userId: text("user_id"),
+  createdAt: text("created_at").notNull().default("datetime('now')"),
+  updatedAt: text("updated_at").notNull().default("datetime('now')"),
+});
+
 export const lkb = sqliteTable("lkb", {
   id: text("id").primaryKey(),
+  userId: text("user_id"),
   no: text("no"),
   uraianTugas: text("uraian_tugas"),
   vol: real("vol").default(0),

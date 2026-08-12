@@ -1,4 +1,4 @@
-import { requireAuth, AuthError, addLog } from "@/lib/auth";
+import { requireAuth, scopeUserId, AuthError, addLog } from "@/lib/auth";
 import { db } from "@/db";
 import { dataKelas } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -12,6 +12,11 @@ export async function PUT(
     const session = await requireAuth();
     const { id } = await params;
     const body = await req.json();
+    const scope = scopeUserId(session.role, session.id);
+    const existing = await db.select({ userId: dataKelas.userId }).from(dataKelas).where(eq(dataKelas.id, id)).get();
+    if (!existing || (scope && existing.userId !== scope)) {
+      return apiError("Kelas tidak ditemukan", 404);
+    }
     const fields = [
       "namaKelas",
       "tingkat",
@@ -43,6 +48,11 @@ export async function DELETE(
   try {
     const session = await requireAuth();
     const { id } = await params;
+    const scope = scopeUserId(session.role, session.id);
+    const existing = await db.select({ userId: dataKelas.userId }).from(dataKelas).where(eq(dataKelas.id, id)).get();
+    if (!existing || (scope && existing.userId !== scope)) {
+      return apiError("Kelas tidak ditemukan", 404);
+    }
     await db.delete(dataKelas).where(eq(dataKelas.id, id));
     await addLog(session.id, "DELETE_KELAS", `Hapus kelas ${id}`);
     return apiOk(null, "Kelas dihapus");

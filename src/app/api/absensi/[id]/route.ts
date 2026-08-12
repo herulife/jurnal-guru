@@ -1,4 +1,4 @@
-import { requireAuth, AuthError, addLog } from "@/lib/auth";
+import { requireAuth, scopeUserId, AuthError, addLog } from "@/lib/auth";
 import { db } from "@/db";
 import { absensi } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -12,6 +12,11 @@ export async function PUT(
     const session = await requireAuth();
     const { id } = await params;
     const body = await req.json();
+    const scope = scopeUserId(session.role, session.id);
+    const existing = await db.select({ userId: absensi.userId }).from(absensi).where(eq(absensi.id, id)).get();
+    if (!existing || (scope && existing.userId !== scope)) {
+      return apiError("Absensi tidak ditemukan", 404);
+    }
     const fields = ["tanggal", "status", "keterangan"] as const;
     const updateData: Record<string, unknown> = {};
     for (const f of fields) {
@@ -34,6 +39,11 @@ export async function DELETE(
   try {
     const session = await requireAuth();
     const { id } = await params;
+    const scope = scopeUserId(session.role, session.id);
+    const existing = await db.select({ userId: absensi.userId }).from(absensi).where(eq(absensi.id, id)).get();
+    if (!existing || (scope && existing.userId !== scope)) {
+      return apiError("Absensi tidak ditemukan", 404);
+    }
     await db.delete(absensi).where(eq(absensi.id, id));
     await addLog(session.id, "DELETE_ABSENSI", `Hapus absensi ${id}`);
     return apiOk(null, "Absensi dihapus");

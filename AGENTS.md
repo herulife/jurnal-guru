@@ -1,22 +1,25 @@
 # AGENTS.md — Jurnal Guru
 
 ## Project
-Dashboard guru untuk kelola absensi, nilai, jurnal mengajar, dan data siswa.
+Dashboard guru (Jurnal Guru) untuk kelola absensi, nilai, jurnal mengajar, kelompok belajar, LCKH/LKB, dan data siswa.
 
-## Quick Reference
-- **URL:** `https://benuatech.web.id/guru/`
-- **Login:** `admin` / `admin123`
-- **PM2:** `pm2 status` | `pm2 logs teacher-dashboard` | `pm2 restart teacher-dashboard`
-- **Nginx:** `/etc/nginx/sites-available/benuatech.web.id`
+## Quick Reference (VERSA SAAT INI — 9 Agustus 2026)
+- **Live URL:** `https://guru.benuatech.web.id` (Cloudflare Worker `guru`, bukan VPS/nginx)
+- **Login admin:** `admin` / `admin123`
+- **Deploy:** `bash deploy.sh` — typecheck + sync + build + deploy dari **folder ini**, BUKAN dari folder mana pun lain
+- **Direktori kerja:** `/root/teacher-dashboard-next` (lokal) -> `/home/ubuntu24/teacher-dashboard-next` (VPS)
+- **Migrasi D1:** urut `0003_kalender_catatan.sql` lalu `0004_users_email.sql`, misalnya `npx wrangler d1 execute teacher-dashboard-db --remote --file=drizzle/0004_users_email.sql` (dari VPS, setelah `source ~/.cf_token.sh`)
+
+## Perhatian Khusus
+- **LATIHAN: Lokal = salinan VPS.** Semua kerja harus dimulai dari kode di `/home/ubuntu24/teacher-dashboard-next` di VPS (kode live). Folder lokal `/root/teacher-dashboard-next` adalah salinan yang disinkronkan dari VPS.
+- **Jangan pernah tulis ke folder `undangan`/folder lama** — itu kode usang (sudah dihapus).
+- **JWT_SECRET, Google service account, .env.local TIDAK ikut deploy** (di-exclude deploy.sh). Dan jangan pernah menyentuh isi secret ke file repo.
+- **Chain paket:** Gratis -> Pro (Rp29rb: +nilai++rekap nilai+kelompok) -> Premium (Rp49rb: +LCKH & LKB). Rapor sudah DIHAPUS.
 
 ## Context
-Lihat `.agents/session-backup.md` untuk detail lengkap:
-- Stack, brand, pricing
-- File structure
-- Deployment config
-- Pending tasks
+Lihat `.agents/session-backup.md` & `.agents/product-marketing.md` untuk detail lengkap.
 
 ## User Preferences
-- Bahasa Indonesia
-- Concise responses
+- Bahasa Indonesia, concise
 - No school names in content
+- No emojis kecuali diminta

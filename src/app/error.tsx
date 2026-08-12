@@ -8,7 +8,7 @@ export default function ErrorPage({ error, reset }: { error: Error; reset: () =>
           <i className="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
         </div>
         <h2 className="text-xl font-bold text-gray-800 font-[Outfit] mb-2">Terjadi Kesalahan</h2>
-        <p className="text-sm text-gray-500 mb-6">{error.message || "Silakan coba lagi"}</p>
+        <p className="text-sm text-gray-500 mb-6">Terjadi kesalahan. Silakan coba lagi.</p>
         <button className="btn btn-primary" onClick={reset}>
           <i className="fas fa-refresh"></i> Coba Lagi
         </button>

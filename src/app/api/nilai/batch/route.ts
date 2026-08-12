@@ -1,20 +1,28 @@
-import { requireAuth, AuthError, addLog } from "@/lib/auth";
+import { requireAuth, scopeUserId, AuthError, addLog } from "@/lib/auth";
+import { requirePlan } from "@/lib/plans";
 import { db } from "@/db";
 import { nilai } from "@/db/schema";
 import { v4 as uuidv4 } from "uuid";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
+import { canUseKelas, canUseSiswa } from "@/lib/ownership";
 
 export async function POST(req: Request) {
   try {
     const session = await requireAuth();
+    await requirePlan(session.role, session.id, "pro");
     const body = await req.json();
     const records = body.records;
     if (!Array.isArray(records) || !records.length) {
       return apiError("Tidak ada data");
     }
+    const scope = scopeUserId(session.role, session.id);
     for (const r of records) {
+      if (!(await canUseSiswa(r.siswaId, scope)) || !(await canUseKelas(r.kelasId, scope))) {
+        return apiError("Siswa atau kelas tidak valid untuk akun Anda", 403);
+      }
       await db.insert(nilai).values({
         id: uuidv4(),
+        userId: session.id,
         tanggal: r.tanggal || new Date().toISOString(),
         siswaId: r.siswaId,
         kelasId: r.kelasId,

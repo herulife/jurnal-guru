@@ -1,8 +1,9 @@
-import { requireAuth, AuthError, addLog } from "@/lib/auth";
+import { requireAuth, scopeUserId, AuthError, addLog } from "@/lib/auth";
 import { db } from "@/db";
 import { dataSiswa } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
+import { canUseKelas } from "@/lib/ownership";
 
 export async function PUT(
   req: Request,
@@ -12,6 +13,14 @@ export async function PUT(
     const session = await requireAuth();
     const { id } = await params;
     const body = await req.json();
+    const scope = scopeUserId(session.role, session.id);
+    const existing = await db.select({ userId: dataSiswa.userId }).from(dataSiswa).where(eq(dataSiswa.id, id)).get();
+    if (!existing || (scope && existing.userId !== scope)) {
+      return apiError("Siswa tidak ditemukan", 404);
+    }
+    if (!(await canUseKelas(body.kelasId, scope))) {
+      return apiError("Kelas tidak valid untuk akun Anda", 403);
+    }
     const fields = [
       "nis",
       "nisn",
@@ -44,6 +53,11 @@ export async function DELETE(
   try {
     const session = await requireAuth();
     const { id } = await params;
+    const scope = scopeUserId(session.role, session.id);
+    const existing = await db.select({ userId: dataSiswa.userId }).from(dataSiswa).where(eq(dataSiswa.id, id)).get();
+    if (!existing || (scope && existing.userId !== scope)) {
+      return apiError("Siswa tidak ditemukan", 404);
+    }
     await db.delete(dataSiswa).where(eq(dataSiswa.id, id));
     await addLog(session.id, "DELETE_SISWA", `Hapus siswa ${id}`);
     return apiOk(null, "Siswa dihapus");

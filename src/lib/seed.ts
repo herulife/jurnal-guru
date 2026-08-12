@@ -16,7 +16,7 @@ export async function seedDatabase() {
     role: "admin",
   });
 
-  await db.insert(settings).values({ key: "app_name", value: "Teacher Dashboard" });
+  await db.insert(settings).values({ key: "app_name", value: "Jurnal Guru" });
   await db.insert(settings).values({ key: "tahun_ajaran", value: "2024/2025" });
   await db.insert(settings).values({ key: "semester", value: "1" });
   await db.insert(settings).values({ key: "kkm_default", value: "75" });

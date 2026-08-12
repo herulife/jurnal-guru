@@ -56,3 +56,9 @@ next-env.d.ts
 # service account credential (jangan di-commit)
 docs/aplikasi/*.json
 dashboard-guru.json
+
+# secret & deployment credentials
+.agents/
+deploy.sh
+opencode.json
+*.local.json

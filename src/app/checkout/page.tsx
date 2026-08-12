@@ -10,17 +10,17 @@ const plans = [
     id: "pro",
     name: "Pro",
     price: 29000,
-    tagline: "Untuk guru yang mengajar banyak kelas",
+    tagline: "Semua fitur Gratis + nilai, rekap nilai & kelompok belajar",
     per: "/bulan",
-    features: ["Unlimited kelas", "Export PDF", "Laporan lanjutan", "Prioritas support", "Bonus: Template RPP"],
+    features: ["Semua fitur Gratis", "Nilai & KKM", "Rekap Nilai", "Generate Kelompok Belajar", "Unlimited kelas"],
   },
   {
-    id: "sekolah",
-    name: "Sekolah",
-    price: 299000,
-    tagline: "Untuk sekolah & dinas pendidikan",
+    id: "premium",
+    name: "Premium",
+    price: 49000,
+    tagline: "Semua fitur Pro + generate LCKH dan LKB",
     per: "/bulan",
-    features: ["Semua fitur Pro", "Multi-guru", "Dashboard admin", "Backup otomatis", "Support dedicated", "Custom domain"],
+    features: ["Semua fitur Pro", "Generate LCKH", "Generate LKB", "Ekspor laporan pegawai", "Support prioritas"],
   },
 ];
 
@@ -42,7 +42,7 @@ function CheckoutInner() {
 
   useEffect(() => {
     const p = searchParams.get("plan");
-    if (p === "sekolah") setPlanId("sekolah");
+    if (p === "premium" || p === "sekolah") setPlanId("premium");
     apiGet("/api/auth/check")
       .then((r) => setAuthState(r.ok ? "ok" : "guest"))
       .catch(() => setAuthState("guest"));
@@ -175,7 +175,7 @@ function CheckoutInner() {
               )}
             </button>
             <p className="text-center text-xs text-gray-400 mt-3">
-              <i className="fas fa-shield-halved mr-1"></i> Pembayaran diverifikasi manual. Garansi 30 hari uang kembali.
+              <i className="fas fa-shield-halved mr-1"></i> Pembayaran diverifikasi manual. Data Anda terenkripsi dan aman.
             </p>
           </div>
         )}

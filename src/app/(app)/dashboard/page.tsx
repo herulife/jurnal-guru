@@ -1,17 +1,20 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { Chart } from "chart.js/auto";
+import { Chart, BarController, BarElement, CategoryScale, LinearScale, Tooltip } from "chart.js";
 import { apiGet } from "@/lib/useApi";
+
+Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip);
 
 interface DashboardData {
   totalSiswa: number;
   totalKelas: number;
   absenHariIni: number;
-  rataNilai: number;
+  rataNilai: number | null;
   distPerKelas: Record<string, number>;
   totalAbsensi: number;
-  totalNilai: number;
+  totalNilai: number | null;
+  nilaiLocked: boolean;
   tahunAjaran: string;
   semester: string;
 }
@@ -112,19 +115,19 @@ export default function DashboardPage() {
     },
     {
       label: "Nilai Keseluruhan",
-      value: data?.rataNilai ?? 0,
-      sub: "Rata-rata",
-      icon: "fa-chart-line",
-      bg: "bg-purple-50",
-      color: "text-purple-700",
-      accent: "#7c3aed",
+      value: data?.nilaiLocked ? "Pro" : (data?.rataNilai ?? 0),
+      sub: data?.nilaiLocked ? "Paket Pro" : "Rata-rata",
+      icon: data?.nilaiLocked ? "fa-lock" : "fa-chart-line",
+      bg: data?.nilaiLocked ? "bg-gray-50" : "bg-purple-50",
+      color: data?.nilaiLocked ? "text-gray-400" : "text-purple-700",
+      accent: data?.nilaiLocked ? "#9ca3af" : "#7c3aed",
     },
   ];
 
   return (
     <div className="p-6 fade-in">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] px-0 py-3 flex items-center justify-between -mx-6 px-6 mb-6">
+      <header className="sticky top-14 md:top-0 z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
         <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">
           Dashboard
         </h1>
@@ -138,7 +141,7 @@ export default function DashboardPage() {
             })}
           </span>
         </div>
-      </div>
+      </header>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
@@ -164,7 +167,7 @@ export default function DashboardPage() {
 
       {/* Charts & Ringkasan */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-2xl p-6 border border-[#E8E4DC]">
+        <div className="card">
           <h3 className="font-bold text-gray-800 mb-4 font-[Outfit]">
             Distribusi Siswa per Kelas
           </h3>
@@ -173,7 +176,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-6 border border-[#E8E4DC]">
+        <div className="card">
           <h3 className="font-bold text-gray-800 mb-4 font-[Outfit]">
             Ringkasan Data
           </h3>
@@ -187,11 +190,11 @@ export default function DashboardPage() {
                 value: data?.totalAbsensi ?? 0,
               },
               {
-                icon: "fa-chart-bar",
-                bg: "bg-[#fffbeb]",
-                color: "text-[#E8A317]",
+                icon: data?.nilaiLocked ? "fa-lock" : "fa-chart-bar",
+                bg: data?.nilaiLocked ? "bg-gray-50" : "bg-[#fffbeb]",
+                color: data?.nilaiLocked ? "text-gray-400" : "text-[#E8A317]",
                 label: "Total Nilai",
-                value: data?.totalNilai ?? 0,
+                value: data?.nilaiLocked ? "Pro" : (data?.totalNilai ?? 0),
               },
               {
                 icon: "fa-calendar-alt",

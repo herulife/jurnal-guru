@@ -15,4 +15,4 @@ Disallow: /settings/
 Disallow: /profil/
 Disallow: /surat/
 
-Sitemap: https://teacher-dashboard-next.teacher-dashboard-app.workers.dev/sitemap.xml
+Sitemap: https://benuatech.web.id/guru/sitemap.xml

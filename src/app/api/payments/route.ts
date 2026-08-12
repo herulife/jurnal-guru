@@ -7,7 +7,7 @@ import { apiError, apiOk, apiServerError } from "@/lib/utils";
 
 export const PLANS: Record<string, { name: string; price: number; months: number }> = {
   pro: { name: "Pro", price: 29000, months: 1 },
-  sekolah: { name: "Sekolah", price: 299000, months: 1 },
+  premium: { name: "Premium", price: 49000, months: 1 },
 };
 
 export async function getPaymentSettings() {

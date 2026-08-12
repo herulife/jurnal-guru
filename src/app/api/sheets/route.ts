@@ -1,4 +1,4 @@
-import { requireAuth, AuthError, addLog } from "@/lib/auth";
+import { requireAuth, isAdminRole, AuthError, addLog } from "@/lib/auth";
 import { db } from "@/db";
 import {
   users,
@@ -27,6 +27,7 @@ export async function GET() {
       spreadsheetUrl: user?.googleSheetsUrl || "",
       serviceAccountEmail: getServiceAccountEmail(),
       scopes: SCOPE_COL,
+      adminOnly: true,
     });
   } catch (e: unknown) {
     if (e instanceof AuthError) return apiError(e.message, e.status);
@@ -42,13 +43,19 @@ export async function POST(req: Request) {
     const spreadsheetUrl = String(body.spreadsheetUrl || "").trim();
 
     if (body.action === "sync") {
+      if (!isAdminRole(session.role)) {
+        return apiError("Fitur sinkronisasi Google Sheets hanya untuk administrator sekolah.", 403);
+      }
       if (!spreadsheetUrl) return apiError("Isi URL spreadsheet dulu");
       const result = await syncAll(session.id, spreadsheetUrl);
       await addLog(session.id, "SYNC_SHEETS", result.msg);
       return apiOk(result);
     }
 
-    // simpan URL
+    // simpan URL — hanya admin
+    if (!isAdminRole(session.role)) {
+      return apiError("Fitur sinkronisasi Google Sheets hanya untuk administrator sekolah.", 403);
+    }
     if (!spreadsheetUrl) return apiError("URL spreadsheet wajib diisi");
     await db.update(users).set({ googleSheetsUrl: spreadsheetUrl }).where(eq(users.id, session.id));
     await addLog(session.id, "SAVE_SHEETS_URL", "Simpan URL spreadsheet");

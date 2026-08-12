@@ -1,18 +1,23 @@
-import { requireAuth, AuthError, addLog } from "@/lib/auth";
+import { requireAuth, scopeUserId, AuthError, addLog } from "@/lib/auth";
+import { requirePlan } from "@/lib/plans";
 import { db } from "@/db";
 import { lckh, jurnalMengajar, dataKelas } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
 
 export async function GET(req: Request) {
   try {
     const session = await requireAuth();
+    await requirePlan(session.role, session.id, "premium");
     const url = new URL(req.url);
     const bulan = url.searchParams.get("bulan");
     const tahun = url.searchParams.get("tahun");
+    const scope = scopeUserId(session.role, session.id);
 
-    let rows = await db.select().from(lckh).all();
+    let rows = scope
+      ? await db.select().from(lckh).where(eq(lckh.userId, scope)).all()
+      : await db.select().from(lckh).all();
     if (bulan) {
       rows = rows.filter(
         (r) => r.tanggal?.includes(`-${bulan}-`) || r.tanggal?.includes(`/${bulan}/`)
@@ -33,9 +38,11 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await requireAuth();
+    await requirePlan(session.role, session.id, "premium");
     const body = await req.json();
     const records = body.records;
     const { action, bulan, tahun } = body;
+    const scope = scopeUserId(session.role, session.id);
 
     if (!Array.isArray(records) && action !== "generate") {
       return apiError("Data tidak lengkap");
@@ -43,8 +50,12 @@ export async function POST(req: Request) {
 
     if (action === "generate") {
       // Generate dari jurnal mengajar per bulan/tahun
-      const jurnal = await db.select().from(jurnalMengajar).all();
-      const kelasList = await db.select().from(dataKelas).all();
+      const jurnal = scope
+        ? await db.select().from(jurnalMengajar).where(eq(jurnalMengajar.userId, scope)).all()
+        : await db.select().from(jurnalMengajar).all();
+      const kelasList = scope
+        ? await db.select().from(dataKelas).where(eq(dataKelas.userId, scope)).all()
+        : await db.select().from(dataKelas).all();
       const kelasMap: Record<string, string> = {};
       for (const k of kelasList) kelasMap[k.id] = k.namaKelas || "-";
 
@@ -81,7 +92,9 @@ export async function POST(req: Request) {
     }
 
     // Simpan records (hapus lama sesuai filter bulan/tahun lalu insert)
-    let toDelete = await db.select().from(lckh).all();
+    let toDelete = scope
+      ? await db.select().from(lckh).where(eq(lckh.userId, scope)).all()
+      : await db.select().from(lckh).all();
     if (bulan) toDelete = toDelete.filter((r) => r.tanggal?.includes(`-${bulan}-`));
     if (tahun) toDelete = toDelete.filter((r) => r.tanggal?.includes(tahun));
     const idsToDelete = toDelete.map((r) => r.id);
@@ -92,6 +105,7 @@ export async function POST(req: Request) {
     if (records.length) {
       const rows = records.map((r: Record<string, unknown>) => ({
         id: r.id && typeof r.id === "string" && r.id.startsWith("tmp-") ? uuidv4() : String(r.id || uuidv4()),
+        userId: session.id,
         no: String(r.no || ""),
         kegiatan: String(r.kegiatan || ""),
         pekerjaan: String(r.pekerjaan || ""),

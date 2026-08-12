@@ -1,21 +1,30 @@
 import { createSession, verifyCredentials, addLog } from "@/lib/auth";
-import { apiError, apiResponse } from "@/lib/utils";
+import { apiError, apiResponse, apiServerError } from "@/lib/utils";
+import { rateLimited } from "@/lib/rateLimit";
 
 export async function POST(req: Request) {
   try {
-    const { username, password } = await req.json();
-    if (!username || !password) {
-      return apiError("Username dan password wajib diisi");
+    const rl = rateLimited(req);
+    if (rl.limited) {
+      return apiError(
+        "Terlalu banyak percobaan login. Silakan coba lagi beberapa menit lagi.",
+        429
+      );
     }
-    const user = await verifyCredentials(username, password);
+    const { username, password, email } = await req.json();
+    const identifier = (email || username || "").trim();
+    if (!identifier || !password) {
+      return apiError("Email dan password wajib diisi");
+    }
+    const user = await verifyCredentials(identifier, password);
     if (!user) {
-      return apiError("Username atau password salah");
+      return apiError("Email atau password salah");
     }
     await createSession(user);
     await addLog(user.id, "LOGIN", `${user.username} login`);
     return apiResponse(true, { user }, "Login berhasil");
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : "Terjadi kesalahan";
-    return apiError(msg);
+    console.error("[LOGIN ERROR]", e);
+    return apiServerError();
   }
 }

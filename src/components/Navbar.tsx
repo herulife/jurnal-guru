@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 
 export default function Navbar() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -24,20 +23,20 @@ export default function Navbar() {
               <i className="fas fa-graduation-cap text-white text-sm"></i>
             </div>
             <div>
-              <p className={`font-bold text-sm leading-tight ${scrolled ? "text-[#1A2332]" : "text-[#1A2332]"}`}>Jurnal Guru</p>
-              <p className={`text-[10px] leading-tight ${scrolled ? "text-gray-400" : "text-gray-500"}`}>Teacher Dashboard</p>
+              <p className={`font-bold text-sm leading-tight transition-colors ${scrolled ? "text-[#1A2332]" : "text-white"}`}>Jurnal Guru</p>
+              <p className={`text-[10px] leading-tight transition-colors ${scrolled ? "text-gray-400" : "text-white/60"}`}>Administrasi Guru &amp; Kelas</p>
             </div>
           </Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-6">
-            <a href="#fitur" className={`text-sm font-medium transition-colors ${scrolled ? "text-gray-600 hover:text-[#0D7C66]" : "text-gray-700 hover:text-[#0D7C66]"}`}>
+            <Link href="#fitur" className={`text-sm font-medium transition-colors ${scrolled ? "text-gray-600 hover:text-[#0D7C66]" : "text-white/90 hover:text-white"}`}>
               Fitur
-            </a>
-            <a href="#harga" className={`text-sm font-medium transition-colors ${scrolled ? "text-gray-600 hover:text-[#0D7C66]" : "text-gray-700 hover:text-[#0D7C66]"}`}>
+            </Link>
+            <Link href="#harga" className={`text-sm font-medium transition-colors ${scrolled ? "text-gray-600 hover:text-[#0D7C66]" : "text-white/90 hover:text-white"}`}>
               Harga
-            </a>
-            <Link href="/login" className={`text-sm font-medium transition-colors ${scrolled ? "text-gray-600 hover:text-[#0D7C66]" : "text-gray-700 hover:text-[#0D7C66]"}`}>
+            </Link>
+            <Link href="/login" className={`text-sm font-medium transition-colors ${scrolled ? "text-gray-600 hover:text-[#0D7C66]" : "text-white/90 hover:text-white"}`}>
               Masuk
             </Link>
             <Link href="/register" className="bg-[#0D7C66] hover:bg-[#0A6352] text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-all shadow-md hover:shadow-lg">
@@ -47,7 +46,7 @@ export default function Navbar() {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-3">
-            <Link href="/login" className={`text-sm font-medium ${scrolled ? "text-gray-600" : "text-gray-700"}`}>
+            <Link href="/login" className={`text-sm font-medium transition-colors ${scrolled ? "text-gray-600" : "text-white/90"}`}>
               Masuk
             </Link>
             <Link href="/register" className="bg-[#0D7C66] hover:bg-[#0A6352] text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all shadow-md">

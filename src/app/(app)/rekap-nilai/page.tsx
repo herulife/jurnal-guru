@@ -4,11 +4,13 @@ import { useEffect, useState, useCallback } from "react";
 import { apiGet } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
 import ExportButton from "@/components/ExportButton";
+import HeaderActions from "@/components/HeaderActions";
+import PlanGuard from "@/components/PlanGuard";
 
 interface Nilai { id: string; namaSiswa: string; siswaId: string; namaKelas: string; kelasId: string; mataPelajaran: string; kategori: string; bab: string; nilai: number; kkm: number; }
 interface Kelas { id: string; namaKelas: string; }
 
-export default function RekapNilaiPage() {
+function RekapNilaiPageInner() {
   const [kelas, setKelas] = useState<Kelas[]>([]);
   const [kelasId, setKelasId] = useState("");
   const [mapel, setMapel] = useState("");
@@ -73,29 +75,43 @@ export default function RekapNilaiPage() {
     });
     return cnt ? Math.round((sum / cnt) * 10) / 10 : "-";
   }
+  function rowTotal(siswaId: string) {
+    let sum = 0;
+    babes.forEach((b) => {
+      const v = avg(cell[`${siswaId}|${b}`]);
+      if (v !== "-") sum += Number(v);
+    });
+    return Math.round(sum * 10) / 10;
+  }
 
   const paginated = siswaList.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div className="p-6 fade-in">
-      <header className="sticky top-0 z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
-        <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">Rekap Nilai</h1>
+      <header className="sticky top-14 md:top-0 z-20 md:z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
+        <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">Rekap Nilai Siswa</h1>
+        <div className="flex items-center gap-2">
+        <HeaderActions />
         <ExportButton
           fileName="rekap-nilai"
           title="Rekap Nilai Siswa"
           subtitle={kelas.find((k) => k.id === kelasId)?.namaKelas || "Semua Kelas"}
+          minPlan="pro"
           columns={[
             { key: "nama", label: "Nama Siswa" },
             ...babes.map((b) => ({ key: b, label: b })),
             { key: "rata", label: "Rata-rata" },
+            { key: "total", label: "Total" },
           ]}
           rows={siswaList.map(([id, s]) => {
             const row: Record<string, string | number> = { nama: s.nama };
             babes.forEach((b) => { row[b] = avg(cell[`${id}|${b}`]); });
             row.rata = rowAvg(id);
+            row.total = rowTotal(id);
             return row as unknown as { nama: string; rata: string | number };
           })}
         />
+        </div>
       </header>
 
       <div className="card mb-6">
@@ -119,11 +135,11 @@ export default function RekapNilaiPage() {
               <tr>
                 <th>No</th><th>Nama Siswa</th>
                 {babes.map((b) => <th key={b}>{b}</th>)}
-                <th>Rata-rata</th>
+                <th>Rata-rata</th><th>Total</th>
               </tr>
             </thead>
             <tbody>
-              {filtered.length === 0 && <tr><td colSpan={babes.length + 3} className="text-center text-gray-400 py-8">{loading ? "Memuat..." : "Klik Tampilkan"}</td></tr>}
+              {filtered.length === 0 && <tr><td colSpan={babes.length + 4} className="text-center text-gray-400 py-8">{loading ? "Memuat..." : "Klik Tampilkan"}</td></tr>}
               {paginated.map(([id, s], i) => (
                 <tr key={id}>
                   <td>{(page - 1) * pageSize + i + 1}</td>
@@ -133,6 +149,7 @@ export default function RekapNilaiPage() {
                     return <td key={b}>{v}</td>;
                   })}
                   <td className="font-bold">{rowAvg(id)}</td>
+                  <td className="font-bold">{rowTotal(id)}</td>
                 </tr>
               ))}
             </tbody>
@@ -141,5 +158,12 @@ export default function RekapNilaiPage() {
         <Pagination current={page} total={siswaList.length} pageSize={pageSize} onChange={setPage} />
       </div>
     </div>
+  );
+}
+export default function RekapNilaiPage() {
+  return (
+    <PlanGuard min="pro">
+      <RekapNilaiPageInner />
+    </PlanGuard>
   );
 }

@@ -1,4 +1,4 @@
-import { requireAuth, AuthError, addLog } from "@/lib/auth";
+import { requireAdmin, AuthError, addLog } from "@/lib/auth";
 import { db } from "@/db";
 import { dataSurat } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -6,7 +6,7 @@ import { apiError, apiResponse, apiServerError } from "@/lib/utils";
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const session = await requireAuth();
+    const session = await requireAdmin();
     const { id } = await params;
     const { judul, jenis, tujuan, template } = await req.json();
     if (!judul || !jenis || !template) {
@@ -24,7 +24,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const session = await requireAuth();
+    const session = await requireAdmin();
     const { id } = await params;
     await db.delete(dataSurat).where(eq(dataSurat.id, id));
     await addLog(session.id, "DELETE_SURAT", `Hapus surat ${id}`);

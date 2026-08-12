@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -8,7 +10,7 @@ import { apiPost } from "@/lib/useApi";
 export default function RegisterPage() {
   const router = useRouter();
   const [namaLengkap, setNamaLengkap] = useState("");
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -28,7 +30,7 @@ export default function RegisterPage() {
     try {
       const res = await apiPost("/api/auth/register", {
         namaLengkap,
-        username,
+        email,
         password,
       });
       if (!res.ok) {
@@ -97,13 +99,11 @@ export default function RegisterPage() {
             <form onSubmit={handleRegister}>
               <div className="mb-4">
                 <label className="label">Nama Lengkap</label>
-                <div className="flex items-center border-2 border-[#E8E4DC] rounded-xl focus-within:border-[#0D7C66] focus-within:shadow-[0_0_0_3px_rgba(13,124,102,0.12)] transition-all bg-white">
-                  <div className="pl-3.5 text-gray-400">
-                    <i className="fas fa-id-card text-sm"></i>
-                  </div>
+                <div className="relative">
+                  <i className="fas fa-id-card absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                   <input
                     type="text"
-                    className="flex-1 px-3 py-2.5 outline-none text-sm bg-transparent"
+                    className="input pl-10 w-full text-sm"
                     placeholder="Masukkan nama lengkap"
                     value={namaLengkap}
                     onChange={(e) => setNamaLengkap(e.target.value)}
@@ -112,55 +112,53 @@ export default function RegisterPage() {
                 </div>
               </div>
               <div className="mb-4">
-                <label className="label">Username</label>
-                <div className="flex items-center border-2 border-[#E8E4DC] rounded-xl focus-within:border-[#0D7C66] focus-within:shadow-[0_0_0_3px_rgba(13,124,102,0.12)] transition-all bg-white">
-                  <div className="pl-3.5 text-gray-400">
-                    <i className="fas fa-user text-sm"></i>
-                  </div>
+                <label className="label">Email</label>
+                <div className="relative">
+                  <i className="fas fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                   <input
-                    type="text"
-                    className="flex-1 px-3 py-2.5 outline-none text-sm bg-transparent"
-                    placeholder="Minimal 4 karakter"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    type="email"
+                    name="email"
+                    autoComplete="email"
+                    className="input pl-10 w-full text-sm"
+                    placeholder="Masukkan email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
-                    minLength={4}
                   />
                 </div>
               </div>
               <div className="mb-4">
                 <label className="label">Password</label>
-                <div className="flex items-center border-2 border-[#E8E4DC] rounded-xl focus-within:border-[#0D7C66] focus-within:shadow-[0_0_0_3px_rgba(13,124,102,0.12)] transition-all bg-white">
-                  <div className="pl-3.5 text-gray-400">
-                    <i className="fas fa-lock text-sm"></i>
-                  </div>
+                <div className="relative">
+                  <i className="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                   <input
                     type="password"
-                    className="flex-1 px-3 py-2.5 outline-none text-sm bg-transparent"
-                    placeholder="Minimal 6 karakter"
+                    className="input pl-10 w-full text-sm"
+                    placeholder="Minimal 8 karakter"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    minLength={6}
+                    minLength={8}
                   />
                 </div>
               </div>
               <div className="mb-6">
                 <label className="label">Konfirmasi Password</label>
-                <div className="flex items-center border-2 border-[#E8E4DC] rounded-xl focus-within:border-[#0D7C66] focus-within:shadow-[0_0_0_3px_rgba(13,124,102,0.12)] transition-all bg-white">
-                  <div className="pl-3.5 text-gray-400">
-                    <i className="fas fa-lock text-sm"></i>
-                  </div>
+                <div className="relative">
+                  <i className="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                   <input
                     type="password"
-                    className="flex-1 px-3 py-2.5 outline-none text-sm bg-transparent"
+                    className="input pl-10 w-full text-sm"
                     placeholder="Ulangi password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
-                    minLength={6}
+                    minLength={8}
                   />
                 </div>
+              </div>
+              <div className="mb-6">
+                <p className="text-xs text-gray-400">Dengan mendaftar, Anda menyetujui ketentuan layanan Jurnal Guru.</p>
               </div>
               {error && (
                 <div className="bg-red-50 border border-red-200 rounded-xl p-3 mb-4">

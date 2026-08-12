@@ -1,4 +1,4 @@
-import { requireAuth, AuthError } from "@/lib/auth";
+import { requireAuth, scopeUserId, AuthError } from "@/lib/auth";
 import { db } from "@/db";
 import { absensi, dataSiswa, dataKelas } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -11,19 +11,27 @@ export async function GET(req: Request) {
     const kelasId = url.searchParams.get("kelasId");
     const startDate = url.searchParams.get("startDate");
     const endDate = url.searchParams.get("endDate");
+    const scope = scopeUserId(session.role, session.id);
 
-    const kelasList = await db.select().from(dataKelas).all();
+    const kelasList = scope
+      ? await db.select().from(dataKelas).where(eq(dataKelas.userId, scope)).all()
+      : await db.select().from(dataKelas).all();
     const kelasMap: Record<string, string> = {};
     for (const k of kelasList) kelasMap[k.id] = k.namaKelas || "-";
 
     let filteredSiswa;
     if (kelasId) {
       filteredSiswa = await db.select().from(dataSiswa).where(eq(dataSiswa.kelasId, kelasId)).all();
+      if (scope) filteredSiswa = filteredSiswa.filter((s) => s.userId === scope);
     } else {
-      filteredSiswa = await db.select().from(dataSiswa).all();
+      filteredSiswa = scope
+        ? await db.select().from(dataSiswa).where(eq(dataSiswa.userId, scope)).all()
+        : await db.select().from(dataSiswa).all();
     }
 
-    let absenList = await db.select().from(absensi).all();
+    let absenList = scope
+      ? await db.select().from(absensi).where(eq(absensi.userId, scope)).all()
+      : await db.select().from(absensi).all();
 
     if (startDate || endDate) {
       const sd = startDate ? new Date(startDate + "T00:00:00") : null;

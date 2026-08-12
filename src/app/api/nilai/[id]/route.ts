@@ -1,4 +1,5 @@
-import { requireAuth, AuthError, addLog } from "@/lib/auth";
+import { requireAuth, scopeUserId, AuthError, addLog } from "@/lib/auth";
+import { requirePlan } from "@/lib/plans";
 import { db } from "@/db";
 import { nilai } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -10,8 +11,14 @@ export async function PUT(
 ) {
   try {
     const session = await requireAuth();
+    await requirePlan(session.role, session.id, "pro");
     const { id } = await params;
     const body = await req.json();
+    const scope = scopeUserId(session.role, session.id);
+    const existing = await db.select({ userId: nilai.userId }).from(nilai).where(eq(nilai.id, id)).get();
+    if (!existing || (scope && existing.userId !== scope)) {
+      return apiError("Nilai tidak ditemukan", 404);
+    }
     const fields = [
       "mataPelajaran",
       "kategori",
@@ -44,7 +51,13 @@ export async function DELETE(
 ) {
   try {
     const session = await requireAuth();
+    await requirePlan(session.role, session.id, "pro");
     const { id } = await params;
+    const scope = scopeUserId(session.role, session.id);
+    const existing = await db.select({ userId: nilai.userId }).from(nilai).where(eq(nilai.id, id)).get();
+    if (!existing || (scope && existing.userId !== scope)) {
+      return apiError("Nilai tidak ditemukan", 404);
+    }
     await db.delete(nilai).where(eq(nilai.id, id));
     await addLog(session.id, "DELETE_NILAI", `Hapus nilai ${id}`);
     return apiOk(null, "Nilai dihapus");

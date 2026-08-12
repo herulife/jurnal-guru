@@ -1,12 +1,15 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiPost } from "@/lib/useApi";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -16,7 +19,7 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await apiPost("/api/auth/login", { username, password });
+      const res = await apiPost("/api/auth/login", { username: email, password });
       if (!res.ok) {
         setError(res.msg || "Login gagal");
         return;
@@ -52,7 +55,7 @@ export default function LoginPage() {
         <div className="relative z-10 text-center px-12">
           <img 
             src="/login-illustration.png" 
-            alt="Login Illustration" 
+            alt="Ilustrasi Jurnal Guru" 
             className="w-full max-w-md mx-auto mb-8 drop-shadow-2xl"
           />
           <h2 className="text-3xl font-bold text-white font-[Outfit] mb-4">
@@ -82,36 +85,42 @@ export default function LoginPage() {
           <div className="bg-white rounded-2xl shadow-xl p-8 border border-[#E8E4DC]">
             <form onSubmit={handleLogin}>
               <div className="mb-5">
-                <label className="label">Username</label>
-                <div className="flex items-center border-2 border-[#E8E4DC] rounded-xl focus-within:border-[#0D7C66] focus-within:shadow-[0_0_0_3px_rgba(13,124,102,0.12)] transition-all bg-white">
-                  <div className="pl-3.5 text-gray-400">
-                    <i className="fas fa-user text-sm"></i>
-                  </div>
+                <label className="label">Email atau Username</label>
+                <div className="relative">
+                  <i className="fas fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none" aria-hidden="true"></i>
                   <input
                     type="text"
-                    className="flex-1 px-3 py-2.5 outline-none text-sm bg-transparent"
-                    placeholder="Masukkan username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    inputMode="email"
+                    name="email"
+                    autoComplete="username"
+                    className="input pl-10 w-full text-sm"
+                    placeholder="Masukkan email atau username"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
               </div>
-              <div className="mb-6">
+              <div className="mb-2">
                 <label className="label">Password</label>
-                <div className="flex items-center border-2 border-[#E8E4DC] rounded-xl focus-within:border-[#0D7C66] focus-within:shadow-[0_0_0_3px_rgba(13,124,102,0.12)] transition-all bg-white">
-                  <div className="pl-3.5 text-gray-400">
-                    <i className="fas fa-lock text-sm"></i>
-                  </div>
+                <div className="relative">
+                  <i className="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none" aria-hidden="true"></i>
                   <input
                     type="password"
-                    className="flex-1 px-3 py-2.5 outline-none text-sm bg-transparent"
+                    name="password"
+                    autoComplete="current-password"
+                    className="input pl-10 w-full text-sm"
                     placeholder="Masukkan password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                 </div>
+              </div>
+              <div className="flex justify-end mb-6">
+                <Link href="/faq" className="text-sm text-[#0D7C66] hover:underline">
+                  Lupa password?
+                </Link>
               </div>
               {error && (
                 <div className="bg-red-50 border border-red-200 rounded-xl p-3 mb-4">
@@ -142,6 +151,13 @@ export default function LoginPage() {
           <p className="text-center text-gray-500 text-sm mt-6">
             <i className="fas fa-shield-halved mr-1 text-[#0D7C66]"></i>
             Login aman & terenkripsi
+          </p>
+
+          <p className="text-center text-gray-500 text-sm mt-4">
+            Belum punya akun?{" "}
+            <Link href="/register" className="text-[#0D7C66] font-semibold hover:underline">
+              Daftar di sini
+            </Link>
           </p>
         </div>
       </div>
