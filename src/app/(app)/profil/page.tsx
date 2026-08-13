@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { apiGet, apiPut } from "@/lib/useApi";
 import AdminGuard from "@/components/AdminGuard";
 import HeaderActions from "@/components/HeaderActions";
+import TutorialLink from "@/components/TutorialLink";
 
 export default function ProfilPage() {
   const [form, setForm] = useState({
@@ -30,23 +31,26 @@ export default function ProfilPage() {
       </header>
 
       <div className="card max-w-3xl">
-        <h3 className="font-bold text-gray-800 mb-6 font-[Outfit]">Informasi Sekolah</h3>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="font-bold text-gray-800 font-[Outfit]">Informasi Sekolah</h3>
+          <TutorialLink href="/panduan#dashboard" label="Panduan" />
+        </div>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div className="sm:col-span-2"><label className="label">Nama Sekolah</label><input type="text" className="input" value={form.namaSekolah} onChange={(e) => setForm({...form, namaSekolah: e.target.value})} /></div>
-            <div className="sm:col-span-2"><label className="label">Alamat</label><textarea className="input" rows={2} value={form.alamat} onChange={(e) => setForm({...form, alamat: e.target.value})} /></div>
-            <div><label className="label">NPSN</label><input type="text" className="input" value={form.npsn} onChange={(e) => setForm({...form, npsn: e.target.value})} /></div>
-            <div><label className="label">Kota</label><input type="text" className="input" value={form.kota} onChange={(e) => setForm({...form, kota: e.target.value})} /></div>
-            <div><label className="label">Provinsi</label><input type="text" className="input" value={form.provinsi} onChange={(e) => setForm({...form, provinsi: e.target.value})} /></div>
-            <div><label className="label">Telepon</label><input type="text" className="input" value={form.telepon} onChange={(e) => setForm({...form, telepon: e.target.value})} /></div>
-            <div><label className="label">Kepala Sekolah</label><input type="text" className="input" value={form.kepalaSekolah} onChange={(e) => setForm({...form, kepalaSekolah: e.target.value})} /></div>
-            <div><label className="label">NIP Kepala Sekolah</label><input type="text" className="input" value={form.nipKepsek} onChange={(e) => setForm({...form, nipKepsek: e.target.value})} /></div>
-            <div><label className="label">Nama Guru</label><input type="text" className="input" value={form.namaGuru} onChange={(e) => setForm({...form, namaGuru: e.target.value})} /></div>
-            <div><label className="label">NIP Guru</label><input type="text" className="input" value={form.nipGuru} onChange={(e) => setForm({...form, nipGuru: e.target.value})} /></div>
+            <div className="sm:col-span-2"><label className="label">Nama Sekolah</label><input type="text" className="input" placeholder="Contoh: SMA Nusantara" value={form.namaSekolah} onChange={(e) => setForm({...form, namaSekolah: e.target.value})} /></div>
+            <div className="sm:col-span-2"><label className="label">Alamat</label><textarea className="input" rows={2} placeholder="Alamat lengkap sekolah" value={form.alamat} onChange={(e) => setForm({...form, alamat: e.target.value})} /></div>
+            <div><label className="label">NPSN</label><input type="text" className="input" placeholder="8 digit NPSN" value={form.npsn} onChange={(e) => setForm({...form, npsn: e.target.value})} /></div>
+            <div><label className="label">Kota</label><input type="text" className="input" placeholder="Kota" value={form.kota} onChange={(e) => setForm({...form, kota: e.target.value})} /></div>
+            <div><label className="label">Provinsi</label><input type="text" className="input" placeholder="Provinsi" value={form.provinsi} onChange={(e) => setForm({...form, provinsi: e.target.value})} /></div>
+            <div><label className="label">Telepon</label><input type="text" className="input" placeholder="Contoh: 0341-123456" value={form.telepon} onChange={(e) => setForm({...form, telepon: e.target.value})} /></div>
+            <div><label className="label">Kepala Sekolah</label><input type="text" className="input" placeholder="Nama kepala sekolah" value={form.kepalaSekolah} onChange={(e) => setForm({...form, kepalaSekolah: e.target.value})} /></div>
+            <div><label className="label">NIP Kepala Sekolah</label><input type="text" className="input" placeholder="NIP kepala sekolah" value={form.nipKepsek} onChange={(e) => setForm({...form, nipKepsek: e.target.value})} /></div>
+            <div><label className="label">Nama Guru</label><input type="text" className="input" placeholder="Nama lengkap guru" value={form.namaGuru} onChange={(e) => setForm({...form, namaGuru: e.target.value})} /></div>
+            <div><label className="label">NIP Guru</label><input type="text" className="input" placeholder="NIP guru" value={form.nipGuru} onChange={(e) => setForm({...form, nipGuru: e.target.value})} /></div>
             <div><label className="label">Jabatan</label><input type="text" className="input" value={form.jabatan} onChange={(e) => setForm({...form, jabatan: e.target.value})} placeholder="Guru Mapel" /></div>
             <div><label className="label">Pangkat</label><input type="text" className="input" value={form.pangkat} onChange={(e) => setForm({...form, pangkat: e.target.value})} placeholder="Penata Muda Tk.I" /></div>
             <div><label className="label">Golongan Ruang</label><input type="text" className="input" value={form.golRuang} onChange={(e) => setForm({...form, golRuang: e.target.value})} placeholder="III/b" /></div>
-            <div className="sm:col-span-2"><label className="label">Logo URL</label><input type="text" className="input" value={form.logoUrl} onChange={(e) => setForm({...form, logoUrl: e.target.value})} /></div>
+            <div className="sm:col-span-2"><label className="label">Logo URL</label><input type="text" className="input" placeholder="URL gambar logo" value={form.logoUrl} onChange={(e) => setForm({...form, logoUrl: e.target.value})} /></div>
           </div>
           <div className="mt-6"><button type="submit" className="btn btn-primary"><i className="fas fa-save"></i> Simpan Profil</button></div>
         </form>

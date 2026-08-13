@@ -5,6 +5,7 @@ import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import { bukaDokumen, exportXlsx, esc } from "@/lib/dokumen";
 import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
+import TutorialLink from "@/components/TutorialLink";
 import PlanGuard from "@/components/PlanGuard";
 
 interface Nilai { id: string; namaSiswa: string; siswaId: string; namaKelas: string; kelasId: string; mataPelajaran: string; kategori: string; nilai: number; kkm: number; bab: string; remedial: string; }
@@ -123,6 +124,7 @@ function NilaiPageInner() {
           <option value="Ulangan">Ulangan</option>
           <option value="Tugas">Tugas</option>
         </select>
+        <TutorialLink href="/panduan#nilai" label="Panduan" />
       </div>
 
       {selected.size > 0 && (
@@ -209,12 +211,12 @@ function NilaiEditModal({ editData, kelas, onSave, onClose }: { editData: Nilai 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {!editData && (<><div><label className="label">Kelas</label><select className="input" value={kelasId} onChange={(e) => setKelasId(e.target.value)}><option value="">Pilih</option>{kelas.map(k => <option key={k.id} value={k.id}>{k.namaKelas}</option>)}</select></div>
               <div><label className="label">Siswa</label><select className="input" value={selectedSiswa} onChange={(e) => setSelectedSiswa(e.target.value)}><option value="">Pilih</option>{siswa.map(s => <option key={s.id} value={s.id}>{s.namaSiswa}</option>)}</select></div></>)}
-            <div><label className="label">Mapel</label><input type="text" className="input" value={form.mataPelajaran} onChange={(e) => setForm({...form, mataPelajaran: e.target.value})} /></div>
+            <div><label className="label">Mapel</label><input type="text" className="input" placeholder="Matematika" value={form.mataPelajaran} onChange={(e) => setForm({...form, mataPelajaran: e.target.value})} /></div>
             <div><label className="label">Kategori</label><select className="input" value={form.kategori} onChange={(e) => setForm({...form, kategori: e.target.value})}><option>Pengetahuan</option><option>Keterampilan</option><option>Ulangan</option><option>Tugas</option></select></div>
-            <div><label className="label">Nilai</label><input type="number" className="input" min="0" max="100" value={form.nilai} onChange={(e) => setForm({...form, nilai: e.target.value})} /></div>
-            <div><label className="label">KKM</label><input type="number" className="input" min="0" max="100" value={form.kkm} onChange={(e) => setForm({...form, kkm: e.target.value})} /></div>
-            <div><label className="label">BAB</label><input type="text" className="input" value={form.bab} onChange={(e) => setForm({...form, bab: e.target.value})} /></div>
-            <div><label className="label">Remedial</label><input type="text" className="input" value={form.remedial} onChange={(e) => setForm({...form, remedial: e.target.value})} /></div>
+            <div><label className="label">Nilai</label><input type="number" className="input" min="0" max="100" placeholder="0-100" value={form.nilai} onChange={(e) => setForm({...form, nilai: e.target.value})} /></div>
+            <div><label className="label">KKM</label><input type="number" className="input" min="0" max="100" placeholder="75" value={form.kkm} onChange={(e) => setForm({...form, kkm: e.target.value})} /></div>
+            <div><label className="label">BAB</label><input type="text" className="input" placeholder="Contoh: Bab 1" value={form.bab} onChange={(e) => setForm({...form, bab: e.target.value})} /></div>
+            <div><label className="label">Remedial</label><input type="text" className="input" placeholder="Keterangan remedial" value={form.remedial} onChange={(e) => setForm({...form, remedial: e.target.value})} /></div>
           </div>
           <div className="mt-5 flex gap-3 justify-end">
             <button type="button" className="btn btn-outline" onClick={onClose}>Batal</button>
@@ -254,11 +256,14 @@ function NilaiBatchInline({ kelas, mapelList, onSave }: { kelas: Kelas[]; mapelL
 
   return (
     <div className="card mb-6">
-      <h3 className="font-bold text-gray-800 mb-4 font-[Outfit]">Input Nilai Batch (Satu Kelas)</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-bold text-gray-800 font-[Outfit]">Input Nilai Batch (Satu Kelas)</h3>
+        <TutorialLink href="/panduan#nilai" label="Panduan" />
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <div><label className="label">Kelas</label><select className="input text-sm" value={kelasId} onChange={(e) => setKelasId(e.target.value)}><option value="">Pilih Kelas</option>{kelas.map(k => <option key={k.id} value={k.id}>{k.namaKelas}</option>)}</select></div>
         <div><label className="label">Mapel</label><select className="input text-sm" value={mapel} onChange={(e) => setMapel(e.target.value)}><option value="">Pilih Mapel</option>{mapelList.map((m) => <option key={m} value={m}>{m}</option>)}</select></div>
-        <div><label className="label">KKM</label><input type="number" className="input text-sm" value={kkm} min="0" max="100" onChange={(e) => setKkm(e.target.value)} /></div>
+        <div><label className="label">KKM</label><input type="number" className="input text-sm" placeholder="75" value={kkm} min="0" max="100" onChange={(e) => setKkm(e.target.value)} /></div>
         <div><label className="label">Kategori</label><select className="input text-sm" value={kategori} onChange={(e) => setKategori(e.target.value)}><option>Pengetahuan</option><option>Keterampilan</option><option>Ulangan</option><option>Tugas</option></select></div>
       </div>
       <div className="space-y-2 mb-4">

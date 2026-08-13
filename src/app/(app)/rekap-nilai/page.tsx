@@ -5,6 +5,7 @@ import { apiGet } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
 import ExportButton from "@/components/ExportButton";
 import HeaderActions from "@/components/HeaderActions";
+import TutorialLink from "@/components/TutorialLink";
 import PlanGuard from "@/components/PlanGuard";
 
 interface Nilai { id: string; namaSiswa: string; siswaId: string; namaKelas: string; kelasId: string; mataPelajaran: string; kategori: string; bab: string; nilai: number; kkm: number; }
@@ -115,7 +116,10 @@ function RekapNilaiPageInner() {
       </header>
 
       <div className="card mb-6">
-        <h3 className="font-bold text-gray-800 mb-4 font-[Outfit]">Filter Rekap Nilai</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-bold text-gray-800 font-[Outfit]">Filter Rekap Nilai</h3>
+          <TutorialLink href="/panduan#nilai" label="Panduan" />
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div><label className="label">Kelas</label><select className="input text-sm" value={kelasId} onChange={(e) => setKelasId(e.target.value)}><option value="">Semua Kelas</option>{kelas.map(k => <option key={k.id} value={k.id}>{k.namaKelas}</option>)}</select></div>
           <div><label className="label">Mapel</label><input type="text" className="input text-sm" value={mapel} onChange={(e) => setMapel(e.target.value)} placeholder="Filter mapel..." /></div>

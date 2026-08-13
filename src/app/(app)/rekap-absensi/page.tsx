@@ -6,6 +6,7 @@ import { apiGet } from "@/lib/useApi";
 import { bukaDokumen, esc } from "@/lib/dokumen";
 import Pagination from "@/components/Pagination";
 import ExportButton from "@/components/ExportButton";
+import TutorialLink from "@/components/TutorialLink";
 import HeaderActions from "@/components/HeaderActions";
 
 interface Rekap {
@@ -101,11 +102,14 @@ export default function RekapAbsensiPage() {
       </header>
 
       <div className="card mb-6">
-        <h3 className="font-bold text-gray-800 mb-4 font-[Outfit]">Filter Rekap Absensi</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-bold text-gray-800 font-[Outfit]">Filter Rekap Absensi</h3>
+          <TutorialLink href="/panduan#lainnya" label="Panduan" />
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div><label className="label">Kelas</label><select className="input text-sm" value={kelasId} onChange={(e) => setKelasId(e.target.value)}><option value="">Semua Kelas</option>{kelas.map(k => <option key={k.id} value={k.id}>{k.namaKelas}</option>)}</select></div>
-          <div><label className="label">Tanggal Mulai</label><input type="date" className="input text-sm" value={startDate} onChange={(e) => setStartDate(e.target.value)} /></div>
-          <div><label className="label">Tanggal Selesai</label><input type="date" className="input text-sm" value={endDate} onChange={(e) => setEndDate(e.target.value)} /></div>
+          <div><label className="label">Tanggal Mulai</label><input type="date" className="input text-sm" placeholder="Pilih tanggal" value={startDate} onChange={(e) => setStartDate(e.target.value)} /></div>
+          <div><label className="label">Tanggal Selesai</label><input type="date" className="input text-sm" placeholder="Pilih tanggal" value={endDate} onChange={(e) => setEndDate(e.target.value)} /></div>
           <div className="flex items-end"><button className="btn btn-primary w-full justify-center" onClick={load}><i className="fas fa-search"></i> Tampilkan</button></div>
         </div>
       </div>

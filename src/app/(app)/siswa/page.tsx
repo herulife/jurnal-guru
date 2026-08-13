@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
+import TutorialLink from "@/components/TutorialLink";
 
 interface Siswa {
   id: string; nis: string; nisn: string; namaSiswa: string;
@@ -107,6 +108,7 @@ export default function SiswaPage() {
           <i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
           <input type="text" className="input pl-10 w-full text-sm" placeholder="Cari nama / NIS..." value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
+        <TutorialLink href="/panduan#siswa" label="Panduan" />
       </div>
 
       {selected.size > 0 && (
@@ -194,15 +196,15 @@ function SiswaModal({ editData, kelas, onSave, onClose }: { editData: Siswa | nu
         </div>
         <form onSubmit={handleSubmit} className="p-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div><label className="label">NIS</label><input type="text" className="input" value={form.nis} onChange={(e) => setForm({...form, nis: e.target.value})} required /></div>
-            <div><label className="label">NISN</label><input type="text" className="input" value={form.nisn} onChange={(e) => setForm({...form, nisn: e.target.value})} /></div>
-            <div className="sm:col-span-2"><label className="label">Nama Siswa</label><input type="text" className="input" value={form.namaSiswa} onChange={(e) => setForm({...form, namaSiswa: e.target.value})} required /></div>
+            <div><label className="label">NIS</label><input type="text" className="input" placeholder="Nomor Induk Siswa" value={form.nis} onChange={(e) => setForm({...form, nis: e.target.value})} required /></div>
+            <div><label className="label">NISN</label><input type="text" className="input" placeholder="Nomor Induk Siswa Nasional" value={form.nisn} onChange={(e) => setForm({...form, nisn: e.target.value})} /></div>
+            <div className="sm:col-span-2"><label className="label">Nama Siswa</label><input type="text" className="input" placeholder="Nama lengkap siswa" value={form.namaSiswa} onChange={(e) => setForm({...form, namaSiswa: e.target.value})} required /></div>
             <div><label className="label">Jenis Kelamin</label><select className="input" value={form.jenisKelamin} onChange={(e) => setForm({...form, jenisKelamin: e.target.value})}><option value="L">Laki-Laki</option><option value="P">Perempuan</option></select></div>
             <div><label className="label">Kelas</label><select className="input" value={form.kelasId} onChange={(e) => setForm({...form, kelasId: e.target.value})}><option value="">Pilih Kelas</option>{kelas.map(k => <option key={k.id} value={k.id}>{k.namaKelas}</option>)}</select></div>
-            <div className="sm:col-span-2"><label className="label">Alamat</label><textarea className="input" rows={2} value={form.alamat} onChange={(e) => setForm({...form, alamat: e.target.value})} /></div>
-            <div><label className="label">Telepon</label><input type="text" className="input" value={form.telepon} onChange={(e) => setForm({...form, telepon: e.target.value})} /></div>
-            <div><label className="label">Email</label><input type="email" className="input" value={form.email} onChange={(e) => setForm({...form, email: e.target.value})} /></div>
-            <div><label className="label">Nama Orang Tua</label><input type="text" className="input" value={form.namaOrtu} onChange={(e) => setForm({...form, namaOrtu: e.target.value})} /></div>
+            <div className="sm:col-span-2"><label className="label">Alamat</label><textarea className="input" rows={2} placeholder="Alamat lengkap siswa" value={form.alamat} onChange={(e) => setForm({...form, alamat: e.target.value})} /></div>
+            <div><label className="label">Telepon</label><input type="text" className="input" placeholder="Contoh: 081234567890" value={form.telepon} onChange={(e) => setForm({...form, telepon: e.target.value})} /></div>
+            <div><label className="label">Email</label><input type="email" className="input" placeholder="email@contoh.com" value={form.email} onChange={(e) => setForm({...form, email: e.target.value})} /></div>
+            <div><label className="label">Nama Orang Tua</label><input type="text" className="input" placeholder="Nama orang tua/wali" value={form.namaOrtu} onChange={(e) => setForm({...form, namaOrtu: e.target.value})} /></div>
           </div>
           <div className="mt-5 flex gap-3 justify-end">
             <button type="button" className="btn btn-outline" onClick={onClose}>Batal</button>

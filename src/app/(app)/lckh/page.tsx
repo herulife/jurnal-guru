@@ -5,6 +5,7 @@ import { apiGet, apiPost } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
 import ExportButton from "@/components/ExportButton";
 import HeaderActions from "@/components/HeaderActions";
+import TutorialLink from "@/components/TutorialLink";
 import { bukaDokumen, exportXlsx, esc } from "@/lib/dokumen";
 import PlanGuard from "@/components/PlanGuard";
 
@@ -155,7 +156,10 @@ function LCKHPageInner() {
       {msg && <div className="p-3 mb-4 rounded-xl border text-sm bg-emerald-50 border-emerald-200 text-emerald-700">{msg}</div>}
 
       <div className="card mb-6">
-        <h3 className="font-bold text-gray-800 mb-4 font-[Outfit]">Pengaturan LCKH</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-bold text-gray-800 font-[Outfit]">Pengaturan LCKH</h3>
+          <TutorialLink href="/panduan#lainnya" label="Panduan" />
+        </div>
         <div className="flex flex-wrap items-end gap-3">
           <div>
             <label className="label">Bulan</label>
@@ -216,9 +220,9 @@ function LCKHPageInner() {
             </div>
             <div className="p-5">
               <div className="space-y-4">
-                <div><label className="label">Kegiatan</label><input className="input" value={formKegiatan} onChange={(e) => setFormKegiatan(e.target.value)} /></div>
-                <div><label className="label">Pekerjaan</label><input className="input" value={formPekerjaan} onChange={(e) => setFormPekerjaan(e.target.value)} /></div>
-                <div><label className="label">Tanggal</label><input type="date" className="input" value={formTanggal} onChange={(e) => setFormTanggal(e.target.value)} /></div>
+                <div><label className="label">Kegiatan</label><input className="input" placeholder="Misal: Kegiatan pembelajaran" value={formKegiatan} onChange={(e) => setFormKegiatan(e.target.value)} /></div>
+                <div><label className="label">Pekerjaan</label><input className="input" placeholder="Rincian pekerjaan" value={formPekerjaan} onChange={(e) => setFormPekerjaan(e.target.value)} /></div>
+                <div><label className="label">Tanggal</label><input type="date" className="input" placeholder="Pilih tanggal" value={formTanggal} onChange={(e) => setFormTanggal(e.target.value)} /></div>
               </div>
               <div className="mt-5 flex gap-3 justify-end">
                 <button className="btn btn-outline" onClick={closeEdit}>Batal</button>

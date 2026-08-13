@@ -5,6 +5,7 @@ import { apiGet, apiPost, apiDelete, apiPut } from "@/lib/useApi";
 import { bukaDokumen, exportXlsx, esc } from "@/lib/dokumen";
 import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
+import TutorialLink from "@/components/TutorialLink";
 import { ConfirmModal, AlertModal } from "@/components/ConfirmModal";
 
 interface Siswa { id: string; namaSiswa: string; }
@@ -172,9 +173,12 @@ export default function AbsensiPage() {
       </header>
 
       <div className="card mb-6">
-        <h3 className="font-bold text-gray-800 mb-4 font-[Outfit]">Input Absensi</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-bold text-gray-800 font-[Outfit]">Input Absensi</h3>
+          <TutorialLink href="/panduan#absensi" label="Panduan" />
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div><label className="label">Tanggal</label><input type="date" className="input text-sm" value={absenTanggal} onChange={(e) => setAbsenTanggal(e.target.value)} /></div>
+          <div><label className="label">Tanggal</label><input type="date" className="input text-sm" placeholder="Pilih tanggal" value={absenTanggal} onChange={(e) => setAbsenTanggal(e.target.value)} /></div>
           <div><label className="label">Kelas</label><select className="input text-sm" value={absenKelas} onChange={(e) => setAbsenKelas(e.target.value)}><option value="">Pilih Kelas</option>{kelas.map(k => <option key={k.id} value={k.id}>{k.namaKelas}</option>)}</select></div>
           <div><label className="label">Mata Pelajaran</label><input type="text" className="input text-sm" placeholder="Matematika" value={absenMapel} onChange={(e) => setAbsenMapel(e.target.value)} /></div>
           <div className="flex items-end"><button className="btn btn-primary w-full justify-center" onClick={handleSave}><i className="fas fa-save"></i> Simpan</button></div>
@@ -210,7 +214,7 @@ export default function AbsensiPage() {
           </div>
         </div>
         <div className="flex flex-wrap gap-3 mb-4">
-          <input type="date" className="input w-44 text-sm" value={filterTanggal} onChange={(e) => setFilterTanggal(e.target.value)} />
+          <input type="date" className="input w-44 text-sm" placeholder="Filter tanggal" value={filterTanggal} onChange={(e) => setFilterTanggal(e.target.value)} />
           <select className="input w-48 text-sm" value={filterKelas} onChange={(e) => setFilterKelas(e.target.value)}><option value="">Semua Kelas</option>{kelas.map(k => <option key={k.id} value={k.id}>{k.namaKelas}</option>)}</select>
           <label className="cursor-pointer text-xs text-gray-600 hover:text-blue-600 ml-auto flex items-center gap-1" onClick={() => setSortAsc(!sortAsc)}>
             <i className={`fas fa-sort-alpha-${sortAsc ? "up" : "down"}`}></i>
@@ -308,7 +312,7 @@ function EditAbsenModal({ absen, onSave }: { absen: Absen; onSave: () => void })
                   <option value="Hadir">Hadir</option><option value="Sakit">Sakit</option><option value="Izin">Izin</option><option value="Alpa">Alpa</option>
                 </select>
               </div>
-              <div className="mb-4"><label className="label">Keterangan</label><input type="text" className="input" value={keterangan} onChange={(e) => setKeterangan(e.target.value)} /></div>
+              <div className="mb-4"><label className="label">Keterangan</label><input type="text" className="input" placeholder="Misal: Demam, izin keluarga" value={keterangan} onChange={(e) => setKeterangan(e.target.value)} /></div>
               <div className="flex gap-3 justify-end">
                 <button type="button" className="btn btn-outline" onClick={() => setOpen(false)}>Batal</button>
                 <button type="submit" className="btn btn-primary"><i className="fas fa-save"></i> Simpan</button>

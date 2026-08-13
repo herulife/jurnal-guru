@@ -5,6 +5,7 @@ import { apiGet, apiPost, apiDelete } from "@/lib/useApi";
 import { bukaDokumen, esc } from "@/lib/dokumen";
 import ExportButton from "@/components/ExportButton";
 import HeaderActions from "@/components/HeaderActions";
+import TutorialLink from "@/components/TutorialLink";
 import PlanGuard from "@/components/PlanGuard";
 
 interface Kelas { id: string; namaKelas: string; }
@@ -184,7 +185,10 @@ function KelompokBelajarPageInner() {
       )}
 
       <div className="card mb-6">
-        <h3 className="font-bold text-gray-800 mb-4 font-[Outfit]">Pengaturan Kelompok</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-bold text-gray-800 font-[Outfit]">Pengaturan Kelompok</h3>
+          <TutorialLink href="/panduan#lainnya" label="Panduan" />
+        </div>
         <div className="flex flex-wrap items-end gap-3">
           <div>
             <label className="label">Kelas</label>

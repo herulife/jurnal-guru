@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
+import TutorialLink from "@/components/TutorialLink";
 
 interface Kelas {
   id: string;
@@ -107,7 +108,7 @@ export default function KelasPage() {
         </div>
       </header>
 
-      <p className="text-sm text-gray-500 mb-5">{data.length} kelas</p>
+      <p className="text-sm text-gray-500 mb-5 flex items-center gap-3">{data.length} kelas <TutorialLink href="/panduan#kelas" label="Panduan" /></p>
 
       {selected.size > 0 && (
         <div className="flex items-center gap-3 mb-3 p-3 bg-red-50 border border-red-200 rounded-xl">
@@ -250,6 +251,7 @@ function KelasModal({ onSave }: { onSave: () => void }) {
               <input
                 type="text"
                 className="input"
+                placeholder="X IPA 1"
                 value={form.namaKelas}
                 onChange={(e) => setForm({ ...form, namaKelas: e.target.value })}
                 required
@@ -284,6 +286,7 @@ function KelasModal({ onSave }: { onSave: () => void }) {
               <input
                 type="text"
                 className="input"
+                placeholder="2024/2025"
                 value={form.tahunAjaran}
                 onChange={(e) =>
                   setForm({ ...form, tahunAjaran: e.target.value })
@@ -295,6 +298,7 @@ function KelasModal({ onSave }: { onSave: () => void }) {
               <input
                 type="text"
                 className="input"
+                placeholder="Nama wali kelas"
                 value={form.waliKelas}
                 onChange={(e) => setForm({ ...form, waliKelas: e.target.value })}
               />

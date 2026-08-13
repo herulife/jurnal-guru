@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
+import TutorialLink from "@/components/TutorialLink";
 
 interface Surat {
   id: string; judul: string; jenis: string; tujuan: string; template: string;
@@ -107,7 +108,10 @@ export default function SuratPage() {
         {kelolaOpen && (
           <>
             <div className="flex items-center justify-between mt-4 mb-3">
-              <p className="text-sm text-gray-500">Kelola template surat tersimpan untuk kebutuhan unduhan.</p>
+              <div className="flex items-center gap-3">
+                <p className="text-sm text-gray-500">Kelola template surat tersimpan untuk kebutuhan unduhan.</p>
+                <TutorialLink href="/panduan#lainnya" label="Panduan" />
+              </div>
               <button className="btn btn-primary btn-sm" onClick={openAdd}><i className="fas fa-plus"></i> Tambah Surat</button>
             </div>
             {selected.size > 0 && (
@@ -178,7 +182,7 @@ function SuratModal({ editData, onSave, onClose }: { editData: Surat | null; onS
         </div>
         <form onSubmit={handleSubmit} className="p-5">
           <div className="space-y-4">
-            <div><label className="label">Judul</label><input type="text" className="input" value={form.judul} onChange={(e) => setForm({...form, judul: e.target.value})} required /></div>
+            <div><label className="label">Judul</label><input type="text" className="input" placeholder="Contoh: Surat Panggilan" value={form.judul} onChange={(e) => setForm({...form, judul: e.target.value})} required /></div>
             <div><label className="label">Jenis</label><select className="input" value={form.jenis} onChange={(e) => setForm({...form, jenis: e.target.value})}>
               {Object.entries(jenisLabel).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
             </select></div>

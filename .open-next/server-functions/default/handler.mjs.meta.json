@@ -3678,12 +3678,12 @@
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/me/password/route_client-reference-manifest.js": {
+    ".open-next/server-functions/default/.next/server/app/api/nilai/batch/route_client-reference-manifest.js": {
       "bytes": 320,
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/nilai/batch/route_client-reference-manifest.js": {
+    ".open-next/server-functions/default/.next/server/app/api/me/password/route_client-reference-manifest.js": {
       "bytes": 320,
       "imports": [],
       "format": "cjs"
@@ -3708,12 +3708,12 @@
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/surat/[id]/route_client-reference-manifest.js": {
+    ".open-next/server-functions/default/.next/server/app/api/siswa/[id]/route_client-reference-manifest.js": {
       "bytes": 319,
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/siswa/[id]/route_client-reference-manifest.js": {
+    ".open-next/server-functions/default/.next/server/app/api/surat/[id]/route_client-reference-manifest.js": {
       "bytes": 319,
       "imports": [],
       "format": "cjs"
@@ -3728,12 +3728,12 @@
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/auth/check/route_client-reference-manifest.js": {
+    ".open-next/server-functions/default/.next/server/app/api/auth/login/route_client-reference-manifest.js": {
       "bytes": 319,
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/auth/login/route_client-reference-manifest.js": {
+    ".open-next/server-functions/default/.next/server/app/api/auth/check/route_client-reference-manifest.js": {
       "bytes": 319,
       "imports": [],
       "format": "cjs"
@@ -3803,12 +3803,12 @@
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/surat/route_client-reference-manifest.js": {
+    ".open-next/server-functions/default/.next/server/app/api/siswa/route_client-reference-manifest.js": {
       "bytes": 314,
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/siswa/route_client-reference-manifest.js": {
+    ".open-next/server-functions/default/.next/server/app/api/surat/route_client-reference-manifest.js": {
       "bytes": 314,
       "imports": [],
       "format": "cjs"
@@ -3828,12 +3828,12 @@
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/lkb/route_client-reference-manifest.js": {
+    ".open-next/server-functions/default/.next/server/app/api/log/route_client-reference-manifest.js": {
       "bytes": 312,
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/log/route_client-reference-manifest.js": {
+    ".open-next/server-functions/default/.next/server/app/api/lkb/route_client-reference-manifest.js": {
       "bytes": 312,
       "imports": [],
       "format": "cjs"
@@ -3844,7 +3844,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/node_modules/next/dist/server/load-manifest.external.js": {
-      "bytes": 275093,
+      "bytes": 275085,
       "imports": [
         {
           "path": "path",
@@ -3887,14 +3887,14 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/absensi/[id]/route_client-reference-manifest.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/app/api/me/password/route_client-reference-manifest.js",
-          "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/me/password/route_client-reference-manifest.js"
-        },
-        {
           "path": ".open-next/server-functions/default/.next/server/app/api/nilai/batch/route_client-reference-manifest.js",
           "kind": "require-call",
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/nilai/batch/route_client-reference-manifest.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/me/password/route_client-reference-manifest.js",
+          "kind": "require-call",
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/me/password/route_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/jurnal/[id]/route_client-reference-manifest.js",
@@ -3917,14 +3917,14 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/users/[id]/route_client-reference-manifest.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/app/api/surat/[id]/route_client-reference-manifest.js",
-          "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/surat/[id]/route_client-reference-manifest.js"
-        },
-        {
           "path": ".open-next/server-functions/default/.next/server/app/api/siswa/[id]/route_client-reference-manifest.js",
           "kind": "require-call",
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/siswa/[id]/route_client-reference-manifest.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/surat/[id]/route_client-reference-manifest.js",
+          "kind": "require-call",
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/surat/[id]/route_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/nilai/[id]/route_client-reference-manifest.js",
@@ -3937,14 +3937,14 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/kelas/[id]/route_client-reference-manifest.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/app/api/auth/check/route_client-reference-manifest.js",
-          "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/auth/check/route_client-reference-manifest.js"
-        },
-        {
           "path": ".open-next/server-functions/default/.next/server/app/api/auth/login/route_client-reference-manifest.js",
           "kind": "require-call",
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/auth/login/route_client-reference-manifest.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/auth/check/route_client-reference-manifest.js",
+          "kind": "require-call",
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/auth/check/route_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/dashboard/route_client-reference-manifest.js",
@@ -4012,14 +4012,14 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/users/route_client-reference-manifest.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/app/api/surat/route_client-reference-manifest.js",
-          "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/surat/route_client-reference-manifest.js"
-        },
-        {
           "path": ".open-next/server-functions/default/.next/server/app/api/siswa/route_client-reference-manifest.js",
           "kind": "require-call",
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/siswa/route_client-reference-manifest.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/surat/route_client-reference-manifest.js",
+          "kind": "require-call",
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/surat/route_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/nilai/route_client-reference-manifest.js",
@@ -4037,14 +4037,14 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/lckh/route_client-reference-manifest.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/app/api/lkb/route_client-reference-manifest.js",
-          "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/lkb/route_client-reference-manifest.js"
-        },
-        {
           "path": ".open-next/server-functions/default/.next/server/app/api/log/route_client-reference-manifest.js",
           "kind": "require-call",
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/log/route_client-reference-manifest.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/lkb/route_client-reference-manifest.js",
+          "kind": "require-call",
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/lkb/route_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/me/route_client-reference-manifest.js",
@@ -5724,13 +5724,13 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/chunks/ssr/_0iaxlwm._.js": {
-      "bytes": 10085,
+    ".open-next/server-functions/default/.next/server/chunks/ssr/_1_lvc5p._.js": {
+      "bytes": 3636,
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/chunks/ssr/_1_lvc5p._.js": {
-      "bytes": 3636,
+    ".open-next/server-functions/default/.next/server/chunks/ssr/_1e4x0uz._.js": {
+      "bytes": 10502,
       "imports": [],
       "format": "cjs"
     },
@@ -5776,7 +5776,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/chunks/ssr/src_app_(app)_absensi_page_tsx_1exz8-7._.js": {
-      "bytes": 15791,
+      "bytes": 16042,
       "imports": [],
       "format": "cjs"
     },
@@ -5908,8 +5908,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/chunks/ssr/src_1gz60fj._.js": {
-      "bytes": 11203,
+    ".open-next/server-functions/default/.next/server/chunks/ssr/src_1h48t_2._.js": {
+      "bytes": 11742,
       "imports": [],
       "format": "cjs"
     },
@@ -5924,8 +5924,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/chunks/ssr/_1s1w6wt._.js": {
-      "bytes": 20012,
+    ".open-next/server-functions/default/.next/server/chunks/ssr/_0pxy7ra._.js": {
+      "bytes": 20768,
       "imports": [],
       "format": "cjs"
     },
@@ -5972,8 +5972,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/chunks/ssr/src_13j9buw._.js": {
-      "bytes": 9142,
+    ".open-next/server-functions/default/.next/server/chunks/ssr/src_19oa1wi._.js": {
+      "bytes": 9711,
       "imports": [],
       "format": "cjs"
     },
@@ -6004,8 +6004,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/chunks/ssr/src_087kybz._.js": {
-      "bytes": 10776,
+    ".open-next/server-functions/default/.next/server/chunks/ssr/src_1iypw96._.js": {
+      "bytes": 11367,
       "imports": [],
       "format": "cjs"
     },
@@ -6020,8 +6020,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/chunks/ssr/_1gi6bc1._.js": {
-      "bytes": 20341,
+    ".open-next/server-functions/default/.next/server/chunks/ssr/_0cloxep._.js": {
+      "bytes": 20910,
       "imports": [],
       "format": "cjs"
     },
@@ -6052,8 +6052,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/chunks/ssr/_0o-y_4q._.js": {
-      "bytes": 21546,
+    ".open-next/server-functions/default/.next/server/chunks/ssr/_0dzvs7n._.js": {
+      "bytes": 22218,
       "imports": [],
       "format": "cjs"
     },
@@ -6084,8 +6084,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/chunks/ssr/_1acff7g._.js": {
-      "bytes": 21604,
+    ".open-next/server-functions/default/.next/server/chunks/ssr/_0nov76_._.js": {
+      "bytes": 22278,
       "imports": [],
       "format": "cjs"
     },
@@ -6148,8 +6148,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/chunks/ssr/_0z_lbgg._.js": {
-      "bytes": 12197,
+    ".open-next/server-functions/default/.next/server/chunks/ssr/_1kpslpz._.js": {
+      "bytes": 12614,
       "imports": [],
       "format": "cjs"
     },
@@ -6170,12 +6170,12 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/chunks/ssr/src_app_(app)_nilai_page_tsx_1psjg5d._.js": {
-      "bytes": 13261,
+      "bytes": 13613,
       "imports": [],
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__15ye4xk._.js": {
-      "bytes": 6614,
+      "bytes": 6733,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/no-fallback-error.external.js",
@@ -6233,8 +6233,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/chunks/ssr/src_0r22gvn._.js": {
-      "bytes": 7766,
+    ".open-next/server-functions/default/.next/server/chunks/ssr/src_1-ik09f._.js": {
+      "bytes": 8665,
       "imports": [],
       "format": "cjs"
     },
@@ -6249,8 +6249,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/chunks/ssr/_1skzg3g._.js": {
-      "bytes": 16663,
+    ".open-next/server-functions/default/.next/server/chunks/ssr/_18ldg7t._.js": {
+      "bytes": 17288,
       "imports": [],
       "format": "cjs"
     },
@@ -6281,8 +6281,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/chunks/ssr/_0mc2613._.js": {
-      "bytes": 18480,
+    ".open-next/server-functions/default/.next/server/chunks/ssr/_1evcxh3._.js": {
+      "bytes": 19047,
       "imports": [],
       "format": "cjs"
     },
@@ -6329,8 +6329,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/chunks/ssr/src_0ad8pfp._.js": {
-      "bytes": 15001,
+    ".open-next/server-functions/default/.next/server/chunks/ssr/src_1x93v0k._.js": {
+      "bytes": 16052,
       "imports": [],
       "format": "cjs"
     },
@@ -6361,8 +6361,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/chunks/ssr/src_13pzf-v._.js": {
-      "bytes": 13803,
+    ".open-next/server-functions/default/.next/server/chunks/ssr/src_1bkb84l._.js": {
+      "bytes": 14534,
       "imports": [],
       "format": "cjs"
     },
@@ -6425,8 +6425,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/chunks/ssr/src_0dc2vii._.js": {
-      "bytes": 12369,
+    ".open-next/server-functions/default/.next/server/chunks/ssr/src_1cz6nmk._.js": {
+      "bytes": 12966,
       "imports": [],
       "format": "cjs"
     },
@@ -6458,7 +6458,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/chunks/ssr/src_0m68iwo._.js": {
-      "bytes": 8947,
+      "bytes": 9005,
       "imports": [],
       "format": "cjs"
     },
@@ -8580,14 +8580,14 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0hyeba6._.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_0iaxlwm._.js",
-          "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_0iaxlwm._.js"
-        },
-        {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_1_lvc5p._.js",
           "kind": "require-call",
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_1_lvc5p._.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_1e4x0uz._.js",
+          "kind": "require-call",
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_1e4x0uz._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_absensi_page_actions_1ohhh7h.js",
@@ -8710,9 +8710,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_0tha2q_.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_1gz60fj._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_1h48t_2._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_1gz60fj._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_1h48t_2._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0dye2jx._.js",
@@ -8720,9 +8720,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0dye2jx._.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_1s1w6wt._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_0pxy7ra._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_1s1w6wt._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_0pxy7ra._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_jurnal_page_actions_1zgfmxm.js",
@@ -8750,9 +8750,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_0-feax1.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_13j9buw._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_19oa1wi._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_13j9buw._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_19oa1wi._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0hebl8i._.js",
@@ -8770,9 +8770,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_1lnom-h.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_087kybz._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_1iypw96._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_087kybz._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_1iypw96._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0hj__o2._.js",
@@ -8780,9 +8780,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0hj__o2._.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_1gi6bc1._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_0cloxep._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_1gi6bc1._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_0cloxep._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_kelompok_page_actions_0dxic20.js",
@@ -8800,9 +8800,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0a07pve._.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_0o-y_4q._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_0dzvs7n._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_0o-y_4q._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_0dzvs7n._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_lckh_page_actions_0pfnz6w.js",
@@ -8820,9 +8820,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0v6bg6j._.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_1acff7g._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_0nov76_._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_1acff7g._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_0nov76_._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_lkb_page_actions_0hyt-cp.js",
@@ -8860,9 +8860,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__05k8z_v._.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_0z_lbgg._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_1kpslpz._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_0z_lbgg._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_1kpslpz._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_nilai_page_actions_0z6-m66.js",
@@ -8915,9 +8915,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_1pd94j4.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_0r22gvn._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_1-ik09f._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_0r22gvn._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_1-ik09f._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0gir-a-._.js",
@@ -8925,9 +8925,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0gir-a-._.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_1skzg3g._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_18ldg7t._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_1skzg3g._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_18ldg7t._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_rekap-absensi_page_actions_0qjsd-t.js",
@@ -8945,9 +8945,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__089clmw._.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_0mc2613._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_1evcxh3._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_0mc2613._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_1evcxh3._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_rekap-nilai_page_actions_1w-ydqv.js",
@@ -8975,9 +8975,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_12y_93-.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_0ad8pfp._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_1x93v0k._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_0ad8pfp._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_1x93v0k._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__029_9zf._.js",
@@ -8995,9 +8995,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_0yefyar.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_13pzf-v._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_1bkb84l._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_13pzf-v._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_1bkb84l._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0nzcxvb._.js",
@@ -9035,9 +9035,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_16jri5i.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_0dc2vii._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_1cz6nmk._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_0dc2vii._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_1cz6nmk._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0h5kpht._.js",
@@ -9771,14 +9771,14 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0hyeba6._.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_0iaxlwm._.js",
-          "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_0iaxlwm._.js"
-        },
-        {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_1_lvc5p._.js",
           "kind": "require-call",
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_1_lvc5p._.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_1e4x0uz._.js",
+          "kind": "require-call",
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_1e4x0uz._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_absensi_page_actions_1ohhh7h.js",
@@ -9901,9 +9901,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_0tha2q_.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_1gz60fj._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_1h48t_2._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_1gz60fj._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_1h48t_2._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0dye2jx._.js",
@@ -9911,9 +9911,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0dye2jx._.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_1s1w6wt._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_0pxy7ra._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_1s1w6wt._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_0pxy7ra._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_jurnal_page_actions_1zgfmxm.js",
@@ -9941,9 +9941,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_0-feax1.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_13j9buw._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_19oa1wi._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_13j9buw._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_19oa1wi._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0hebl8i._.js",
@@ -9961,9 +9961,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_1lnom-h.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_087kybz._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_1iypw96._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_087kybz._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_1iypw96._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0hj__o2._.js",
@@ -9971,9 +9971,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0hj__o2._.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_1gi6bc1._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_0cloxep._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_1gi6bc1._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_0cloxep._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_kelompok_page_actions_0dxic20.js",
@@ -9991,9 +9991,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0a07pve._.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_0o-y_4q._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_0dzvs7n._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_0o-y_4q._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_0dzvs7n._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_lckh_page_actions_0pfnz6w.js",
@@ -10011,9 +10011,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0v6bg6j._.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_1acff7g._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_0nov76_._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_1acff7g._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_0nov76_._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_lkb_page_actions_0hyt-cp.js",
@@ -10051,9 +10051,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__05k8z_v._.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_0z_lbgg._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_1kpslpz._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_0z_lbgg._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_1kpslpz._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_nilai_page_actions_0z6-m66.js",
@@ -10106,9 +10106,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_1pd94j4.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_0r22gvn._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_1-ik09f._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_0r22gvn._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_1-ik09f._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0gir-a-._.js",
@@ -10116,9 +10116,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0gir-a-._.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_1skzg3g._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_18ldg7t._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_1skzg3g._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_18ldg7t._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_rekap-absensi_page_actions_0qjsd-t.js",
@@ -10136,9 +10136,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__089clmw._.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_0mc2613._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_1evcxh3._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_0mc2613._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/_1evcxh3._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_rekap-nilai_page_actions_1w-ydqv.js",
@@ -10166,9 +10166,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_12y_93-.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_0ad8pfp._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_1x93v0k._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_0ad8pfp._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_1x93v0k._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__029_9zf._.js",
@@ -10186,9 +10186,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_0yefyar.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_13pzf-v._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_1bkb84l._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_13pzf-v._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_1bkb84l._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0nzcxvb._.js",
@@ -10226,9 +10226,9 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_16jri5i.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_0dc2vii._.js",
+          "path": ".open-next/server-functions/default/.next/server/chunks/ssr/src_1cz6nmk._.js",
           "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_0dc2vii._.js"
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/chunks/ssr/src_1cz6nmk._.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0h5kpht._.js",
@@ -14518,10 +14518,10 @@
         ".open-next/server-functions/default/.next/server/app/api/absensi/[id]/route_client-reference-manifest.js": {
           "bytesInOutput": 474
         },
-        ".open-next/server-functions/default/.next/server/app/api/me/password/route_client-reference-manifest.js": {
+        ".open-next/server-functions/default/.next/server/app/api/nilai/batch/route_client-reference-manifest.js": {
           "bytesInOutput": 472
         },
-        ".open-next/server-functions/default/.next/server/app/api/nilai/batch/route_client-reference-manifest.js": {
+        ".open-next/server-functions/default/.next/server/app/api/me/password/route_client-reference-manifest.js": {
           "bytesInOutput": 472
         },
         ".open-next/server-functions/default/.next/server/app/api/jurnal/[id]/route_client-reference-manifest.js": {
@@ -14536,10 +14536,10 @@
         ".open-next/server-functions/default/.next/server/app/api/users/[id]/route_client-reference-manifest.js": {
           "bytesInOutput": 471
         },
-        ".open-next/server-functions/default/.next/server/app/api/surat/[id]/route_client-reference-manifest.js": {
+        ".open-next/server-functions/default/.next/server/app/api/siswa/[id]/route_client-reference-manifest.js": {
           "bytesInOutput": 471
         },
-        ".open-next/server-functions/default/.next/server/app/api/siswa/[id]/route_client-reference-manifest.js": {
+        ".open-next/server-functions/default/.next/server/app/api/surat/[id]/route_client-reference-manifest.js": {
           "bytesInOutput": 471
         },
         ".open-next/server-functions/default/.next/server/app/api/nilai/[id]/route_client-reference-manifest.js": {
@@ -14548,10 +14548,10 @@
         ".open-next/server-functions/default/.next/server/app/api/kelas/[id]/route_client-reference-manifest.js": {
           "bytesInOutput": 471
         },
-        ".open-next/server-functions/default/.next/server/app/api/auth/check/route_client-reference-manifest.js": {
+        ".open-next/server-functions/default/.next/server/app/api/auth/login/route_client-reference-manifest.js": {
           "bytesInOutput": 471
         },
-        ".open-next/server-functions/default/.next/server/app/api/auth/login/route_client-reference-manifest.js": {
+        ".open-next/server-functions/default/.next/server/app/api/auth/check/route_client-reference-manifest.js": {
           "bytesInOutput": 471
         },
         ".open-next/server-functions/default/.next/server/app/api/dashboard/route_client-reference-manifest.js": {
@@ -14593,10 +14593,10 @@
         ".open-next/server-functions/default/.next/server/app/api/users/route_client-reference-manifest.js": {
           "bytesInOutput": 461
         },
-        ".open-next/server-functions/default/.next/server/app/api/surat/route_client-reference-manifest.js": {
+        ".open-next/server-functions/default/.next/server/app/api/siswa/route_client-reference-manifest.js": {
           "bytesInOutput": 461
         },
-        ".open-next/server-functions/default/.next/server/app/api/siswa/route_client-reference-manifest.js": {
+        ".open-next/server-functions/default/.next/server/app/api/surat/route_client-reference-manifest.js": {
           "bytesInOutput": 461
         },
         ".open-next/server-functions/default/.next/server/app/api/nilai/route_client-reference-manifest.js": {
@@ -14608,17 +14608,17 @@
         ".open-next/server-functions/default/.next/server/app/api/lckh/route_client-reference-manifest.js": {
           "bytesInOutput": 459
         },
-        ".open-next/server-functions/default/.next/server/app/api/lkb/route_client-reference-manifest.js": {
+        ".open-next/server-functions/default/.next/server/app/api/log/route_client-reference-manifest.js": {
           "bytesInOutput": 457
         },
-        ".open-next/server-functions/default/.next/server/app/api/log/route_client-reference-manifest.js": {
+        ".open-next/server-functions/default/.next/server/app/api/lkb/route_client-reference-manifest.js": {
           "bytesInOutput": 457
         },
         ".open-next/server-functions/default/.next/server/app/api/me/route_client-reference-manifest.js": {
           "bytesInOutput": 455
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/load-manifest.external.js": {
-          "bytesInOutput": 230500
+          "bytesInOutput": 230492
         },
         ".open-next/cloudflare-templates/shims/throw.js": {
           "bytesInOutput": 215
@@ -14902,11 +14902,11 @@
         ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0hyeba6._.js": {
           "bytesInOutput": 2493
         },
-        ".open-next/server-functions/default/.next/server/chunks/ssr/_0iaxlwm._.js": {
-          "bytesInOutput": 10402
-        },
         ".open-next/server-functions/default/.next/server/chunks/ssr/_1_lvc5p._.js": {
           "bytesInOutput": 3895
+        },
+        ".open-next/server-functions/default/.next/server/chunks/ssr/_1e4x0uz._.js": {
+          "bytesInOutput": 10821
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_absensi_page_actions_1ohhh7h.js": {
           "bytesInOutput": 275
@@ -14930,7 +14930,7 @@
           "bytesInOutput": 2478
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/src_app_(app)_absensi_page_tsx_1exz8-7._.js": {
-          "bytesInOutput": 16169
+          "bytesInOutput": 16427
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/src_app_(app)_loading_tsx_155ioe1._.js": {
           "bytesInOutput": 660
@@ -14980,14 +14980,14 @@
         ".open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_0tha2q_.js": {
           "bytesInOutput": 23988
         },
-        ".open-next/server-functions/default/.next/server/chunks/ssr/src_1gz60fj._.js": {
-          "bytesInOutput": 11495
+        ".open-next/server-functions/default/.next/server/chunks/ssr/src_1h48t_2._.js": {
+          "bytesInOutput": 12051
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0dye2jx._.js": {
           "bytesInOutput": 2490
         },
-        ".open-next/server-functions/default/.next/server/chunks/ssr/_1s1w6wt._.js": {
-          "bytesInOutput": 20466
+        ".open-next/server-functions/default/.next/server/chunks/ssr/_0pxy7ra._.js": {
+          "bytesInOutput": 21247
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_jurnal_page_actions_1zgfmxm.js": {
           "bytesInOutput": 273
@@ -15004,8 +15004,8 @@
         ".open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_0-feax1.js": {
           "bytesInOutput": 24001
         },
-        ".open-next/server-functions/default/.next/server/chunks/ssr/src_13j9buw._.js": {
-          "bytesInOutput": 9338
+        ".open-next/server-functions/default/.next/server/chunks/ssr/src_19oa1wi._.js": {
+          "bytesInOutput": 9909
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0hebl8i._.js": {
           "bytesInOutput": 2486
@@ -15016,14 +15016,14 @@
         ".open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_1lnom-h.js": {
           "bytesInOutput": 23984
         },
-        ".open-next/server-functions/default/.next/server/chunks/ssr/src_087kybz._.js": {
-          "bytesInOutput": 11030
+        ".open-next/server-functions/default/.next/server/chunks/ssr/src_1iypw96._.js": {
+          "bytesInOutput": 11627
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0hj__o2._.js": {
           "bytesInOutput": 2497
         },
-        ".open-next/server-functions/default/.next/server/chunks/ssr/_1gi6bc1._.js": {
-          "bytesInOutput": 20796
+        ".open-next/server-functions/default/.next/server/chunks/ssr/_0cloxep._.js": {
+          "bytesInOutput": 21367
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_kelompok_page_actions_0dxic20.js": {
           "bytesInOutput": 277
@@ -15034,8 +15034,8 @@
         ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0a07pve._.js": {
           "bytesInOutput": 2482
         },
-        ".open-next/server-functions/default/.next/server/chunks/ssr/_0o-y_4q._.js": {
-          "bytesInOutput": 22002
+        ".open-next/server-functions/default/.next/server/chunks/ssr/_0dzvs7n._.js": {
+          "bytesInOutput": 22676
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_lckh_page_actions_0pfnz6w.js": {
           "bytesInOutput": 269
@@ -15046,8 +15046,8 @@
         ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0v6bg6j._.js": {
           "bytesInOutput": 2478
         },
-        ".open-next/server-functions/default/.next/server/chunks/ssr/_1acff7g._.js": {
-          "bytesInOutput": 22065
+        ".open-next/server-functions/default/.next/server/chunks/ssr/_0nov76_._.js": {
+          "bytesInOutput": 22740
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_lkb_page_actions_0hyt-cp.js": {
           "bytesInOutput": 267
@@ -15070,8 +15070,8 @@
         ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__05k8z_v._.js": {
           "bytesInOutput": 2484
         },
-        ".open-next/server-functions/default/.next/server/chunks/ssr/_0z_lbgg._.js": {
-          "bytesInOutput": 12523
+        ".open-next/server-functions/default/.next/server/chunks/ssr/_1kpslpz._.js": {
+          "bytesInOutput": 12942
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_nilai_page_actions_0z6-m66.js": {
           "bytesInOutput": 271
@@ -15080,10 +15080,10 @@
           "bytesInOutput": 23986
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/src_app_(app)_nilai_page_tsx_1psjg5d._.js": {
-          "bytesInOutput": 13627
+          "bytesInOutput": 13981
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__15ye4xk._.js": {
-          "bytesInOutput": 6754
+          "bytesInOutput": 6874
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_panduan_page_actions_1hmlhp-.js": {
           "bytesInOutput": 274
@@ -15103,14 +15103,14 @@
         ".open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_1pd94j4.js": {
           "bytesInOutput": 23991
         },
-        ".open-next/server-functions/default/.next/server/chunks/ssr/src_0r22gvn._.js": {
-          "bytesInOutput": 7960
+        ".open-next/server-functions/default/.next/server/chunks/ssr/src_1-ik09f._.js": {
+          "bytesInOutput": 8861
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0gir-a-._.js": {
           "bytesInOutput": 2515
         },
-        ".open-next/server-functions/default/.next/server/chunks/ssr/_1skzg3g._.js": {
-          "bytesInOutput": 17054
+        ".open-next/server-functions/default/.next/server/chunks/ssr/_18ldg7t._.js": {
+          "bytesInOutput": 17680
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_rekap-absensi_page_actions_0qjsd-t.js": {
           "bytesInOutput": 287
@@ -15121,8 +15121,8 @@
         ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__089clmw._.js": {
           "bytesInOutput": 2510
         },
-        ".open-next/server-functions/default/.next/server/chunks/ssr/_0mc2613._.js": {
-          "bytesInOutput": 18946
+        ".open-next/server-functions/default/.next/server/chunks/ssr/_1evcxh3._.js": {
+          "bytesInOutput": 19515
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_(app)_rekap-nilai_page_actions_1w-ydqv.js": {
           "bytesInOutput": 283
@@ -15139,8 +15139,8 @@
         ".open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_12y_93-.js": {
           "bytesInOutput": 24000
         },
-        ".open-next/server-functions/default/.next/server/chunks/ssr/src_0ad8pfp._.js": {
-          "bytesInOutput": 15246
+        ".open-next/server-functions/default/.next/server/chunks/ssr/src_1x93v0k._.js": {
+          "bytesInOutput": 16302
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__029_9zf._.js": {
           "bytesInOutput": 2486
@@ -15151,8 +15151,8 @@
         ".open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_0yefyar.js": {
           "bytesInOutput": 23986
         },
-        ".open-next/server-functions/default/.next/server/chunks/ssr/src_13pzf-v._.js": {
-          "bytesInOutput": 14110
+        ".open-next/server-functions/default/.next/server/chunks/ssr/src_1bkb84l._.js": {
+          "bytesInOutput": 14848
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0nzcxvb._.js": {
           "bytesInOutput": 2514
@@ -15175,8 +15175,8 @@
         ".open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_16jri5i.js": {
           "bytesInOutput": 23986
         },
-        ".open-next/server-functions/default/.next/server/chunks/ssr/src_0dc2vii._.js": {
-          "bytesInOutput": 12666
+        ".open-next/server-functions/default/.next/server/chunks/ssr/src_1cz6nmk._.js": {
+          "bytesInOutput": 13276
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0h5kpht._.js": {
           "bytesInOutput": 2486
@@ -15188,7 +15188,7 @@
           "bytesInOutput": 23986
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/src_0m68iwo._.js": {
-          "bytesInOutput": 9121
+          "bytesInOutput": 9179
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__057tebb._.js": {
           "bytesInOutput": 6490
@@ -15533,10 +15533,10 @@
           "bytesInOutput": 393
         },
         ".open-next/server-functions/default/.next/server/chunks/[turbopack]_runtime.js": {
-          "bytesInOutput": 44941
+          "bytesInOutput": 44939
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/[turbopack]_runtime.js": {
-          "bytesInOutput": 44991
+          "bytesInOutput": 44989
         },
         ".open-next/server-functions/default/.next/server/app/(app)/rekap-absensi/page.js": {
           "bytesInOutput": 1244
@@ -15893,7 +15893,7 @@
           "bytesInOutput": 75957
         }
       },
-      "bytes": 6089313
+      "bytes": 6099854
     }
   }
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import HeaderActions from "@/components/HeaderActions";
+import TutorialLink from "@/components/TutorialLink";
 
 interface Event { date: string; title: string; time: string; type: string; id?: string; }
 
@@ -133,10 +134,13 @@ export default function KalenderPage() {
         </div>
 
         <div className="card">
-          <h3 className="font-bold text-gray-800 font-[Outfit] mb-1">
-            {selectedDate ? `Catatan ${selectedDate}` : "Catatan Tanggal"}
-          </h3>
-          <p className="text-xs text-gray-400 mb-4">Klik tanggal di kalender untuk melihat & menambah catatan.</p>
+          <div className="flex items-center justify-between">
+            <h3 className="font-bold text-gray-800 font-[Outfit]">
+              {selectedDate ? `Catatan ${selectedDate}` : "Catatan Tanggal"}
+            </h3>
+            <TutorialLink href="/panduan#lainnya" label="Panduan" />
+          </div>
+          <p className="text-xs text-gray-400 mb-4 mt-1">Klik tanggal di kalender untuk melihat & menambah catatan.</p>
 
           {!selectedDate && (
             <p className="text-sm text-gray-500">Pilih tanggal terlebih dahulu.</p>

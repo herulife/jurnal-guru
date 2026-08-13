@@ -5,6 +5,7 @@ import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import { bukaDokumen, exportXlsx, esc } from "@/lib/dokumen";
 import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
+import TutorialLink from "@/components/TutorialLink";
 
 interface Jurnal { id: string; tanggal: string; namaKelas: string; mataPelajaran: string; jamKe: string; materi: string; kendala: string; deskripsi: string; solusi: string; kehadiranSiswa: string; catatan: string; kelasId: string; }
 interface Kelas { id: string; namaKelas: string; }
@@ -123,6 +124,7 @@ export default function JurnalPage() {
         <div>
           <input type="date" className="input w-40 text-sm" value={filterTanggalSampai} onChange={(e) => setFilterTanggalSampai(e.target.value)} />
         </div>
+        <TutorialLink href="/panduan#jurnal" label="Panduan" />
       </div>
 
       {selected.size > 0 && (
@@ -193,16 +195,16 @@ function JurnalModal({ editData, kelas, onSave, onClose }: { editData: Jurnal | 
         </div>
         <form onSubmit={handleSubmit} className="p-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div><label className="label">Tanggal</label><input type="date" className="input" value={form.tanggal} onChange={(e) => setForm({...form, tanggal: e.target.value})} /></div>
-            <div><label className="label">Kelas</label><select className="input" value={form.kelasId} onChange={(e) => setForm({...form, kelasId: e.target.value})}><option value="">Pilih</option>{kelas.map(k => <option key={k.id} value={k.id}>{k.namaKelas}</option>)}</select></div>
-            <div><label className="label">Mapel</label><input type="text" className="input" value={form.mataPelajaran} onChange={(e) => setForm({...form, mataPelajaran: e.target.value})} /></div>
-            <div><label className="label">Jam Ke</label><input type="text" className="input" value={form.jamKe} onChange={(e) => setForm({...form, jamKe: e.target.value})} /></div>
-            <div className="sm:col-span-2"><label className="label">Materi</label><input type="text" className="input" value={form.materi} onChange={(e) => setForm({...form, materi: e.target.value})} /></div>
-            <div className="sm:col-span-2"><label className="label">Deskripsi</label><textarea className="input" rows={2} value={form.deskripsi} onChange={(e) => setForm({...form, deskripsi: e.target.value})} /></div>
-            <div><label className="label">Kendala</label><input type="text" className="input" value={form.kendala} onChange={(e) => setForm({...form, kendala: e.target.value})} /></div>
-            <div><label className="label">Solusi</label><input type="text" className="input" value={form.solusi} onChange={(e) => setForm({...form, solusi: e.target.value})} /></div>
+            <div><label className="label">Tanggal</label><input type="date" className="input" placeholder="Pilih tanggal" value={form.tanggal} onChange={(e) => setForm({...form, tanggal: e.target.value})} /></div>
+            <div><label className="label">Kelas</label><select className="input" value={form.kelasId} onChange={(e) => setForm({...form, kelasId: e.target.value})}><option value="">Pilih Kelas</option>{kelas.map(k => <option key={k.id} value={k.id}>{k.namaKelas}</option>)}</select></div>
+            <div><label className="label">Mapel</label><input type="text" className="input" placeholder="Matematika" value={form.mataPelajaran} onChange={(e) => setForm({...form, mataPelajaran: e.target.value})} /></div>
+            <div><label className="label">Jam Ke</label><input type="text" className="input" placeholder="1-2" value={form.jamKe} onChange={(e) => setForm({...form, jamKe: e.target.value})} /></div>
+            <div className="sm:col-span-2"><label className="label">Materi</label><input type="text" className="input" placeholder="Contoh: Persamaan Linear" value={form.materi} onChange={(e) => setForm({...form, materi: e.target.value})} /></div>
+            <div className="sm:col-span-2"><label className="label">Deskripsi</label><textarea className="input" rows={2} placeholder="Ringkasan kegiatan pembelajaran" value={form.deskripsi} onChange={(e) => setForm({...form, deskripsi: e.target.value})} /></div>
+            <div><label className="label">Kendala</label><input type="text" className="input" placeholder="Kendala yang dihadapi" value={form.kendala} onChange={(e) => setForm({...form, kendala: e.target.value})} /></div>
+            <div><label className="label">Solusi</label><input type="text" className="input" placeholder="Solusi yang dilakukan" value={form.solusi} onChange={(e) => setForm({...form, solusi: e.target.value})} /></div>
             <div><label className="label">Kehadiran</label><input type="text" className="input" value={form.kehadiranSiswa} onChange={(e) => setForm({...form, kehadiranSiswa: e.target.value})} placeholder="30/32" /></div>
-            <div><label className="label">Catatan</label><input type="text" className="input" value={form.catatan} onChange={(e) => setForm({...form, catatan: e.target.value})} /></div>
+            <div><label className="label">Catatan</label><input type="text" className="input" placeholder="Catatan tambahan" value={form.catatan} onChange={(e) => setForm({...form, catatan: e.target.value})} /></div>
           </div>
           <div className="mt-5 flex gap-3 justify-end">
             <button type="button" className="btn btn-outline" onClick={onClose}>Batal</button>

@@ -2,6 +2,7 @@ import HeaderActions from "@/components/HeaderActions";
 
 const panduan = [
   {
+    id: "dashboard",
     judul: "Dashboard",
     icon: "fa-th-large",
     color: "text-[#0D7C66]",
@@ -13,6 +14,7 @@ const panduan = [
     ],
   },
   {
+    id: "siswa",
     judul: "Data Siswa",
     icon: "fa-user-graduate",
     color: "text-[#E8A317]",
@@ -25,6 +27,7 @@ const panduan = [
     ],
   },
   {
+    id: "kelas",
     judul: "Data Kelas",
     icon: "fa-chalkboard",
     color: "text-purple-600",
@@ -36,6 +39,7 @@ const panduan = [
     ],
   },
   {
+    id: "jadwal",
     judul: "Jadwal Mengajar",
     icon: "fa-calendar-alt",
     color: "text-red-600",
@@ -47,6 +51,7 @@ const panduan = [
     ],
   },
   {
+    id: "absensi",
     judul: "Absensi",
     icon: "fa-clipboard-check",
     color: "text-green-600",
@@ -60,6 +65,7 @@ const panduan = [
     ],
   },
   {
+    id: "nilai",
     judul: "Nilai",
     icon: "fa-chart-bar",
     color: "text-blue-600",
@@ -72,6 +78,7 @@ const panduan = [
     ],
   },
   {
+    id: "jurnal",
     judul: "Jurnal Mengajar",
     icon: "fa-book-open",
     color: "text-indigo-600",
@@ -83,6 +90,7 @@ const panduan = [
     ],
   },
   {
+    id: "lainnya",
     judul: "Lainnya",
     icon: "fa-ellipsis-h",
     color: "text-gray-600",
@@ -113,7 +121,7 @@ export default function PanduanPage() {
 
         <div className="space-y-4">
           {panduan.map((p) => (
-            <div key={p.judul} className="card">
+            <div key={p.judul} id={p.id} className="card scroll-mt-24">
               <div className="flex items-center gap-3 mb-3">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${p.bg} ${p.color}`}>
                   <i className={`fas ${p.icon}`}></i>

@@ -5,6 +5,7 @@ import { apiGet, apiPost } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
 import ExportButton from "@/components/ExportButton";
 import HeaderActions from "@/components/HeaderActions";
+import TutorialLink from "@/components/TutorialLink";
 import { bukaDokumen, exportXlsx, esc } from "@/lib/dokumen";
 import PlanGuard from "@/components/PlanGuard";
 
@@ -157,7 +158,10 @@ function LKBPageInner() {
       {msg && <div className="p-3 mb-4 rounded-xl border text-sm bg-emerald-50 border-emerald-200 text-emerald-700">{msg}</div>}
 
       <div className="card mb-6">
-        <h3 className="font-bold text-gray-800 mb-4 font-[Outfit]">Pengaturan LKB</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-bold text-gray-800 font-[Outfit]">Pengaturan LKB</h3>
+          <TutorialLink href="/panduan#lainnya" label="Panduan" />
+        </div>
         <div className="flex flex-wrap items-end gap-3">
           <div>
             <label className="label">Bulan</label>
@@ -218,9 +222,9 @@ function LKBPageInner() {
             </div>
             <div className="p-5">
               <div className="space-y-4">
-                <div><label className="label">Uraian Tugas / Kegiatan</label><input className="input" value={formUraian} onChange={(e) => setFormUraian(e.target.value)} /></div>
-                <div><label className="label">Volume</label><input type="number" className="input" value={formVol} onChange={(e) => setFormVol(Number(e.target.value))} /></div>
-                <div><label className="label">Bukti Dokumen</label><input className="input" value={formBukti} onChange={(e) => setFormBukti(e.target.value)} /></div>
+                <div><label className="label">Uraian Tugas / Kegiatan</label><input className="input" placeholder="Misal: Penyusunan silabus dan RPP" value={formUraian} onChange={(e) => setFormUraian(e.target.value)} /></div>
+                <div><label className="label">Volume</label><input type="number" className="input" placeholder="Contoh: 3" value={formVol} onChange={(e) => setFormVol(Number(e.target.value))} /></div>
+                <div><label className="label">Bukti Dokumen</label><input className="input" placeholder="Misal: Dokumen RPP" value={formBukti} onChange={(e) => setFormBukti(e.target.value)} /></div>
               </div>
               <div className="mt-5 flex gap-3 justify-end">
                 <button className="btn btn-outline" onClick={closeEdit}>Batal</button>

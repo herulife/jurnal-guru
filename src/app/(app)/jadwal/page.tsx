@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
+import TutorialLink from "@/components/TutorialLink";
 
 interface Jadwal {
   id: string; hari: string; jamMulai: string; jamSelesai: string;
@@ -74,6 +75,7 @@ export default function JadwalPage() {
           <option value="">Semua Hari</option>
           {["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"].map((h) => (<option key={h} value={h}>{h}</option>))}
         </select>
+        <TutorialLink href="/panduan#jadwal" label="Panduan" />
       </div>
 
       {selected.size > 0 && (
@@ -145,8 +147,8 @@ function JadwalModal({ editData, kelas, onSave, onClose }: { editData: Jadwal | 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div><label className="label">Hari</label><select className="input" value={form.hari} onChange={(e) => setForm({...form, hari: e.target.value})}>{["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"].map(h => <option key={h} value={h}>{h}</option>)}</select></div>
             <div><label className="label">Kelas</label><select className="input" value={form.kelasId} onChange={(e) => setForm({...form, kelasId: e.target.value})}><option value="">Pilih Kelas</option>{kelas.map(k => <option key={k.id} value={k.id}>{k.namaKelas}</option>)}</select></div>
-            <div><label className="label">Mapel</label><input type="text" className="input" value={form.mataPelajaran} onChange={(e) => setForm({...form, mataPelajaran: e.target.value})} required /></div>
-            <div><label className="label">Ruangan</label><input type="text" className="input" value={form.ruangan} onChange={(e) => setForm({...form, ruangan: e.target.value})} /></div>
+            <div><label className="label">Mapel</label><input type="text" className="input" placeholder="Matematika" value={form.mataPelajaran} onChange={(e) => setForm({...form, mataPelajaran: e.target.value})} required /></div>
+            <div><label className="label">Ruangan</label><input type="text" className="input" placeholder="R.101" value={form.ruangan} onChange={(e) => setForm({...form, ruangan: e.target.value})} /></div>
             <div><label className="label">Jam Mulai</label><input type="time" className="input" value={form.jamMulai} onChange={(e) => setForm({...form, jamMulai: e.target.value})} required /></div>
             <div><label className="label">Jam Selesai</label><input type="time" className="input" value={form.jamSelesai} onChange={(e) => setForm({...form, jamSelesai: e.target.value})} required /></div>
           </div>

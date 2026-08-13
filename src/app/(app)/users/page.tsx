@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import HeaderActions from "@/components/HeaderActions";
+import TutorialLink from "@/components/TutorialLink";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 
 interface User {
@@ -180,6 +181,7 @@ export default function UsersPage() {
                 <input
                   type="text"
                   className="input"
+                  placeholder="Username / email"
                   value={form.username}
                   onChange={(e) => setForm({ ...form, username: e.target.value })}
                   disabled={!!editUser}
@@ -192,6 +194,7 @@ export default function UsersPage() {
                 <input
                   type="text"
                   className="input"
+                  placeholder="Nama lengkap"
                   value={form.namaLengkap}
                   onChange={(e) => setForm({ ...form, namaLengkap: e.target.value })}
                   required
