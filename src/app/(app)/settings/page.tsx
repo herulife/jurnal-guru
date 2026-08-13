@@ -6,27 +6,45 @@ import HeaderActions from "@/components/HeaderActions";
 import GoogleSheetsSection from "@/components/GoogleSheetsSection";
 import { Toast, useToast } from "@/components/Feedback";
 
+interface SettingsData {
+  admin: Record<string, string>;
+  user: Record<string, string>;
+}
+
 export default function SettingsPage() {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [form, setForm] = useState({ app_name: "", tahun_ajaran: "", semester: "1", kkm_default: "75", invite_code: "" });
+  const [userForm, setUserForm] = useState({ tahun_ajaran: "", semester: "1", kkm_default: "75", dark_mode: "off" });
+  const [adminForm, setAdminForm] = useState({ app_name: "", invite_code: "", bank_name: "", bank_account_number: "", bank_account_name: "", bank_note: "" });
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{msg: string; type: "success"|"error"} | null>(null);
 
   useEffect(() => {
-    apiGet<Record<string, string>>("/api/settings").then((r) => {
-      if (r.ok && r.data) setForm((prev) => ({ ...prev, ...r.data }));
+    apiGet<SettingsData>("/api/settings").then((r) => {
+      if (r.ok && r.data) {
+        const d = r.data;
+        if (d.user) setUserForm((prev) => ({ ...prev, ...d.user }));
+        if (d.admin) setAdminForm((prev) => ({ ...prev, ...d.admin }));
+      }
     });
     fetch("/api/auth/check").then((r) => r.json()).then((r) => {
       if (r.ok && r.data?.user?.role === "Admin") setIsAdmin(true);
     }).catch(() => {});
   }, []);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSaveUser(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    const res = await apiPut("/api/settings", form);
+    const res = await apiPut("/api/settings", { user: userForm });
     setSaving(false);
-    setToast({ msg: res.ok ? "Pengaturan berhasil disimpan" : (res.msg || "Gagal menyimpan"), type: res.ok ? "success" : "error" });
+    setToast({ msg: res.ok ? "Pengaturan pribadi disimpan" : (res.msg || "Gagal menyimpan"), type: res.ok ? "success" : "error" });
+  }
+
+  async function handleSaveAdmin(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    const res = await apiPut("/api/settings", { admin: adminForm });
+    setSaving(false);
+    setToast({ msg: res.ok ? "Pengaturan aplikasi disimpan" : (res.msg || "Gagal menyimpan"), type: res.ok ? "success" : "error" });
   }
 
   async function handleBackup() {
@@ -72,25 +90,43 @@ export default function SettingsPage() {
         <div className="flex items-center gap-2"><HeaderActions /></div>
       </header>
 
-      <div className="max-w-4xl">
-        {isAdmin && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+      <div className="max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-6">
+
         <div className="card">
-          <h3 className="font-bold text-gray-800 mb-6 font-[Outfit]">Pengaturan</h3>
-          <form onSubmit={handleSubmit}>
+          <h3 className="font-bold text-gray-800 mb-6 font-[Outfit]">Pengaturan Saya</h3>
+          <p className="text-sm text-gray-500 mb-4">Berlaku untuk akun Anda sendiri.</p>
+          <form onSubmit={handleSaveUser}>
             <div className="space-y-5">
-              <div><label className="label">Nama Aplikasi</label><input type="text" className="input" value={form.app_name} onChange={(e) => setForm({...form, app_name: e.target.value})} /></div>
-              <div className="grid grid-cols-2 gap-5">
-                <div><label className="label">Tahun Ajaran</label><input type="text" className="input" value={form.tahun_ajaran} onChange={(e) => setForm({...form, tahun_ajaran: e.target.value})} /></div>
-                <div><label className="label">Semester</label><select className="input" value={form.semester} onChange={(e) => setForm({...form, semester: e.target.value})}><option value="1">Semester 1</option><option value="2">Semester 2</option></select></div>
-              </div>
-              <div><label className="label">KKM Default</label><input type="number" className="input" value={form.kkm_default} onChange={(e) => setForm({...form, kkm_default: e.target.value})} /></div>
-              <div><label className="label">Kode Undangan (untuk pendaftaran guru)</label><input type="text" className="input" value={form.invite_code} onChange={(e) => setForm({...form, invite_code: e.target.value})} placeholder="Contoh: JURNAL-2026" /><p className="text-xs text-gray-500 mt-1">Bagikan kode ini ke guru agar bisa membuat akun.</p></div>
+              <div><label className="label">Tahun Ajaran</label><input type="text" className="input" value={userForm.tahun_ajaran} onChange={(e) => setUserForm({...userForm, tahun_ajaran: e.target.value})} /></div>
+              <div><label className="label">Semester</label><select className="input" value={userForm.semester} onChange={(e) => setUserForm({...userForm, semester: e.target.value})}><option value="1">Semester 1</option><option value="2">Semester 2</option></select></div>
+              <div><label className="label">KKM Default</label><input type="number" className="input" value={userForm.kkm_default} onChange={(e) => setUserForm({...userForm, kkm_default: e.target.value})} /></div>
+              <div><label className="label">Tema Gelap</label><select className="input" value={userForm.dark_mode} onChange={(e) => setUserForm({...userForm, dark_mode: e.target.value})}><option value="off">Terang</option><option value="on">Gelap</option></select></div>
             </div>
-            <div className="mt-6"><button type="submit" className="btn btn-primary"><i className="fas fa-save"></i> Simpan</button></div>
+            <div className="mt-6"><button type="submit" className="btn btn-primary" disabled={saving}><i className="fas fa-save"></i> Simpan</button></div>
           </form>
         </div>
 
+        {isAdmin && (
+        <div className="card">
+          <h3 className="font-bold text-gray-800 mb-6 font-[Outfit]">Pengaturan Admin</h3>
+          <p className="text-sm text-gray-500 mb-4">Khusus admin — berlaku untuk seluruh aplikasi.</p>
+          <form onSubmit={handleSaveAdmin}>
+            <div className="space-y-5">
+              <div><label className="label">Nama Aplikasi</label><input type="text" className="input" value={adminForm.app_name} onChange={(e) => setAdminForm({...adminForm, app_name: e.target.value})} /></div>
+              <div><label className="label">Kode Undangan (untuk pendaftaran guru)</label><input type="text" className="input" value={adminForm.invite_code} onChange={(e) => setAdminForm({...adminForm, invite_code: e.target.value})} placeholder="Contoh: JURNAL-2026" /><p className="text-xs text-gray-500 mt-1">Bagikan kode ini ke guru agar bisa membuat akun.</p></div>
+              <div className="grid grid-cols-2 gap-5">
+                <div><label className="label">Nama Bank</label><input type="text" className="input" value={adminForm.bank_name} onChange={(e) => setAdminForm({...adminForm, bank_name: e.target.value})} /></div>
+                <div><label className="label">No. Rekening</label><input type="text" className="input" value={adminForm.bank_account_number} onChange={(e) => setAdminForm({...adminForm, bank_account_number: e.target.value})} /></div>
+              </div>
+              <div><label className="label">Atas Nama</label><input type="text" className="input" value={adminForm.bank_account_name} onChange={(e) => setAdminForm({...adminForm, bank_account_name: e.target.value})} /></div>
+              <div><label className="label">Catatan Bank</label><input type="text" className="input" value={adminForm.bank_note} onChange={(e) => setAdminForm({...adminForm, bank_note: e.target.value})} /></div>
+            </div>
+            <div className="mt-6"><button type="submit" className="btn btn-primary" disabled={saving}><i className="fas fa-save"></i> Simpan</button></div>
+          </form>
+        </div>
+        )}
+
+        {isAdmin && (
         <div className="card">
           <h3 className="font-bold text-gray-800 mb-6 font-[Outfit]">Backup & Restore Database</h3>
           <p className="text-sm text-gray-500 mb-4">Backup menyimpan seluruh data (Kelas, Siswa, Nilai, Absensi, Jurnal, dll) dalam format JSON.</p>
@@ -100,10 +136,11 @@ export default function SettingsPage() {
             <input type="file" id="restoreInput" accept=".json" className="hidden" onChange={handleRestore} />
           </div>
         </div>
+        )}
 
+        {isAdmin && (
         <div className="lg:col-span-2">
           <GoogleSheetsSection />
-        </div>
         </div>
         )}
       </div>

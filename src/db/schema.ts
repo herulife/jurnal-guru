@@ -112,6 +112,12 @@ export const settings = sqliteTable("settings", {
   value: text("value"),
 });
 
+export const userSettings = sqliteTable("user_settings", {
+  userId: text("user_id").notNull(),
+  key: text("key").notNull(),
+  value: text("value"),
+});
+
 export const dataSurat = sqliteTable("data_surat", {
   id: text("id").primaryKey(),
   judul: text("judul").notNull(),

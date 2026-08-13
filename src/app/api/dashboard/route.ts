@@ -1,6 +1,6 @@
 import { requireAuth, scopeUserId, isAdminRole, AuthError } from "@/lib/auth";
 import { db } from "@/db";
-import { dataSiswa, dataKelas, absensi, nilai, settings } from "@/db/schema";
+import { dataSiswa, dataKelas, absensi, nilai, settings, userSettings } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getUserPlan, canAccess } from "@/lib/plans";
 import { PLAN_RANK } from "@/lib/plan-helpers";
@@ -28,6 +28,13 @@ export async function GET() {
     const setRows = await db.select().from(settings).all();
     const setMap: Record<string, string> = {};
     for (const r of setRows) setMap[r.key] = r.value || "";
+
+    const ownSettings = await db.select().from(userSettings).where(eq(userSettings.userId, session.id)).all();
+    const ownMap: Record<string, string> = {};
+    for (const r of ownSettings) ownMap[r.key] = r.value || "";
+
+    const tahunAjaran = ownMap.tahun_ajaran || setMap.tahun_ajaran || "-";
+    const semester = ownMap.semester || setMap.semester || "-";
 
     const today = todayISO();
     let absenHariIni = 0;
@@ -61,8 +68,8 @@ export async function GET() {
       totalAbsensi: absenAll.length,
       totalNilai: nilaiAllowed ? nilaiAll.length : null,
       nilaiLocked: !nilaiAllowed,
-      tahunAjaran: setMap.tahun_ajaran || "-",
-      semester: setMap.semester ? `Semester ${setMap.semester}` : "-",
+      tahunAjaran,
+      semester: semester ? `Semester ${semester}` : "-",
     });
   } catch (e: unknown) {
     if (e instanceof AuthError) return apiError(e.message, e.status);
