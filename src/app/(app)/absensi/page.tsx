@@ -6,7 +6,6 @@ import { bukaDokumen, exportXlsx, esc } from "@/lib/dokumen";
 import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
 import { ConfirmModal, AlertModal } from "@/components/ConfirmModal";
-import Modal from "@/components/Modal";
 
 interface Siswa { id: string; namaSiswa: string; }
 interface Kelas { id: string; namaKelas: string; }
@@ -169,8 +168,7 @@ export default function AbsensiPage() {
     <div className="p-6 fade-in">
       <header className="sticky top-14 md:top-0 z-20 md:z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
         <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">Absensi</h1>
-        <div className="flex items-center gap-2"><a href="/panduan#absensi" className="doc-link" aria-label="Buka panduan"><i className="fas fa-circle-question"></i></a>
-<HeaderActions /></div>
+        <div className="flex items-center gap-2"><HeaderActions /></div>
       </header>
 
       <div className="card mb-6">
@@ -246,7 +244,7 @@ export default function AbsensiPage() {
                   <td>{a.keterangan}</td>
                   <td>
                     <EditAbsenModal absen={a} onSave={loadRiwayat} />
-                    <button className="btn btn-danger btn-sm ml-1" aria-label="Hapus absensi" onClick={() => showConfirm({ title: "Hapus", message: "Hapus data absensi ini?", variant: "danger", confirmText: "Hapus", cancelText: "Batal", onConfirm: async () => { await apiDelete(`/api/absensi/${a.id}`); loadRiwayat(); } })}><i className="fas fa-trash"></i></button>
+                    <button className="btn btn-danger btn-sm ml-1" onClick={() => showConfirm({ title: "Hapus", message: "Hapus data absensi ini?", variant: "danger", confirmText: "Hapus", cancelText: "Batal", onConfirm: async () => { await apiDelete(`/api/absensi/${a.id}`); loadRiwayat(); } })}><i className="fas fa-trash"></i></button>
                   </td>
                 </tr>
               ))}
@@ -295,9 +293,14 @@ function EditAbsenModal({ absen, onSave }: { absen: Absen; onSave: () => void })
 
   return (
     <>
-      <button className="btn btn-outline btn-sm" onClick={() => setOpen(true)} aria-label="Edit absensi"><i className="fas fa-edit"></i></button>
+      <button className="btn btn-outline btn-sm" onClick={() => setOpen(true)}><i className="fas fa-edit"></i></button>
       {open && (
-        <Modal open maxWidth="max-w-sm" onClose={() => setOpen(false)} title="Edit Absensi">
+        <div className="modal-overlay" onClick={() => setOpen(false)}>
+          <div className="modal-content max-w-sm" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-5 border-b border-[#E8E4DC]">
+              <h3 className="font-bold text-gray-800 font-[Outfit]">Edit Absensi</h3>
+              <button onClick={() => setOpen(false)} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 bg-transparent border-none cursor-pointer"><i className="fas fa-times"></i></button>
+            </div>
             <form onSubmit={handleSubmit} className="p-5">
               <p className="text-sm mb-4">{absen.namaSiswa} - {absen.tanggal}</p>
               <div className="mb-4"><label className="label">Status</label>
@@ -305,13 +308,14 @@ function EditAbsenModal({ absen, onSave }: { absen: Absen; onSave: () => void })
                   <option value="Hadir">Hadir</option><option value="Sakit">Sakit</option><option value="Izin">Izin</option><option value="Alpa">Alpa</option>
                 </select>
               </div>
-              <div className="mb-4"><label className="label">Keterangan</label><input type="text" className="input" value={keterangan} onChange={(e) => setKeterangan(e.target.value)} placeholder="Contoh: Terlambat 10 menit" /></div>
+              <div className="mb-4"><label className="label">Keterangan</label><input type="text" className="input" value={keterangan} onChange={(e) => setKeterangan(e.target.value)} /></div>
               <div className="flex gap-3 justify-end">
                 <button type="button" className="btn btn-outline" onClick={() => setOpen(false)}>Batal</button>
                 <button type="submit" className="btn btn-primary"><i className="fas fa-save"></i> Simpan</button>
               </div>
             </form>
-        </Modal>
+          </div>
+        </div>
       )}
     </>
   );

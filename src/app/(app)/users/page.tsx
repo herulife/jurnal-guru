@@ -3,9 +3,6 @@
 import { useEffect, useState } from "react";
 import HeaderActions from "@/components/HeaderActions";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
-import { deriveRoleLabel, ROLE_LABEL, ROLE_BADGE } from "@/lib/plan-helpers";
-import Modal from "@/components/Modal";
-import { useConfirm } from "@/components/ConfirmModal";
 
 interface User {
   id: string;
@@ -21,9 +18,8 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editUser, setEditUser] = useState<User | null>(null);
-  const [form, setForm] = useState({ username: "", password: "", namaLengkap: "", role: "free" });
+  const [form, setForm] = useState({ username: "", password: "", namaLengkap: "", role: "guru" });
   const [saving, setSaving] = useState(false);
-  const { confirm, ConfirmComponent } = useConfirm();
 
   useEffect(() => {
     loadUsers();
@@ -38,13 +34,13 @@ export default function UsersPage() {
 
   function openAdd() {
     setEditUser(null);
-    setForm({ username: "", password: "", namaLengkap: "", role: "free" });
+    setForm({ username: "", password: "", namaLengkap: "", role: "guru" });
     setModalOpen(true);
   }
 
   function openEdit(u: User) {
     setEditUser(u);
-    setForm({ username: u.username, password: "", namaLengkap: u.namaLengkap, role: deriveRoleLabel(u.role, u.plan) });
+    setForm({ username: u.username, password: "", namaLengkap: u.namaLengkap, role: u.role });
     setModalOpen(true);
   }
 
@@ -79,7 +75,7 @@ export default function UsersPage() {
   }
 
   async function handleDelete(u: User) {
-    if (!(await confirm({ message: `Hapus user "${u.username}"?` }))) return;
+    if (!confirm(`Hapus user "${u.username}"?`)) return;
     const res = await apiDelete(`/api/users/${u.id}`);
     if (res.ok) {
       loadUsers();
@@ -110,8 +106,7 @@ export default function UsersPage() {
           <button className="btn btn-primary" onClick={openAdd}>
             <i className="fas fa-plus"></i> Tambah User
           </button>
-          <a href="/panduan#akun-pengaturan" className="doc-link" aria-label="Buka panduan"><i className="fas fa-circle-question"></i></a>
-<HeaderActions />
+          <HeaderActions />
         </div>
       </header>
 
@@ -141,8 +136,8 @@ export default function UsersPage() {
                   <td className="font-medium">{u.username}</td>
                   <td>{u.namaLengkap}</td>
                   <td>
-                    <span className={`badge ${ROLE_BADGE[deriveRoleLabel(u.role, u.plan)]}`}>
-                      {ROLE_LABEL[deriveRoleLabel(u.role, u.plan)]}
+                    <span className={`badge ${u.role === "admin" ? "bg-purple-100 text-purple-700" : "bg-gray-100 text-gray-700"}`}>
+                      {u.role}
                     </span>
                   </td>
                   <td>
@@ -153,10 +148,10 @@ export default function UsersPage() {
                   <td>{u.createdAt ? new Date(u.createdAt).toLocaleDateString("id-ID") : "-"}</td>
                   <td>
                     <div className="flex gap-1">
-                      <button className="btn btn-outline btn-sm" onClick={() => openEdit(u)} aria-label={`Edit user ${u.username}`}>
+                      <button className="btn btn-outline btn-sm" onClick={() => openEdit(u)} title="Edit">
                         <i className="fas fa-edit"></i>
                       </button>
-                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(u)} aria-label={`Hapus user ${u.username}`}>
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(u)} title="Hapus">
                         <i className="fas fa-trash"></i>
                       </button>
                     </div>
@@ -169,8 +164,17 @@ export default function UsersPage() {
       )}
 
       {modalOpen && (
-        <Modal open maxWidth="max-w-md" onClose={() => setModalOpen(false)} title={editUser ? "Edit User" : "Tambah User Baru"}>
-          <form onSubmit={handleSubmit} className="p-5 space-y-4">
+        <div className="modal-overlay" onClick={() => setModalOpen(false)}>
+          <div className="modal-content max-w-md" onClick={(e) => e.stopPropagation()}>
+            <div className="p-5 border-b border-[#E8E4DC] flex items-center justify-between">
+              <h3 className="font-bold text-gray-800 font-[Outfit]">
+                {editUser ? "Edit User" : "Tambah User Baru"}
+              </h3>
+              <button className="text-gray-400 hover:text-gray-600" onClick={() => setModalOpen(false)}>
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            <form onSubmit={handleSubmit} className="p-5 space-y-4">
               <div>
                 <label className="label">Username</label>
                 <input
@@ -181,7 +185,6 @@ export default function UsersPage() {
                   disabled={!!editUser}
                   required
                   minLength={4}
-                  placeholder="Contoh: guru01"
                 />
               </div>
               <div>
@@ -192,7 +195,6 @@ export default function UsersPage() {
                   value={form.namaLengkap}
                   onChange={(e) => setForm({ ...form, namaLengkap: e.target.value })}
                   required
-                  placeholder="Nama lengkap guru"
                 />
               </div>
               <div>
@@ -214,10 +216,8 @@ export default function UsersPage() {
                   value={form.role}
                   onChange={(e) => setForm({ ...form, role: e.target.value })}
                 >
+                  <option value="guru">Guru</option>
                   <option value="admin">Admin</option>
-                  <option value="free">Free</option>
-                  <option value="pro">Pro</option>
-                  <option value="premium">Premium</option>
                 </select>
               </div>
               <div className="flex gap-2 pt-2">
@@ -229,9 +229,9 @@ export default function UsersPage() {
                 </button>
               </div>
             </form>
-        </Modal>
+          </div>
+        </div>
       )}
-      {ConfirmComponent}
     </div>
   );
 }

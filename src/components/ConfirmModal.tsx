@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import Modal from "@/components/Modal";
+import { useEffect, useState } from "react";
 
 interface ConfirmModalProps {
   open: boolean;
@@ -38,12 +37,37 @@ export function ConfirmModal({
   variant = "danger",
   loading = false,
 }: ConfirmModalProps) {
-  const [mounted, setMounted] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   if (!mounted || !open) return null;
 
   return (
-    <Modal open onClose={onClose} title={title}>
+    <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <div className="modal-content max-w-md" onClick={(e) => e.stopPropagation()}>
+        <div className="p-5 border-b border-[#E8E4DC] flex items-center justify-between">
+          <h3 id="confirm-title" className="font-bold text-gray-800 font-[Outfit]">{title}</h3>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 bg-transparent border-none cursor-pointer"
+            aria-label="Tutup"
+          >
+            <i className="fas fa-times"></i>
+          </button>
+        </div>
         <div className={`p-5 ${variantStyles[variant]} rounded-b-xl border-t border-[#E8E4DC]`}>
           <p className="text-sm leading-relaxed">{message}</p>
         </div>
@@ -72,7 +96,8 @@ export function ConfirmModal({
             )}
           </button>
         </div>
-    </Modal>
+      </div>
+    </div>
   );
 }
 
@@ -97,12 +122,28 @@ export function AlertModal({
   message,
   variant = "info",
 }: AlertModalProps) {
-  const [mounted, setMounted] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
 
   if (!mounted || !open) return null;
 
   return (
-    <Modal open onClose={onClose} title={title}>
+    <div className="modal-overlay" onClick={onClose} role="alertdialog" aria-modal="true" aria-labelledby="alert-title">
+      <div className="modal-content max-w-md" onClick={(e) => e.stopPropagation()}>
+        <div className="p-5 border-b border-[#E8E4DC] flex items-center justify-between">
+          <h3 id="alert-title" className="font-bold text-gray-800 font-[Outfit]">{title}</h3>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 bg-transparent border-none cursor-pointer"
+            aria-label="Tutup"
+          >
+            <i className="fas fa-times"></i>
+          </button>
+        </div>
         <div className={`p-5 ${alertStyles[variant]} rounded-b-xl border-t border-[#E8E4DC]`}>
           <div className="flex items-start gap-3">
             <i className={`fas ${
@@ -118,7 +159,8 @@ export function AlertModal({
             OK
           </button>
         </div>
-    </Modal>
+      </div>
+    </div>
   );
 }
 

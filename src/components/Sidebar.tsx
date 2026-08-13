@@ -55,7 +55,7 @@ const menuItems: { section: string; items: MenuItem[] }[] = [
     section: "Sistem",
     items: [
       { label: "Kelola User", icon: "fa-users-cog", href: "/users", adminOnly: true },
-      { label: "Profil Sekolah", icon: "fa-school", href: "/profil" },
+      { label: "Profil Sekolah", icon: "fa-school", href: "/profil", adminOnly: true },
       { label: "Pengaturan", icon: "fa-cog", href: "/settings" },
       { label: "Activity Log", icon: "fa-history", href: "/log", adminOnly: true },
       { label: "Kalender", icon: "fa-calendar", href: "/kalender" },

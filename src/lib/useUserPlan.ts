@@ -2,11 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { apiGet } from "@/lib/useApi";
-import { normalizePlan } from "@/lib/plan-helpers";
-import type { Plan } from "@/lib/plan-helpers";
 
-export type { Plan } from "@/lib/plan-helpers";
-export { canExport, canUsePro, canUsePremium, normalizePlan } from "@/lib/plan-helpers";
+export type Plan = "gratis" | "pro" | "premium";
+
+const PLAN_RANK: Record<Plan, number> = { gratis: 0, pro: 1, premium: 2 };
+
+export function normalizePlan(p: string | null | undefined): Plan {
+  if (p === "pro") return "pro";
+  if (p === "premium" || p === "sekolah") return "premium";
+  return "gratis";
+}
 
 export function useUserPlan() {
   const [plan, setPlan] = useState<Plan | null>(null);
@@ -27,3 +32,12 @@ export function useUserPlan() {
 
   return { plan, role, loading };
 }
+
+export const canExport = (p: Plan | null) =>
+  p !== null && PLAN_RANK[p] >= PLAN_RANK.pro;
+
+export const canUsePro = (p: Plan | null) =>
+  p !== null && PLAN_RANK[p] >= PLAN_RANK.pro;
+
+export const canUsePremium = (p: Plan | null) =>
+  p !== null && PLAN_RANK[p] >= PLAN_RANK.premium;

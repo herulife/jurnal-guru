@@ -106,22 +106,6 @@ h1, h2, h3, h4, h5, h6 {
   flex-shrink: 0;
 }
 .btn:active { transform: scale(0.97); }
-.doc-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  color: #9ca3af;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: color 0.15s ease, background-color 0.15s ease;
-}
-.doc-link:hover { color: #0D7C66; background-color: rgba(232, 228, 220, 0.5); }
-.doc-link:focus-visible { outline: 2px solid #0D7C66; outline-offset: 2px; }
 .btn-primary { background: #0D7C66; color: #fff; }
 .btn-primary:hover { background: #0A6352; box-shadow: 0 4px 15px rgba(13, 124, 102, 0.3); }
 .btn-accent { background: #E8A317; color: #1A2332; }
@@ -205,8 +189,6 @@ body.dark .card .text-gray-600, body.dark .card .text-gray-500 { color: #94a3b8;
 body.dark .card .text-gray-400 { color: #64748b; }
 body.dark .input { background: #1e293b; border-color: #334155; color: #e2e8f0; }
 body.dark .label { color: #94a3b8; }
-body.dark .doc-link { color: #94a3b8; }
-body.dark .doc-link:hover { color: #38bdf8; background-color: rgba(56, 189, 248, 0.1); }
 body.dark .modal-content { background: #1e293b; color: #e2e8f0; }
 body.dark .modal-content h1, body.dark .modal-content h2, body.dark .modal-content h3, body.dark .modal-content h4 { color: #f1f5f9; }
 body.dark .modal-content .text-gray-800, body.dark .modal-content .text-gray-700 { color: #e2e8f0; }
@@ -221,20 +203,6 @@ body.dark header { background: #1a2332 !important; border-color: #334155 !import
 body.dark header h1 { color: #f1f5f9; }
 body.dark .btn-outline { color: #e2e8f0; border-color: #334155; }
 body.dark .btn-outline:hover { border-color: #0D7C66; color: #0D7C66; background: rgba(13, 124, 102, 0.12); }
-
-/* Dropdown menu akun (UserMenu) */
-.user-menu-dropdown { animation: menuPop 0.15s ease; }
-.user-menu-dropdown button:hover { background: #f4f1ea; }
-body.dark .user-menu-dropdown { background: #1e293b; border-color: #334155; }
-body.dark .user-menu-dropdown .text-gray-700 { color: #e2e8f0; }
-body.dark .user-menu-dropdown .text-gray-400 { color: #64748b; }
-body.dark .user-menu-dropdown button:hover { background: #233348; }
-body.dark .user-menu-dropdown .border-t { border-color: #334155; }
-
-@keyframes menuPop {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 
 .table-wrap tbody tr:hover { background: #f8f6f2; }
 

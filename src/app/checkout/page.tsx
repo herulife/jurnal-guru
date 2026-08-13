@@ -175,7 +175,7 @@ function CheckoutInner() {
               )}
             </button>
             <p className="text-center text-xs text-gray-400 mt-3">
-              <i className="fas fa-shield-halved mr-1"></i> Pembayaran diverifikasi manual. Data Anda terenkripsi dan aman.
+              <i className="fas fa-shield-halved mr-1"></i> Pembayaran diverifikasi manual. Garansi 30 hari uang kembali.
             </p>
           </div>
         )}

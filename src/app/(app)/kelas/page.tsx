@@ -4,8 +4,6 @@ import { useEffect, useState, useCallback } from "react";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
-import Modal from "@/components/Modal";
-import { useConfirm } from "@/components/ConfirmModal";
 
 interface Kelas {
   id: string;
@@ -24,7 +22,6 @@ export default function KelasPage() {
   const [pageSize] = useState(25);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [selectAll, setSelectAll] = useState(false);
-  const { confirm, ConfirmComponent } = useConfirm();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -55,7 +52,7 @@ export default function KelasPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!(await confirm({ message: "Hapus kelas ini?" }))) return;
+    if (!confirm("Hapus kelas ini?")) return;
     const res = await apiDelete(`/api/kelas/${id}`);
     if (res.ok) load();
   }
@@ -79,7 +76,7 @@ export default function KelasPage() {
 
   async function handleBulkDelete() {
     if (selected.size === 0) return;
-    if (!(await confirm({ message: `Hapus ${selected.size} kelas?` }))) return;
+    if (!confirm(`Hapus ${selected.size} kelas?`)) return;
     for (const id of selected) {
       await apiDelete(`/api/kelas/${id}`);
     }
@@ -97,8 +94,7 @@ export default function KelasPage() {
           Data Kelas
         </h1>
         <div className="flex items-center gap-2">
-        <a href="/panduan#data-kelas" className="doc-link" aria-label="Buka panduan"><i className="fas fa-circle-question"></i></a>
-<HeaderActions />
+        <HeaderActions />
         <button
           className="btn btn-primary btn-sm"
           onClick={() =>
@@ -168,14 +164,12 @@ export default function KelasPage() {
                       const modal = (window as any).__kelasModal;
                       if (modal) modal.open(k);
                     }}
-                    aria-label="Edit kelas"
                   >
                     <i className="fas fa-edit"></i>
                   </button>
                   <button
                     className="btn btn-danger btn-sm"
                     onClick={() => handleDelete(k.id)}
-                    aria-label="Hapus kelas"
                   >
                     <i className="fas fa-trash"></i>
                   </button>
@@ -189,7 +183,6 @@ export default function KelasPage() {
       <Pagination current={page} total={data.length} pageSize={pageSize} onChange={setPage} />
 
       <KelasModal onSave={load} />
-      {ConfirmComponent}
     </div>
   );
 }
@@ -237,7 +230,19 @@ function KelasModal({ onSave }: { onSave: () => void }) {
   if (!open) return null;
 
   return (
-    <Modal open={open} onClose={() => setOpen(false)} title={edit ? "Edit Kelas" : "Tambah Kelas"}>
+    <div className="modal-overlay" onClick={() => setOpen(false)}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-5 border-b border-[#E8E4DC]">
+          <h3 className="font-bold text-lg text-gray-800 font-[Outfit]">
+            {edit ? "Edit Kelas" : "Tambah Kelas"}
+          </h3>
+          <button
+            onClick={() => setOpen(false)}
+            className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 bg-transparent border-none cursor-pointer"
+          >
+            <i className="fas fa-times"></i>
+          </button>
+        </div>
         <form onSubmit={handleSubmit} className="p-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -247,7 +252,6 @@ function KelasModal({ onSave }: { onSave: () => void }) {
                 className="input"
                 value={form.namaKelas}
                 onChange={(e) => setForm({ ...form, namaKelas: e.target.value })}
-                placeholder="Contoh: X MIPA 1"
                 required
               />
             </div>
@@ -284,7 +288,6 @@ function KelasModal({ onSave }: { onSave: () => void }) {
                 onChange={(e) =>
                   setForm({ ...form, tahunAjaran: e.target.value })
                 }
-                placeholder="Contoh: 2025/2026"
               />
             </div>
             <div className="sm:col-span-2">
@@ -294,7 +297,6 @@ function KelasModal({ onSave }: { onSave: () => void }) {
                 className="input"
                 value={form.waliKelas}
                 onChange={(e) => setForm({ ...form, waliKelas: e.target.value })}
-                placeholder="Nama lengkap wali kelas"
               />
             </div>
           </div>
@@ -311,6 +313,7 @@ function KelasModal({ onSave }: { onSave: () => void }) {
             </button>
           </div>
         </form>
-    </Modal>
+      </div>
+    </div>
   );
 }

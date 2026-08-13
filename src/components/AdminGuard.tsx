@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { isAdminRole } from "@/lib/plan-helpers";
 
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -12,7 +11,7 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
     fetch("/api/auth/check")
       .then((r) => r.json())
       .then((r) => {
-        if (r.ok && r.data?.user && isAdminRole(r.data.user.role)) setOk(true);
+        if (r.ok && r.data?.user?.role === "Admin") setOk(true);
         else router.replace("/dashboard");
       })
       .catch(() => router.replace("/dashboard"));

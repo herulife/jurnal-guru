@@ -5,8 +5,6 @@ import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import { bukaDokumen, exportXlsx, esc } from "@/lib/dokumen";
 import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
-import Modal from "@/components/Modal";
-import { useConfirm } from "@/components/ConfirmModal";
 
 interface Jurnal { id: string; tanggal: string; namaKelas: string; mataPelajaran: string; jamKe: string; materi: string; kendala: string; deskripsi: string; solusi: string; kehadiranSiswa: string; catatan: string; kelasId: string; }
 interface Kelas { id: string; namaKelas: string; }
@@ -23,7 +21,6 @@ export default function JurnalPage() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(25);
   const [selected, setSelected] = useState(new Set<string>());
-  const { confirm, ConfirmComponent } = useConfirm();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -57,7 +54,7 @@ export default function JurnalPage() {
     else { setSelected(new Set(paginatedData.map(d => d.id))); }
   }
   async function handleBulkDelete() {
-    if (!(await confirm({ message: `Hapus ${selected.size} data?` }))) return;
+    if (!confirm(`Hapus ${selected.size} data?`)) return;
     for (const id of selected) { await apiDelete(`/api/jurnal/${id}`); }
     setSelected(new Set()); load();
   }
@@ -103,8 +100,7 @@ export default function JurnalPage() {
       <header className="sticky top-14 md:top-0 z-20 md:z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
         <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">Jurnal Mengajar</h1>
         <div className="flex items-center gap-2">
-          <a href="/panduan#jurnal-mengajar" className="doc-link" aria-label="Buka panduan"><i className="fas fa-circle-question"></i></a>
-<HeaderActions />
+          <HeaderActions />
           <button className="btn btn-accent btn-sm" onClick={printJurnalPdf}><i className="fas fa-file-pdf"></i> PDF</button>
           <button className="btn btn-accent btn-sm" onClick={exportExcel}><i className="fas fa-file-excel"></i> Excel</button>
           <button className="btn btn-primary btn-sm" onClick={openAdd}><i className="fas fa-plus"></i> Tambah</button>
@@ -155,8 +151,8 @@ export default function JurnalPage() {
                 <td>{j.materi}</td>
                 <td>{j.kendala}</td>
                 <td>
-                  <button className="btn btn-outline btn-sm mr-1" onClick={() => openEdit(j)} aria-label="Edit jurnal"><i className="fas fa-edit"></i></button>
-                  <button className="btn btn-danger btn-sm" onClick={async () => { if (await confirm({ message: "Hapus data ini?" })) { await apiDelete(`/api/jurnal/${j.id}`); load(); } }} aria-label="Hapus jurnal"><i className="fas fa-trash"></i></button>
+                  <button className="btn btn-outline btn-sm mr-1" onClick={() => openEdit(j)}><i className="fas fa-edit"></i></button>
+                  <button className="btn btn-danger btn-sm" onClick={async () => { if (confirm("Hapus?")) { await apiDelete(`/api/jurnal/${j.id}`); load(); } }}><i className="fas fa-trash"></i></button>
                 </td>
               </tr>
             ))}
@@ -167,7 +163,6 @@ export default function JurnalPage() {
       {filtered.length > 0 && <Pagination current={page} total={filtered.length} pageSize={pageSize} onChange={setPage} />}
 
       {modalOpen && <JurnalModal editData={editData} kelas={kelas} onSave={load} onClose={() => setModalOpen(false)} />}
-      {ConfirmComponent}
     </div>
   );
 }
@@ -190,25 +185,31 @@ function JurnalModal({ editData, kelas, onSave, onClose }: { editData: Jurnal | 
   }
 
   return (
-    <Modal open onClose={onClose} title={editData ? "Edit Jurnal" : "Tambah Jurnal"}>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-5 border-b border-[#E8E4DC]">
+          <h3 className="font-bold text-lg text-gray-800 font-[Outfit]">{editData ? "Edit Jurnal" : "Tambah Jurnal"}</h3>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 bg-transparent border-none cursor-pointer"><i className="fas fa-times"></i></button>
+        </div>
         <form onSubmit={handleSubmit} className="p-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div><label className="label">Tanggal</label><input type="date" className="input" value={form.tanggal} onChange={(e) => setForm({...form, tanggal: e.target.value})} /></div>
             <div><label className="label">Kelas</label><select className="input" value={form.kelasId} onChange={(e) => setForm({...form, kelasId: e.target.value})}><option value="">Pilih</option>{kelas.map(k => <option key={k.id} value={k.id}>{k.namaKelas}</option>)}</select></div>
-            <div><label className="label">Mapel</label><input type="text" className="input" value={form.mataPelajaran} onChange={(e) => setForm({...form, mataPelajaran: e.target.value})} placeholder="Contoh: Matematika" /></div>
-            <div><label className="label">Jam Ke</label><input type="text" className="input" value={form.jamKe} onChange={(e) => setForm({...form, jamKe: e.target.value})} placeholder="Contoh: 1-2" /></div>
-            <div className="sm:col-span-2"><label className="label">Materi</label><input type="text" className="input" value={form.materi} onChange={(e) => setForm({...form, materi: e.target.value})} placeholder="Bab & judul materi" /></div>
-            <div className="sm:col-span-2"><label className="label">Deskripsi</label><textarea className="input" rows={2} value={form.deskripsi} onChange={(e) => setForm({...form, deskripsi: e.target.value})} placeholder="Rincian kegiatan pembelajaran" /></div>
-            <div><label className="label">Kendala</label><input type="text" className="input" value={form.kendala} onChange={(e) => setForm({...form, kendala: e.target.value})} placeholder="Hambatan saat mengajar" /></div>
-            <div><label className="label">Solusi</label><input type="text" className="input" value={form.solusi} onChange={(e) => setForm({...form, solusi: e.target.value})} placeholder="Cara mengatasi kendala" /></div>
+            <div><label className="label">Mapel</label><input type="text" className="input" value={form.mataPelajaran} onChange={(e) => setForm({...form, mataPelajaran: e.target.value})} /></div>
+            <div><label className="label">Jam Ke</label><input type="text" className="input" value={form.jamKe} onChange={(e) => setForm({...form, jamKe: e.target.value})} /></div>
+            <div className="sm:col-span-2"><label className="label">Materi</label><input type="text" className="input" value={form.materi} onChange={(e) => setForm({...form, materi: e.target.value})} /></div>
+            <div className="sm:col-span-2"><label className="label">Deskripsi</label><textarea className="input" rows={2} value={form.deskripsi} onChange={(e) => setForm({...form, deskripsi: e.target.value})} /></div>
+            <div><label className="label">Kendala</label><input type="text" className="input" value={form.kendala} onChange={(e) => setForm({...form, kendala: e.target.value})} /></div>
+            <div><label className="label">Solusi</label><input type="text" className="input" value={form.solusi} onChange={(e) => setForm({...form, solusi: e.target.value})} /></div>
             <div><label className="label">Kehadiran</label><input type="text" className="input" value={form.kehadiranSiswa} onChange={(e) => setForm({...form, kehadiranSiswa: e.target.value})} placeholder="30/32" /></div>
-            <div><label className="label">Catatan</label><input type="text" className="input" value={form.catatan} onChange={(e) => setForm({...form, catatan: e.target.value})} placeholder="Catatan tambahan" /></div>
+            <div><label className="label">Catatan</label><input type="text" className="input" value={form.catatan} onChange={(e) => setForm({...form, catatan: e.target.value})} /></div>
           </div>
           <div className="mt-5 flex gap-3 justify-end">
             <button type="button" className="btn btn-outline" onClick={onClose}>Batal</button>
             <button type="submit" className="btn btn-primary"><i className="fas fa-save"></i> Simpan</button>
           </div>
         </form>
-    </Modal>
+      </div>
+    </div>
   );
 }

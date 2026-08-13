@@ -27,8 +27,10 @@ export async function middleware(request: NextRequest) {
         await jwtVerify(session, key, { algorithms: ["HS256"] });
         return res;
       } catch {
-        // token invalid/expired — lanjut ke pengecekan di bawah
+        // token invalid/expired — lanjut ke redirect login
       }
+    } else {
+      return res;
     }
   }
 

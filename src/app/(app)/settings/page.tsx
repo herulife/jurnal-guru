@@ -5,7 +5,6 @@ import { apiGet, apiPut, apiPost } from "@/lib/useApi";
 import HeaderActions from "@/components/HeaderActions";
 import GoogleSheetsSection from "@/components/GoogleSheetsSection";
 import { Toast, useToast } from "@/components/Feedback";
-import { isAdminRole } from "@/lib/plan-helpers";
 
 export default function SettingsPage() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -18,7 +17,7 @@ export default function SettingsPage() {
       if (r.ok && r.data) setForm((prev) => ({ ...prev, ...r.data }));
     });
     fetch("/api/auth/check").then((r) => r.json()).then((r) => {
-      if (r.ok && r.data?.user && isAdminRole(r.data.user.role)) setIsAdmin(true);
+      if (r.ok && r.data?.user?.role === "Admin") setIsAdmin(true);
     }).catch(() => {});
   }, []);
 
@@ -70,33 +69,28 @@ export default function SettingsPage() {
       )}
       <header className="sticky top-14 md:top-0 z-20 md:z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
         <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">Pengaturan</h1>
-        <div className="flex items-center gap-2"><a href="/panduan#akun-pengaturan" className="doc-link" aria-label="Buka panduan"><i className="fas fa-circle-question"></i></a>
-<HeaderActions /></div>
+        <div className="flex items-center gap-2"><HeaderActions /></div>
       </header>
 
       <div className="max-w-4xl">
+        {isAdmin && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <div className="card">
           <h3 className="font-bold text-gray-800 mb-6 font-[Outfit]">Pengaturan</h3>
           <form onSubmit={handleSubmit}>
             <div className="space-y-5">
-              {isAdmin && (
-                <>
-              <div><label className="label">Nama Aplikasi</label><input type="text" className="input" value={form.app_name} onChange={(e) => setForm({...form, app_name: e.target.value})} placeholder="Contoh: Jurnal Guru" /></div>
+              <div><label className="label">Nama Aplikasi</label><input type="text" className="input" value={form.app_name} onChange={(e) => setForm({...form, app_name: e.target.value})} /></div>
               <div className="grid grid-cols-2 gap-5">
-                <div><label className="label">Tahun Ajaran</label><input type="text" className="input" value={form.tahun_ajaran} onChange={(e) => setForm({...form, tahun_ajaran: e.target.value})} placeholder="Contoh: 2025/2026" /></div>
+                <div><label className="label">Tahun Ajaran</label><input type="text" className="input" value={form.tahun_ajaran} onChange={(e) => setForm({...form, tahun_ajaran: e.target.value})} /></div>
                 <div><label className="label">Semester</label><select className="input" value={form.semester} onChange={(e) => setForm({...form, semester: e.target.value})}><option value="1">Semester 1</option><option value="2">Semester 2</option></select></div>
               </div>
-              <div><label className="label">KKM Default</label><input type="number" className="input" value={form.kkm_default} onChange={(e) => setForm({...form, kkm_default: e.target.value})} placeholder="Contoh: 75" /></div>
+              <div><label className="label">KKM Default</label><input type="number" className="input" value={form.kkm_default} onChange={(e) => setForm({...form, kkm_default: e.target.value})} /></div>
               <div><label className="label">Kode Undangan (untuk pendaftaran guru)</label><input type="text" className="input" value={form.invite_code} onChange={(e) => setForm({...form, invite_code: e.target.value})} placeholder="Contoh: JURNAL-2026" /><p className="text-xs text-gray-500 mt-1">Bagikan kode ini ke guru agar bisa membuat akun.</p></div>
-                </>
-              )}
             </div>
-            <div className="mt-6">{isAdmin && <button type="submit" className="btn btn-primary"><i className="fas fa-save"></i> Simpan</button>}</div>
+            <div className="mt-6"><button type="submit" className="btn btn-primary"><i className="fas fa-save"></i> Simpan</button></div>
           </form>
         </div>
 
-        {isAdmin && (
         <div className="card">
           <h3 className="font-bold text-gray-800 mb-6 font-[Outfit]">Backup & Restore Database</h3>
           <p className="text-sm text-gray-500 mb-4">Backup menyimpan seluruh data (Kelas, Siswa, Nilai, Absensi, Jurnal, dll) dalam format JSON.</p>
@@ -106,14 +100,12 @@ export default function SettingsPage() {
             <input type="file" id="restoreInput" accept=".json" className="hidden" onChange={handleRestore} />
           </div>
         </div>
-        )}
 
-        {isAdmin && (
         <div className="lg:col-span-2">
           <GoogleSheetsSection />
         </div>
-        )}
         </div>
+        )}
       </div>
     </div>
   );

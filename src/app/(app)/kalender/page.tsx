@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import HeaderActions from "@/components/HeaderActions";
-import { useConfirm } from "@/components/ConfirmModal";
 
 interface Event { date: string; title: string; time: string; type: string; id?: string; }
 
@@ -21,7 +20,6 @@ export default function KalenderPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
-  const { confirm, ConfirmComponent } = useConfirm();
 
   const load = useCallback(async () => {
     const res = await apiGet<Event[]>(`/api/kalender?month=${month}&year=${year}`);
@@ -70,7 +68,7 @@ export default function KalenderPage() {
   }
 
   async function handleDeleteNote(id: string) {
-    if (!(await confirm({ message: "Hapus catatan ini?" }))) return;
+    if (!window.confirm("Hapus catatan ini?")) return;
     const res = await apiDelete(`/api/kalender?id=${id}`);
     if (res.ok) {
       setMsg("Catatan dihapus");
@@ -93,9 +91,9 @@ export default function KalenderPage() {
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <h3 className="font-bold text-gray-800 font-[Outfit]">Kalender Akademik</h3>
             <div className="flex items-center gap-2">
-              <button className="btn btn-outline btn-sm" aria-label="Bulan sebelumnya" onClick={() => { if (month === 1) { setMonth(12); setYear(year - 1); } else setMonth(m => m - 1); }}><i className="fas fa-chevron-left"></i></button>
+              <button className="btn btn-outline btn-sm" onClick={() => { if (month === 1) { setMonth(12); setYear(year - 1); } else setMonth(m => m - 1); }}><i className="fas fa-chevron-left"></i></button>
               <span className="font-bold text-sm w-36 text-center">{months[month - 1]} {year}</span>
-              <button className="btn btn-outline btn-sm" aria-label="Bulan berikutnya" onClick={() => { if (month === 12) { setMonth(1); setYear(year + 1); } else setMonth(m => m + 1); }}><i className="fas fa-chevron-right"></i></button>
+              <button className="btn btn-outline btn-sm" onClick={() => { if (month === 12) { setMonth(1); setYear(year + 1); } else setMonth(m => m + 1); }}><i className="fas fa-chevron-right"></i></button>
             </div>
           </div>
 
@@ -193,7 +191,6 @@ export default function KalenderPage() {
           )}
         </div>
       </div>
-      {ConfirmComponent}
     </div>
   );
 }

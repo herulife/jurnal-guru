@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
+import SocialProof from "@/components/SocialProof";
 import Navbar from "@/components/Navbar";
 import DashboardMockup from "@/components/DashboardMockup";
 
@@ -33,7 +34,7 @@ const features = [
   {
     icon: "fa-file-invoice",
     title: "Template Surat",
-    desc: "Buat surat resmi lebih cepat dari template yang sudah disiapkan.",
+    desc: "Buat surat resmi sekolah lebih cepat dari template yang sudah disiapkan.",
   },
 ];
 
@@ -376,7 +377,7 @@ export default async function Home() {
             <div className="bg-white rounded-2xl border border-[#E8E4DC] p-6">
               <div className="mb-4">
                 <p className="font-bold text-[#1A2332] text-lg">Premium</p>
-                <p className="text-gray-500 text-sm">Untuk guru berstatus pegawai</p>
+                <p className="text-gray-500 text-sm">Untuk sekolah & guru berstatus pegawai</p>
               </div>
               <div className="mb-6">
                 <span className="text-4xl font-extrabold font-[Outfit] text-[#1A2332]">Rp 49.000</span>

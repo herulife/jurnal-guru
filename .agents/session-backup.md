@@ -21,7 +21,7 @@
 
 ## API keys opencode (9-8-2026)
 - **VPS:** `~/.local/share/opencode/auth.json` DIHAPUS (berisi key `openrouter` sk-or-v1-... & `opencode` sk-q8Zhnz...). Delete → restore default. Kalau butuh login ulang: `opencode auth login`.
-- **omniroute DIHAPUS** (11-8-2026): proses PM2 + `~/.omniroute` + `OMNIROUTE_API_KEY` di `~/.bashrc` + provider `omniroute` di `~/.config/opencode/opencode.json`. Semua dihapus; opencode kembali ke model default.
+- **omniroute TETAP** (key via `OMNIROUTE_API_KEY` di `~/.bashrc` VPS; config `omniroute` + model `omniroute/auto/best-coding` di `~/.config/opencode/opencode.json` VPS). Tidak dihapus.
 - Lokal `~/.config/opencode/opencode.jsonc` kosong-default; tidak ada auth.json di mesin ini.
 
 ## Arsitektur & Deploy
@@ -69,3 +69,11 @@
 - **Excel semua file .xlsx** (bukan .csv lagi): nilai, riwayat-absensi, jurnal, lckh/lkb — baris pertama berisi kop/identitas/jam cetak (TTD di baris bawah merges).
 - Data kop & TTD dari `/profil` (namaSekolah, alamat, kota, provinsi, telepon, npsn, kepalaSekolah, nipKepsek, namaGuru, nipGuru, logoUrl).
 - Typecheck `npx tsc --noEmit` lokal lolos; lint hanya error lama `react-hooks/set-state-in-effect` (baris useEffect yang tidak disentuh); build lokal OOM di sandbox (build sesungguhnya di VPS via deploy.sh).
+- **STATUS: SELESAI & LIVE** — `bash deploy.sh` sukses 9 Agu 2026: compiled, uploaded guru, Current Version `6ce4fc39-7d61-4a10-b3f5-e92065234378`; verifikasi `/`→200, `/checkout`→200, `/api/auth/check`→401 (normal tanpa cookie). Batch ini juga jadi "sync percakapan terakhir" — sesi berikutnya baca file ini.
+
+## 13 Agu 2026 — Restore Fitur Profil User (UserMenu)
+- **Masalah**: kartu profil di sidebar bawah (edit profil, ganti password, ganti foto) hilang + fitur lama "hilang". Ternyata salinan HP lebih tua dari git HEAD di VPS; deploy.sh menimpa working tree VPS (tanpa commit) sehingga fitur UserMenu hilang dari kode.
+- **Bukti**: git HEAD `830fc83` di VPS punya `src/components/UserMenu.tsx`, `src/app/api/me/route.ts`, `src/app/api/me/password/route.ts`, `src/lib/plan-helpers.ts`, `drizzle/0007_user_foto.sql`, schema users.foto.
+- **PENTING**: D1 produksi BUKAN skema per-user (tabel tanpa `user_id`; migrasi 0005/0006 belum pernah diterapkan) tapi `users.foto` SUDAH ada (0007 terapkan). → Restore SANGAT selektif: hanya fitur profil (UserMenu + api/me + plan-helpers + foto), JANGAN restore schema per-user.
+- **Tindakan**: checkout HEAD di VPS → tarik file ke lokal → schema.ts + `foto` di users → Sidebar: UserMenu di bawah (desktop) + header mobile + tetap adminOnly utk Profil Sekolah → tsc lolos → deploy.
+- Navbar landing juga diperbaiki (teks selalu gelap di header putih; sebelumnya text-white di bg transparan = tak terlihat).

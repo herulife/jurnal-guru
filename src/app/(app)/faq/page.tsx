@@ -24,8 +24,8 @@ const faqs = [
     a: "Bisa. Jurnal Guru responsif dan bisa dipakai dari HP, tablet, maupun laptop.",
   },
   {
-    q: "Apakah data saya bisa dilihat guru lain?",
-    a: "Tidak. Data Anda (siswa, nilai, absensi, jurnal) hanya bisa diakses oleh akun Anda. Guru lain tidak akan melihat data kelas Anda.",
+    q: "Apakah ada garansi uang kembali?",
+    a: "Ada. Kami memberikan garansi 30 hari uang kembali tanpa pertanyaan untuk paket berbayar.",
   },
   {
     q: "Bagaimana kalau saya lupa password?",

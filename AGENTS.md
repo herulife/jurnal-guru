@@ -8,7 +8,7 @@ Dashboard guru (Jurnal Guru) untuk kelola absensi, nilai, jurnal mengajar, kelom
 - **Login admin:** `admin` / `admin123`
 - **Deploy:** `bash deploy.sh` — typecheck + sync + build + deploy dari **folder ini**, BUKAN dari folder mana pun lain
 - **Direktori kerja:** `/root/teacher-dashboard-next` (lokal) -> `/home/ubuntu24/teacher-dashboard-next` (VPS)
-- **Migrasi D1:** urut `0003_kalender_catatan.sql` lalu `0004_users_email.sql`, misalnya `npx wrangler d1 execute teacher-dashboard-db --remote --file=drizzle/0004_users_email.sql` (dari VPS, setelah `source ~/.cf_token.sh`)
+- **Migrasi D1:** `npx wrangler d1 execute teacher-dashboard-db --remote --file=drizzle/0003_kalender_catatan.sql` (dari VPS, setelah `source ~/.cf_token.sh`)
 
 ## Perhatian Khusus
 - **LATIHAN: Lokal = salinan VPS.** Semua kerja harus dimulai dari kode di `/home/ubuntu24/teacher-dashboard-next` di VPS (kode live). Folder lokal `/root/teacher-dashboard-next` adalah salinan yang disinkronkan dari VPS.

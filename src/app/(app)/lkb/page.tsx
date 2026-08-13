@@ -5,7 +5,6 @@ import { apiGet, apiPost } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
 import ExportButton from "@/components/ExportButton";
 import HeaderActions from "@/components/HeaderActions";
-import Modal from "@/components/Modal";
 import { bukaDokumen, exportXlsx, esc } from "@/lib/dokumen";
 import PlanGuard from "@/components/PlanGuard";
 
@@ -138,8 +137,7 @@ function LKBPageInner() {
       <header className="sticky top-14 md:top-0 z-20 md:z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
         <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">LKB</h1>
         <div className="flex items-center gap-2">
-        <a href="/panduan#lainnya" className="doc-link" aria-label="Buka panduan"><i className="fas fa-circle-question"></i></a>
-<HeaderActions />
+        <HeaderActions />
         <ExportButton
           fileName={`lkb-${bulan}-${tahun}`}
           title="Laporan Kinerja Bulanan"
@@ -212,19 +210,25 @@ function LKBPageInner() {
       </div>
 
       {editId !== null && (
-        <Modal open onClose={closeEdit} title="Edit LKB">
+        <div className="modal-overlay" onClick={closeEdit}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-5 border-b border-[#E8E4DC]">
+              <h3 className="font-bold text-lg text-gray-800 font-[Outfit]">Edit LKB</h3>
+              <button onClick={closeEdit} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 bg-transparent border-none cursor-pointer"><i className="fas fa-times"></i></button>
+            </div>
             <div className="p-5">
               <div className="space-y-4">
-                <div><label className="label">Uraian Tugas / Kegiatan</label><input className="input" value={formUraian} onChange={(e) => setFormUraian(e.target.value)} placeholder="Uraian tugas/kegiatan" /></div>
-                <div><label className="label">Volume</label><input type="number" className="input" value={formVol} onChange={(e) => setFormVol(Number(e.target.value))} placeholder="Contoh: 4" /></div>
-                <div><label className="label">Bukti Dokumen</label><input className="input" value={formBukti} onChange={(e) => setFormBukti(e.target.value)} placeholder="Nama file / URL bukti" /></div>
+                <div><label className="label">Uraian Tugas / Kegiatan</label><input className="input" value={formUraian} onChange={(e) => setFormUraian(e.target.value)} /></div>
+                <div><label className="label">Volume</label><input type="number" className="input" value={formVol} onChange={(e) => setFormVol(Number(e.target.value))} /></div>
+                <div><label className="label">Bukti Dokumen</label><input className="input" value={formBukti} onChange={(e) => setFormBukti(e.target.value)} /></div>
               </div>
               <div className="mt-5 flex gap-3 justify-end">
                 <button className="btn btn-outline" onClick={closeEdit}>Batal</button>
                 <button className="btn btn-primary" onClick={saveEdit}><i className="fas fa-save"></i> Simpan</button>
               </div>
             </div>
-        </Modal>
+          </div>
+        </div>
       )}
     </div>
   );

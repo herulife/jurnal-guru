@@ -10,11 +10,10 @@ interface DashboardData {
   totalSiswa: number;
   totalKelas: number;
   absenHariIni: number;
-  rataNilai: number | null;
+  rataNilai: number;
   distPerKelas: Record<string, number>;
   totalAbsensi: number;
-  totalNilai: number | null;
-  nilaiLocked: boolean;
+  totalNilai: number;
   tahunAjaran: string;
   semester: string;
 }
@@ -115,12 +114,12 @@ export default function DashboardPage() {
     },
     {
       label: "Nilai Keseluruhan",
-      value: data?.nilaiLocked ? "Pro" : (data?.rataNilai ?? 0),
-      sub: data?.nilaiLocked ? "Paket Pro" : "Rata-rata",
-      icon: data?.nilaiLocked ? "fa-lock" : "fa-chart-line",
-      bg: data?.nilaiLocked ? "bg-gray-50" : "bg-purple-50",
-      color: data?.nilaiLocked ? "text-gray-400" : "text-purple-700",
-      accent: data?.nilaiLocked ? "#9ca3af" : "#7c3aed",
+      value: data?.rataNilai ?? 0,
+      sub: "Rata-rata",
+      icon: "fa-chart-line",
+      bg: "bg-purple-50",
+      color: "text-purple-700",
+      accent: "#7c3aed",
     },
   ];
 
@@ -190,11 +189,11 @@ export default function DashboardPage() {
                 value: data?.totalAbsensi ?? 0,
               },
               {
-                icon: data?.nilaiLocked ? "fa-lock" : "fa-chart-bar",
-                bg: data?.nilaiLocked ? "bg-gray-50" : "bg-[#fffbeb]",
-                color: data?.nilaiLocked ? "text-gray-400" : "text-[#E8A317]",
+                icon: "fa-chart-bar",
+                bg: "bg-[#fffbeb]",
+                color: "text-[#E8A317]",
                 label: "Total Nilai",
-                value: data?.nilaiLocked ? "Pro" : (data?.totalNilai ?? 0),
+                value: data?.totalNilai ?? 0,
               },
               {
                 icon: "fa-calendar-alt",
@@ -213,7 +212,7 @@ export default function DashboardPage() {
             ].map((r) => (
               <div
                 key={r.label}
-                className="flex items-center justify-between p-3 bg-[#F5F3EF] rounded-xl"
+                className="flex items-center justify-between p-3 bg-[#F5F3EF] rounded-xl dark:bg-[#1a2332]"
               >
                 <div className="flex items-center gap-3">
                   <div

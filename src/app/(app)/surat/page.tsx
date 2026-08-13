@@ -4,9 +4,6 @@ import { useEffect, useState, useCallback } from "react";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
-import { isAdminRole } from "@/lib/plan-helpers";
-import Modal from "@/components/Modal";
-import { useConfirm } from "@/components/ConfirmModal";
 
 interface Surat {
   id: string; judul: string; jenis: string; tujuan: string; template: string;
@@ -17,17 +14,9 @@ export default function SuratPage() {
   const [loading, setLoading] = useState(true);
   const [editData, setEditData] = useState<Surat | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(25);
   const [selected, setSelected] = useState(new Set<string>());
-  const { confirm, ConfirmComponent } = useConfirm();
-
-  useEffect(() => {
-    fetch("/api/auth/check").then((r) => r.json()).then((r) => {
-      if (r.ok && r.data?.user && isAdminRole(r.data.user.role)) setIsAdmin(true);
-    }).catch(() => {});
-  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -50,7 +39,7 @@ export default function SuratPage() {
     else { setSelected(new Set(paginatedData.map(d => d.id))); }
   }
   async function handleBulkDelete() {
-    if (!(await confirm({ message: `Hapus ${selected.size} data?` }))) return;
+    if (!confirm(`Hapus ${selected.size} data?`)) return;
     for (const id of selected) { await apiDelete(`/api/surat/${id}`); }
     setSelected(new Set()); load();
   }
@@ -88,8 +77,7 @@ export default function SuratPage() {
     <div className="p-6 fade-in">
       <header className="sticky top-14 md:top-0 z-20 md:z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
         <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">Template Surat</h1>
-        <div className="flex items-center gap-2"><a href="/panduan#lainnya" className="doc-link" aria-label="Buka panduan"><i className="fas fa-circle-question"></i></a>
-<HeaderActions /></div>
+        <div className="flex items-center gap-2"><HeaderActions /></div>
       </header>
 
       <div className="card max-w-xl">
@@ -111,8 +99,7 @@ export default function SuratPage() {
         </div>
       </div>
 
-      {isAdmin ? (
-        <div className="card mt-6">
+      <div className="card mt-6">
         <button className="w-full flex items-center justify-between font-bold text-gray-800 font-[Outfit]" onClick={() => setKelolaOpen((o) => !o)}>
           <span><i className="fas fa-cog text-[#0D7C66] mr-2"></i>Kelola Template</span>
           <i className={`fas fa-chevron-${kelolaOpen ? "up" : "down"} text-gray-400`}></i>
@@ -145,8 +132,8 @@ export default function SuratPage() {
                       <td><span className="badge badge-izin">{s.jenis}</span></td>
                       <td>{s.tujuan}</td>
                       <td>
-                        <button className="btn btn-outline btn-sm mr-1" onClick={() => openEdit(s)} aria-label="Edit surat"><i className="fas fa-edit"></i></button>
-                        <button className="btn btn-danger btn-sm" onClick={async () => { if (await confirm({ message: "Hapus data ini?" })) { await apiDelete(`/api/surat/${s.id}`); load(); } }} aria-label="Hapus surat"><i className="fas fa-trash"></i></button>
+                        <button className="btn btn-outline btn-sm mr-1" onClick={() => openEdit(s)}><i className="fas fa-edit"></i></button>
+                        <button className="btn btn-danger btn-sm" onClick={async () => { if (confirm("Hapus?")) { await apiDelete(`/api/surat/${s.id}`); load(); } }}><i className="fas fa-trash"></i></button>
                       </td>
                     </tr>
                   ))}
@@ -157,10 +144,8 @@ export default function SuratPage() {
           </>
         )}
       </div>
-      ) : null}
 
       {modalOpen && <SuratModal editData={editData} onSave={load} onClose={() => setModalOpen(false)} />}
-      {ConfirmComponent}
     </div>
   );
 }
@@ -185,10 +170,15 @@ function SuratModal({ editData, onSave, onClose }: { editData: Surat | null; onS
   const jenisLabel: Record<string, string> = { panggilan: "Surat Panggilan", keterangan: "Surat Keterangan", tugas: "Tugas/PR" };
 
   return (
-    <Modal open maxWidth="max-w-lg" onClose={onClose} title={editData ? "Edit Surat" : "Tambah Surat"}>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content max-w-lg" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-5 border-b border-[#E8E4DC]">
+          <h3 className="font-bold text-lg text-gray-800 font-[Outfit]">{editData ? "Edit Surat" : "Tambah Surat"}</h3>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 bg-transparent border-none cursor-pointer"><i className="fas fa-times"></i></button>
+        </div>
         <form onSubmit={handleSubmit} className="p-5">
           <div className="space-y-4">
-            <div><label className="label">Judul</label><input type="text" className="input" value={form.judul} onChange={(e) => setForm({...form, judul: e.target.value})} placeholder="Contoh: Surat Panggilan Orang Tua" required /></div>
+            <div><label className="label">Judul</label><input type="text" className="input" value={form.judul} onChange={(e) => setForm({...form, judul: e.target.value})} required /></div>
             <div><label className="label">Jenis</label><select className="input" value={form.jenis} onChange={(e) => setForm({...form, jenis: e.target.value})}>
               {Object.entries(jenisLabel).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
             </select></div>
@@ -200,6 +190,7 @@ function SuratModal({ editData, onSave, onClose }: { editData: Surat | null; onS
             <button type="submit" className="btn btn-primary"><i className="fas fa-save"></i> Simpan</button>
           </div>
         </form>
-    </Modal>
+      </div>
+    </div>
   );
 }

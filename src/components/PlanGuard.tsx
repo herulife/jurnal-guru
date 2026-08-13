@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useUserPlan, canUsePro, canUsePremium } from "@/lib/useUserPlan";
-import { isAdminRole } from "@/lib/plan-helpers";
 import type { Plan } from "@/lib/useUserPlan";
 
 /**
@@ -20,7 +19,7 @@ export default function PlanGuard({ min, children }: { min: Plan; children: Reac
     );
   }
 
-  if (isAdminRole(role)) return <>{children}</>;
+  if (role === "Admin") return <>{children}</>;
   const allowed = min === "premium" ? canUsePremium(plan) : canUsePro(plan);
   if (allowed) return <>{children}</>;
 

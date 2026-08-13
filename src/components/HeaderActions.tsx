@@ -84,7 +84,7 @@ export default function HeaderActions() {
       >
         <i id="darkIcon" className={`fas ${dark ? "fa-sun" : "fa-moon"} text-sm`}></i>
       </button>
-      <div className="relative hidden md:block">
+      <div className="relative">
       <button
         onClick={() => setNotifOpen(!notifOpen)}
         className="w-9 h-9 rounded-lg bg-white border border-[#E8E4DC] flex items-center justify-center text-gray-600 cursor-pointer relative"

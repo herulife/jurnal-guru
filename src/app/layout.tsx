@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Jurnal Guru — Administrasi Guru & Kelas",
+    default: "Jurnal Guru — Sistem Manajemen Sekolah",
     template: "%s — Jurnal Guru",
   },
   description:
@@ -13,15 +13,15 @@ export const metadata: Metadata = {
     type: "website",
     locale: "id_ID",
     siteName: "Jurnal Guru",
-    title: "Jurnal Guru — Administrasi Guru & Kelas",
+    title: "Jurnal Guru — Sistem Manajemen Sekolah",
     description:
-      "Dashboard untuk guru: absensi, nilai, jurnal mengajar, dan data siswa dalam satu tempat yang aman dan mudah digunakan.",
+      "Sistem manajemen sekolah untuk guru: absensi, nilai, jurnal mengajar, dan data siswa dalam satu dashboard yang aman dan mudah digunakan.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Jurnal Guru — Administrasi Guru & Kelas",
+    title: "Jurnal Guru — Sistem Manajemen Sekolah",
     description:
-      "Dashboard untuk guru: absensi, nilai, jurnal mengajar, dan data siswa dalam satu tempat yang aman dan mudah digunakan.",
+      "Sistem manajemen sekolah untuk guru: absensi, nilai, jurnal mengajar, dan data siswa dalam satu dashboard yang aman dan mudah digunakan.",
   },
   alternates: {
     canonical: "/",

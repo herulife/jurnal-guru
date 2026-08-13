@@ -4,9 +4,6 @@ import { useEffect, useState, useCallback } from "react";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
-import Modal from "@/components/Modal";
-import UploadModal from "@/components/UploadModal";
-import { useConfirm } from "@/components/ConfirmModal";
 
 interface Siswa {
   id: string; nis: string; nisn: string; namaSiswa: string;
@@ -23,11 +20,9 @@ export default function SiswaPage() {
   const [search, setSearch] = useState("");
   const [editData, setEditData] = useState<Siswa | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [uploadOpen, setUploadOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
   const [selected, setSelected] = useState(new Set<string>());
-  const { confirm, ConfirmComponent } = useConfirm();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -74,7 +69,7 @@ export default function SiswaPage() {
     else { setSelected(new Set(paginatedData.map(d => d.id))); }
   }
   async function handleBulkDelete() {
-    if (!(await confirm({ message: `Hapus ${selected.size} data?` }))) return;
+    if (!confirm(`Hapus ${selected.size} data?`)) return;
     for (const id of selected) { await apiDelete(`/api/siswa/${id}`); }
     setSelected(new Set()); load();
   }
@@ -87,15 +82,14 @@ export default function SiswaPage() {
       <header className="sticky top-14 md:top-0 z-20 md:z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
         <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">Data Siswa</h1>
         <div className="flex gap-2">
-          <a href="/panduan#data-siswa" className="doc-link" aria-label="Buka panduan"><i className="fas fa-circle-question"></i></a>
-<HeaderActions />
+          <HeaderActions />
           <button className="btn btn-outline btn-sm" onClick={() => downloadTemplate("csv")}>
             <i className="fas fa-download"></i> Template CSV
           </button>
           <button className="btn btn-outline btn-sm" onClick={() => downloadTemplate("excel")}>
             <i className="fas fa-download"></i> Template Excel
           </button>
-          <button className="btn btn-accent btn-sm" onClick={() => setUploadOpen(true)}>
+          <button className="btn btn-accent btn-sm" onClick={() => openUploadModal(kelas, load)}>
             <i className="fas fa-upload"></i> Upload Data
           </button>
           <button className="btn btn-primary btn-sm" onClick={openAdd}>
@@ -144,8 +138,8 @@ export default function SiswaPage() {
                 <td>{s.telepon}</td>
                 <td>{s.namaOrtu}</td>
                 <td>
-                  <button className="btn btn-outline btn-sm mr-1" onClick={() => openEdit(s)} aria-label="Edit siswa"><i className="fas fa-edit"></i></button>
-                  <button className="btn btn-danger btn-sm" onClick={async () => { if (await confirm({ message: "Hapus data ini?" })) { await apiDelete(`/api/siswa/${s.id}`); load(); } }} aria-label="Hapus siswa"><i className="fas fa-trash"></i></button>
+                  <button className="btn btn-outline btn-sm mr-1" onClick={() => openEdit(s)}><i className="fas fa-edit"></i></button>
+                  <button className="btn btn-danger btn-sm" onClick={async () => { if (confirm("Hapus?")) { await apiDelete(`/api/siswa/${s.id}`); load(); } }}><i className="fas fa-trash"></i></button>
                 </td>
               </tr>
             ))}
@@ -166,10 +160,12 @@ export default function SiswaPage() {
       )}
 
       {modalOpen && <SiswaModal editData={editData} kelas={kelas} onSave={load} onClose={() => setModalOpen(false)} />}
-      {uploadOpen && <UploadModal onDone={load} onClose={() => setUploadOpen(false)} />}
-      {ConfirmComponent}
     </div>
   );
+}
+
+function openUploadModal(kelas: Kelas[], onDone: () => void) {
+  (window as any).__uploadModal?.open(kelas, onDone);
 }
 
 function SiswaModal({ editData, kelas, onSave, onClose }: { editData: Siswa | null; kelas: Kelas[]; onSave: () => void; onClose: () => void }) {
@@ -190,7 +186,12 @@ function SiswaModal({ editData, kelas, onSave, onClose }: { editData: Siswa | nu
   }
 
   return (
-    <Modal open maxWidth="max-w-2xl" onClose={onClose} title={editData ? "Edit Siswa" : "Tambah Siswa"}>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content max-w-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-5 border-b border-[#E8E4DC]">
+          <h3 className="font-bold text-lg text-gray-800 font-[Outfit]">{editData ? "Edit Siswa" : "Tambah Siswa"}</h3>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 bg-transparent border-none cursor-pointer"><i className="fas fa-times"></i></button>
+        </div>
         <form onSubmit={handleSubmit} className="p-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div><label className="label">NIS</label><input type="text" className="input" value={form.nis} onChange={(e) => setForm({...form, nis: e.target.value})} required /></div>
@@ -208,6 +209,7 @@ function SiswaModal({ editData, kelas, onSave, onClose }: { editData: Siswa | nu
             <button type="submit" className="btn btn-primary"><i className="fas fa-save"></i> Simpan</button>
           </div>
         </form>
-    </Modal>
+      </div>
+    </div>
   );
 }

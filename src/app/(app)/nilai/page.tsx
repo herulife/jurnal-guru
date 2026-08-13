@@ -6,8 +6,6 @@ import { bukaDokumen, exportXlsx, esc } from "@/lib/dokumen";
 import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
 import PlanGuard from "@/components/PlanGuard";
-import Modal from "@/components/Modal";
-import { useConfirm, useAlert } from "@/components/ConfirmModal";
 
 interface Nilai { id: string; namaSiswa: string; siswaId: string; namaKelas: string; kelasId: string; mataPelajaran: string; kategori: string; nilai: number; kkm: number; bab: string; remedial: string; }
 interface Kelas { id: string; namaKelas: string; }
@@ -25,8 +23,6 @@ function NilaiPageInner() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(25);
   const [selected, setSelected] = useState(new Set<string>());
-  const { confirm, ConfirmComponent } = useConfirm();
-  const { alert, AlertComponent } = useAlert();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -61,7 +57,7 @@ function NilaiPageInner() {
     else { setSelected(new Set(paginatedData.map(d => d.id))); }
   }
   async function handleBulkDelete() {
-    if (!(await confirm({ message: `Hapus ${selected.size} data?` }))) return;
+    if (!confirm(`Hapus ${selected.size} data?`)) return;
     for (const id of selected) { await apiDelete(`/api/nilai/${id}`); }
     setSelected(new Set()); load();
   }
@@ -106,8 +102,7 @@ function NilaiPageInner() {
       <header className="sticky top-14 md:top-0 z-20 md:z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6 gap-3">
         <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">Nilai</h1>
         <div className="flex flex-wrap gap-2">
-          <a href="/panduan#nilai" className="doc-link" aria-label="Buka panduan"><i className="fas fa-circle-question"></i></a>
-<HeaderActions />
+          <HeaderActions />
           <button className="btn btn-accent btn-sm" onClick={printNilaiPdf}><i className="fas fa-file-pdf"></i> PDF Nilai</button>
           <button className="btn btn-accent btn-sm" onClick={() => exportExcelNilai()}><i className="fas fa-file-excel"></i> Excel Nilai</button>
         </div>
@@ -157,8 +152,8 @@ function NilaiPageInner() {
                 <td>{n.kkm}</td>
                 <td><span className={`badge ${n.nilai >= n.kkm ? "badge-hadir" : "badge-alpha"}`}>{n.nilai >= n.kkm ? "Tuntas" : "Belum Tuntas"}</span></td>
                 <td>
-                  <button className="btn btn-outline btn-sm mr-1" onClick={() => openEdit(n)} aria-label="Edit nilai"><i className="fas fa-edit"></i></button>
-                  <button className="btn btn-danger btn-sm" onClick={async () => { if (await confirm({ message: "Hapus data ini?" })) { await apiDelete(`/api/nilai/${n.id}`); load(); } }} aria-label="Hapus nilai"><i className="fas fa-trash"></i></button>
+                  <button className="btn btn-outline btn-sm mr-1" onClick={() => openEdit(n)}><i className="fas fa-edit"></i></button>
+                  <button className="btn btn-danger btn-sm" onClick={async () => { if (confirm("Hapus?")) { await apiDelete(`/api/nilai/${n.id}`); load(); } }}><i className="fas fa-trash"></i></button>
                 </td>
               </tr>
             ))}
@@ -169,14 +164,11 @@ function NilaiPageInner() {
       {filteredData.length > 0 && <Pagination current={page} total={filteredData.length} pageSize={pageSize} onChange={setPage} />}
 
       {modalOpen && <NilaiEditModal editData={editData} kelas={kelas} onSave={load} onClose={() => setModalOpen(false)} />}
-      {ConfirmComponent}
-      {AlertComponent}
     </div>
   );
 }
 
 function NilaiEditModal({ editData, kelas, onSave, onClose }: { editData: Nilai | null; kelas: Kelas[]; onSave: () => void; onClose: () => void }) {
-  const { alert, AlertComponent } = useAlert();
   const [form, setForm] = useState({ mataPelajaran: "", kategori: "Pengetahuan", nilai: "75", kkm: "75", bab: "", remedial: "" });
   const [kelasId, setKelasId] = useState("");
   const [siswa, setSiswa] = useState<Siswa[]>([]);
@@ -200,36 +192,41 @@ function NilaiEditModal({ editData, kelas, onSave, onClose }: { editData: Nilai 
       const ok = (await apiPut(`/api/nilai/${editData.id}`, payload)).ok;
       if (ok) { onClose(); onSave(); }
     } else {
-      if (!selectedSiswa) { await alert({ message: "Pilih siswa", variant: "error" }); return; }
+      if (!selectedSiswa) return alert("Pilih siswa");
       const ok = (await apiPost("/api/nilai", { ...payload, siswaId: selectedSiswa, kelasId })).ok;
       if (ok) { onClose(); onSave(); }
     }
   }
 
   return (
-    <Modal open maxWidth="max-w-lg" onClose={onClose} title={editData ? "Edit Nilai" : "Tambah Nilai"}>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content max-w-lg" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-5 border-b border-[#E8E4DC]">
+          <h3 className="font-bold text-lg text-gray-800 font-[Outfit]">{editData ? "Edit Nilai" : "Tambah Nilai"}</h3>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 bg-transparent border-none cursor-pointer"><i className="fas fa-times"></i></button>
+        </div>
         <form onSubmit={handleSubmit} className="p-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {!editData && (<><div><label className="label">Kelas</label><select className="input" value={kelasId} onChange={(e) => setKelasId(e.target.value)}><option value="">Pilih</option>{kelas.map(k => <option key={k.id} value={k.id}>{k.namaKelas}</option>)}</select></div>
               <div><label className="label">Siswa</label><select className="input" value={selectedSiswa} onChange={(e) => setSelectedSiswa(e.target.value)}><option value="">Pilih</option>{siswa.map(s => <option key={s.id} value={s.id}>{s.namaSiswa}</option>)}</select></div></>)}
-            <div><label className="label">Mapel</label><input type="text" className="input" value={form.mataPelajaran} onChange={(e) => setForm({...form, mataPelajaran: e.target.value})} placeholder="Contoh: Matematika" /></div>
+            <div><label className="label">Mapel</label><input type="text" className="input" value={form.mataPelajaran} onChange={(e) => setForm({...form, mataPelajaran: e.target.value})} /></div>
             <div><label className="label">Kategori</label><select className="input" value={form.kategori} onChange={(e) => setForm({...form, kategori: e.target.value})}><option>Pengetahuan</option><option>Keterampilan</option><option>Ulangan</option><option>Tugas</option></select></div>
-            <div><label className="label">Nilai</label><input type="number" className="input" min="0" max="100" value={form.nilai} onChange={(e) => setForm({...form, nilai: e.target.value})} placeholder="0-100, contoh: 85" /></div>
-            <div><label className="label">KKM</label><input type="number" className="input" min="0" max="100" value={form.kkm} onChange={(e) => setForm({...form, kkm: e.target.value})} placeholder="Contoh: 75" /></div>
-            <div><label className="label">BAB</label><input type="text" className="input" value={form.bab} onChange={(e) => setForm({...form, bab: e.target.value})} placeholder="Contoh: Bab 1 Bilangan" /></div>
-            <div><label className="label">Remedial</label><input type="text" className="input" value={form.remedial} onChange={(e) => setForm({...form, remedial: e.target.value})} placeholder="Tanggal/keterangan remidi" /></div>
+            <div><label className="label">Nilai</label><input type="number" className="input" min="0" max="100" value={form.nilai} onChange={(e) => setForm({...form, nilai: e.target.value})} /></div>
+            <div><label className="label">KKM</label><input type="number" className="input" min="0" max="100" value={form.kkm} onChange={(e) => setForm({...form, kkm: e.target.value})} /></div>
+            <div><label className="label">BAB</label><input type="text" className="input" value={form.bab} onChange={(e) => setForm({...form, bab: e.target.value})} /></div>
+            <div><label className="label">Remedial</label><input type="text" className="input" value={form.remedial} onChange={(e) => setForm({...form, remedial: e.target.value})} /></div>
           </div>
           <div className="mt-5 flex gap-3 justify-end">
             <button type="button" className="btn btn-outline" onClick={onClose}>Batal</button>
             <button type="submit" className="btn btn-primary"><i className="fas fa-save"></i> Simpan</button>
           </div>
         </form>
-    </Modal>
+      </div>
+    </div>
   );
 }
 
 function NilaiBatchInline({ kelas, mapelList, onSave }: { kelas: Kelas[]; mapelList: string[]; onSave: () => void }) {
-  const { alert, AlertComponent } = useAlert();
   const [kelasId, setKelasId] = useState("");
   const [mapel, setMapel] = useState("");
   const [kategori, setKategori] = useState("Pengetahuan");
@@ -244,7 +241,7 @@ function NilaiBatchInline({ kelas, mapelList, onSave }: { kelas: Kelas[]; mapelL
   }, [kelasId]);
 
   async function handleSubmit() {
-    if (!kelasId || !mapel) { await alert({ message: "Pilih kelas dan mapel", variant: "error" }); return; }
+    if (!kelasId || !mapel) return alert("Pilih kelas dan mapel");
     const records = siswa.map((s) => ({
       siswaId: s.id, kelasId, mataPelajaran: mapel, kategori, bab,
       nilai: Number(nilaiMap[s.id]) || 0, kkm: Number(kkm) || 75,
@@ -261,7 +258,7 @@ function NilaiBatchInline({ kelas, mapelList, onSave }: { kelas: Kelas[]; mapelL
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <div><label className="label">Kelas</label><select className="input text-sm" value={kelasId} onChange={(e) => setKelasId(e.target.value)}><option value="">Pilih Kelas</option>{kelas.map(k => <option key={k.id} value={k.id}>{k.namaKelas}</option>)}</select></div>
         <div><label className="label">Mapel</label><select className="input text-sm" value={mapel} onChange={(e) => setMapel(e.target.value)}><option value="">Pilih Mapel</option>{mapelList.map((m) => <option key={m} value={m}>{m}</option>)}</select></div>
-        <div><label className="label">KKM</label><input type="number" className="input text-sm" value={kkm} min="0" max="100" onChange={(e) => setKkm(e.target.value)} placeholder="Contoh: 75" /></div>
+        <div><label className="label">KKM</label><input type="number" className="input text-sm" value={kkm} min="0" max="100" onChange={(e) => setKkm(e.target.value)} /></div>
         <div><label className="label">Kategori</label><select className="input text-sm" value={kategori} onChange={(e) => setKategori(e.target.value)}><option>Pengetahuan</option><option>Keterampilan</option><option>Ulangan</option><option>Tugas</option></select></div>
       </div>
       <div className="space-y-2 mb-4">
@@ -276,7 +273,6 @@ function NilaiBatchInline({ kelas, mapelList, onSave }: { kelas: Kelas[]; mapelL
         ))}
       </div>
       <button className="btn btn-primary" onClick={handleSubmit} disabled={!kelasId}><i className="fas fa-save"></i> Simpan Semua Nilai</button>
-      {AlertComponent}
     </div>
   );
 }

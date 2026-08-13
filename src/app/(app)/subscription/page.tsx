@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { apiGet } from "@/lib/useApi";
-import { normalizePlan } from "@/lib/plan-helpers";
-import type { Plan } from "@/lib/plan-helpers";
+
+type Plan = "gratis" | "pro" | "premium";
 
 interface SubsInfo {
   plan: Plan;
@@ -24,7 +24,7 @@ export default function SubscriptionPage() {
         setRole(r.data!.user!.role ?? null);
       }
     });
-    apiGet<{ plan?: string; payments?: Array<{ amount: number; status: string; createdAt: string }> }>("/api/payments").then((r) => {
+    apiGet<{ plan?: string; payments?: any[] }>("/api/payments").then((r) => {
       if (r.ok && r.data) {
         const latest = r.data.payments?.[0] || null;
         setInfo({
@@ -41,10 +41,16 @@ export default function SubscriptionPage() {
     premium: { label: "Premium", desc: "Semua fitur Pro + generate LCKH dan LKB", color: "bg-amber-100 text-amber-700" },
   };
 
+  const normalizePlan = (p?: string): Plan => {
+    if (p === "pro") return "pro";
+    if (p === "premium" || p === "sekolah") return "premium";
+    return "gratis";
+  };
+
   if (loading) return <div className="p-6 flex justify-center py-20"><div className="w-8 h-8 border-2 border-[#0D7C66]/20 border-t-[#0D7C66] rounded-full animate-spin"></div></div>;
 
   const meta = planMeta[normalizePlan(info?.plan)];
-  const isAdmin = role?.toLowerCase() === "admin";
+  const isAdmin = role === "Admin";
   const metaLabel = isAdmin ? "Admin — Akses Penuh" : meta.label;
   const metaColor = isAdmin ? "bg-[#1A2332] text-white" : meta.color;
 

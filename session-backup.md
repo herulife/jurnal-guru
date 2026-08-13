@@ -6,7 +6,7 @@
 - **D1:** `teacher-dashboard-db` (17 tabel — termsuk `kalender_catatan`)
 
 ## Arsitektur & Deploy
-- **Source of truth ada di VPS** (`/home/ubuntu24/teacher-dashboard-next`). Lokal `/root/teacher-dashboard-next` = salinan sinkron.
+- **Source of truth ada di VPS** (`/home/ubuntu24/teacher-dashboard-next`). Lokal `/home/awipari/Developer/teacher-dashboard-next` = salinan sinkron.
 - **Satu-satunya cara deploy: `bash deploy.sh`** (di folder lokal): tar+scp seluruh src (exclude node_modules/.next/.open-next/.git/data.db/.env*/.dev.vars/docs/screenshots/tsconfig.tsbuildinfo) ke VPS -> `npx tsc --noEmit` di VPS -> `npm run deploy` (opennextjs-cloudflare) di VPS -> verifikasi 3 URL.
 - Secret: JWT_SECRET & service account Google set sebagai **worker secrets** di Cloudflare (bukan di wrangler.jsonc). `.env.local`, `.dev.vars`, isi `docs/aplikasi/` TIDAK ikut deploy.
 - Build di awal (`next build`) hanya berjalan di VPS; lokal tanpa node_modules.
@@ -44,7 +44,7 @@
 - Semua route protected (requireAuth/requireAdmin); backup/upload/sync admin-only.
 
 ## Cara Kerja di Sesi Berikutnya
-1. Buka folder ini di opencode di VPS (`/home/ubuntu24/teacher-dashboard-next`) ATAU di lokal `/root/teacher-dashboard-next`.
+1. Buka folder ini di opencode di VPS (`/home/ubuntu24/teacher-dashboard-next`) ATAU di lokal `/home/awipari/Developer/teacher-dashboard-next`.
 2. Konteks otomatis: AGENTS.md -> session-backup.md; pelindung pertama: `git pull` di VPS? — **VPS bukan git repo utama**; kerja source di VPS folder langsung.
 3. Jika mau sync lokal->VPS: edit di lokal, `bash deploy.sh`.
 4. Perubahan schema: update `src/db/schema.ts` + buat file `drizzle/XXXX_nama.sql` (ikuti format 0003) + execute ke D1 remote.
