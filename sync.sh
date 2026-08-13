@@ -14,8 +14,10 @@ cd "$(dirname "$0")"
 MSG="${1:-sync: $(date '+%Y-%m-%d %H:%M')}"
 BRANCH="$(git branch --show-current)"
 [ -z "$BRANCH" ] && { echo "!! bukan di branch aktif"; exit 1; }
+REMOTE_BRANCH="$BRANCH"
+[ "$BRANCH" = "master" ] && REMOTE_BRANCH="main"
 
-echo "== 1/3 commit perubahan lokal ($BRANCH)"
+echo "== 1/3 commit perubahan lokal ($BRANCH -> origin/$REMOTE_BRANCH)"
 if git status --porcelain | grep -q .; then
   git add -A
   git commit -m "$MSG"
@@ -25,17 +27,17 @@ else
 fi
 
 echo "== 2/3 tarik perubahan remote (rebase)"
-git fetch origin "$BRANCH"
-if git rev-parse -q --verify "refs/remotes/origin/$BRANCH" >/dev/null; then
-  if ! git diff --quiet "origin/$BRANCH"; then
-    git rebase "origin/$BRANCH"
+git fetch origin "$REMOTE_BRANCH"
+if git rev-parse -q --verify "refs/remotes/origin/$REMOTE_BRANCH" >/dev/null; then
+  if ! git diff --quiet "origin/$REMOTE_BRANCH"; then
+    git rebase "origin/$REMOTE_BRANCH"
   else
     echo "   sudah sama dengan remote"
   fi
 fi
 
 echo "== 3/3 push ke GitHub"
-git push origin "$BRANCH"
+git push origin "master:$REMOTE_BRANCH"
 
 echo "== selesai ✓"
 git log --oneline -3
