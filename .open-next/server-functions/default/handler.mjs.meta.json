@@ -3678,12 +3678,12 @@
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/nilai/batch/route_client-reference-manifest.js": {
+    ".open-next/server-functions/default/.next/server/app/api/me/password/route_client-reference-manifest.js": {
       "bytes": 320,
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/me/password/route_client-reference-manifest.js": {
+    ".open-next/server-functions/default/.next/server/app/api/nilai/batch/route_client-reference-manifest.js": {
       "bytes": 320,
       "imports": [],
       "format": "cjs"
@@ -3887,14 +3887,14 @@
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/absensi/[id]/route_client-reference-manifest.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/app/api/nilai/batch/route_client-reference-manifest.js",
-          "kind": "require-call",
-          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/nilai/batch/route_client-reference-manifest.js"
-        },
-        {
           "path": ".open-next/server-functions/default/.next/server/app/api/me/password/route_client-reference-manifest.js",
           "kind": "require-call",
           "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/me/password/route_client-reference-manifest.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/nilai/batch/route_client-reference-manifest.js",
+          "kind": "require-call",
+          "original": "/home/ubuntu24/teacher-dashboard-next/.open-next/server-functions/default/.next/server/app/api/nilai/batch/route_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/jurnal/[id]/route_client-reference-manifest.js",
@@ -6330,7 +6330,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/chunks/ssr/src_0ad8pfp._.js": {
-      "bytes": 12823,
+      "bytes": 15002,
       "imports": [],
       "format": "cjs"
     },
@@ -6699,7 +6699,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/chunks/_0mhlz27._.js": {
-      "bytes": 157904,
+      "bytes": 158059,
       "imports": [],
       "format": "cjs"
     },
@@ -6955,7 +6955,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/chunks/[root-of-the-server]__0gdl8j4._.js": {
-      "bytes": 11424,
+      "bytes": 11588,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.prod.js",
@@ -7837,7 +7837,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/chunks/[root-of-the-server]__0elc6sp._.js": {
-      "bytes": 10417,
+      "bytes": 11014,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.prod.js",
@@ -8379,7 +8379,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/chunks/ssr/_0j8qs54._.js": {
-      "bytes": 216967,
+      "bytes": 217122,
       "imports": [],
       "format": "cjs"
     },
@@ -14503,10 +14503,10 @@
         ".open-next/server-functions/default/.next/server/app/api/absensi/[id]/route_client-reference-manifest.js": {
           "bytesInOutput": 474
         },
-        ".open-next/server-functions/default/.next/server/app/api/nilai/batch/route_client-reference-manifest.js": {
+        ".open-next/server-functions/default/.next/server/app/api/me/password/route_client-reference-manifest.js": {
           "bytesInOutput": 472
         },
-        ".open-next/server-functions/default/.next/server/app/api/me/password/route_client-reference-manifest.js": {
+        ".open-next/server-functions/default/.next/server/app/api/nilai/batch/route_client-reference-manifest.js": {
           "bytesInOutput": 472
         },
         ".open-next/server-functions/default/.next/server/app/api/jurnal/[id]/route_client-reference-manifest.js": {
@@ -15125,7 +15125,7 @@
           "bytesInOutput": 24000
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/src_0ad8pfp._.js": {
-          "bytesInOutput": 13043
+          "bytesInOutput": 15249
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__029_9zf._.js": {
           "bytesInOutput": 2486
@@ -15200,7 +15200,7 @@
           "bytesInOutput": 117990
         },
         ".open-next/server-functions/default/.next/server/chunks/_0mhlz27._.js": {
-          "bytesInOutput": 165386
+          "bytesInOutput": 165541
         },
         ".open-next/server-functions/default/.next/server/chunks/_next-internal_server_app_api_absensi_[id]_route_actions_0ylicij.js": {
           "bytesInOutput": 279
@@ -15242,7 +15242,7 @@
           "bytesInOutput": 269
         },
         ".open-next/server-functions/default/.next/server/chunks/[root-of-the-server]__0gdl8j4._.js": {
-          "bytesInOutput": 11610
+          "bytesInOutput": 11778
         },
         ".open-next/server-functions/default/.next/server/chunks/_next-internal_server_app_api_dashboard_route_actions_0euxrno.js": {
           "bytesInOutput": 275
@@ -15377,7 +15377,7 @@
           "bytesInOutput": 282
         },
         ".open-next/server-functions/default/.next/server/chunks/[root-of-the-server]__0elc6sp._.js": {
-          "bytesInOutput": 10572
+          "bytesInOutput": 11199
         },
         ".open-next/server-functions/default/.next/server/chunks/_next-internal_server_app_api_settings_route_actions_1bpm9ac.js": {
           "bytesInOutput": 273
@@ -15488,7 +15488,7 @@
           "bytesInOutput": 1730
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/_0j8qs54._.js": {
-          "bytesInOutput": 225341
+          "bytesInOutput": 225496
         },
         ".open-next/server-functions/default/.next/server/chunks/ssr/_1sp8e7b._.js": {
           "bytesInOutput": 9916
@@ -15875,7 +15875,7 @@
           "bytesInOutput": 75957
         }
       },
-      "bytes": 6080412
+      "bytes": 6083723
     }
   }
 }
