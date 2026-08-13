@@ -7,3 +7,4 @@ tsconfig.tsbuildinfo
 d1-backup-*.sql
 *.tgz
 docs/aplikasi/*.json
+next-env.d.ts
