@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq, or } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
+import { seedDummyData } from "@/lib/seed";
 
 export async function POST(req: Request) {
   try {
@@ -54,6 +55,13 @@ export async function POST(req: Request) {
       namaLengkap,
       role: "free",
     });
+
+    // Isi data dummy agar akun baru langsung punya data contoh
+    try {
+      await seedDummyData(userId);
+    } catch (seedErr) {
+      console.error("[SEED ERROR]", seedErr);
+    }
 
     // Auto login after registration
     const user = {
