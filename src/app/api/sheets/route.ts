@@ -1,4 +1,4 @@
-import { requireAuth, isAdminRole, AuthError, addLog } from "@/lib/auth";
+import { requireAuth, AuthError, addLog } from "@/lib/auth";
 import { db } from "@/db";
 import {
   users,
@@ -43,19 +43,13 @@ export async function POST(req: Request) {
     const spreadsheetUrl = String(body.spreadsheetUrl || "").trim();
 
     if (body.action === "sync") {
-      if (!isAdminRole(session.role)) {
-        return apiError("Fitur sinkronisasi Google Sheets hanya untuk administrator sekolah.", 403);
-      }
       if (!spreadsheetUrl) return apiError("Isi URL spreadsheet dulu");
       const result = await syncAll(session.id, spreadsheetUrl);
       await addLog(session.id, "SYNC_SHEETS", result.msg);
       return apiOk(result);
     }
 
-    // simpan URL — hanya admin
-    if (!isAdminRole(session.role)) {
-      return apiError("Fitur sinkronisasi Google Sheets hanya untuk administrator sekolah.", 403);
-    }
+    // simpan URL — semua user
     if (!spreadsheetUrl) return apiError("URL spreadsheet wajib diisi");
     await db.update(users).set({ googleSheetsUrl: spreadsheetUrl }).where(eq(users.id, session.id));
     await addLog(session.id, "SAVE_SHEETS_URL", "Simpan URL spreadsheet");
@@ -68,10 +62,10 @@ export async function POST(req: Request) {
 }
 
 async function syncAll(userId: string, spreadsheetUrl: string): Promise<{ msg: string }> {
-  const kelas = await db.select().from(dataKelas).all();
+  const kelas = await db.select().from(dataKelas).where(eq(dataKelas.userId, userId)).all();
   const kelasMap: Record<string, string> = {};
   for (const k of kelas) kelasMap[k.id] = k.namaKelas;
-  const siswa = await db.select().from(dataSiswa).all();
+  const siswa = await db.select().from(dataSiswa).where(eq(dataSiswa.userId, userId)).all();
   const siswaMap: Record<string, string> = {};
   for (const s of siswa) siswaMap[s.id] = s.namaSiswa;
 
@@ -95,7 +89,7 @@ async function syncAll(userId: string, spreadsheetUrl: string): Promise<{ msg: s
     {
       name: "Jadwal",
       header: ["Kelas", "Mapel", "Hari", "Jam Mulai", "Jam Selesai", "Semester", "Ruangan"],
-      rows: (await db.select().from(jadwalMengajar).all()).map((j) => [
+      rows: (await db.select().from(jadwalMengajar).where(eq(jadwalMengajar.userId, userId)).all()).map((j) => [
         j.kelasId ? kelasMap[j.kelasId] || "" : "", j.mataPelajaran, j.hari, j.jamMulai || "", j.jamSelesai || "",
         j.semester || "", j.ruangan || "",
       ]),
@@ -103,7 +97,7 @@ async function syncAll(userId: string, spreadsheetUrl: string): Promise<{ msg: s
     {
       name: "Absensi",
       header: ["Tanggal", "Siswa", "Kelas", "Mapel", "Status", "Keterangan"],
-      rows: (await db.select().from(absensi).all()).map((a) => [
+      rows: (await db.select().from(absensi).where(eq(absensi.userId, userId)).all()).map((a) => [
         a.tanggal, a.siswaId ? siswaMap[a.siswaId] || "" : "", a.kelasId ? kelasMap[a.kelasId] || "" : "",
         a.mataPelajaran || "", a.status, a.keterangan || "",
       ]),
@@ -111,7 +105,7 @@ async function syncAll(userId: string, spreadsheetUrl: string): Promise<{ msg: s
     {
       name: "Nilai",
       header: ["Tanggal", "Siswa", "Kelas", "Mapel", "Kategori", "BAB", "Nilai", "KKM", "Remedial"],
-      rows: (await db.select().from(nilai).all()).map((n) => [
+      rows: (await db.select().from(nilai).where(eq(nilai.userId, userId)).all()).map((n) => [
         n.tanggal || "", n.siswaId ? siswaMap[n.siswaId] || "" : "", n.kelasId ? kelasMap[n.kelasId] || "" : "",
         n.mataPelajaran || "", n.kategori || "", n.bab || "", Number(n.nilai) || 0, Number(n.kkm) || 75, n.remedial || "",
       ]),
@@ -119,7 +113,7 @@ async function syncAll(userId: string, spreadsheetUrl: string): Promise<{ msg: s
     {
       name: "Jurnal",
       header: ["Tanggal", "Kelas", "Mapel", "Jam Ke", "Materi", "Deskripsi", "Kendala", "Solusi", "Kehadiran", "Catatan"],
-      rows: (await db.select().from(jurnalMengajar).all()).map((j) => [
+      rows: (await db.select().from(jurnalMengajar).where(eq(jurnalMengajar.userId, userId)).all()).map((j) => [
         j.tanggal || "", j.kelasId ? kelasMap[j.kelasId] || "" : "", j.mataPelajaran || "", j.jamKe || "",
         j.materi || "", j.deskripsi || "", j.kendala || "", j.solusi || "", j.kehadiranSiswa || "", j.catatan || "",
       ]),
@@ -134,7 +128,7 @@ async function syncAll(userId: string, spreadsheetUrl: string): Promise<{ msg: s
     {
       name: "Kelompok",
       header: ["Kelas", "Kelompok", "No", "NIS", "Nama", "JK", "Kelas Asal"],
-      rows: (await db.select().from(kelompokBelajar).all()).map((kb) => [
+      rows: (await db.select().from(kelompokBelajar).where(eq(kelompokBelajar.userId, userId)).all()).map((kb) => [
         kb.kelasId ? kelasMap[kb.kelasId] || "" : "", kb.kelompok, kb.no || "",
         kb.nis || "", kb.namaSiswa || "", kb.jenisKelamin || "", kb.kelasAsal || "",
       ]),
@@ -142,12 +136,12 @@ async function syncAll(userId: string, spreadsheetUrl: string): Promise<{ msg: s
     {
       name: "LCKH",
       header: ["No", "Kegiatan", "Pekerjaan", "Tanggal"],
-      rows: (await db.select().from(lckh).all()).map((l) => [l.no || "", l.kegiatan || "", l.pekerjaan || "", l.tanggal || ""]),
+      rows: (await db.select().from(lckh).where(eq(lckh.userId, userId)).all()).map((l) => [l.no || "", l.kegiatan || "", l.pekerjaan || "", l.tanggal || ""]),
     },
     {
       name: "LKB",
       header: ["No", "Uraian Tugas", "Vol", "Bukti Dokumen", "Bulan", "Tahun"],
-      rows: (await db.select().from(lkb).all()).map((l) => [
+      rows: (await db.select().from(lkb).where(eq(lkb.userId, userId)).all()).map((l) => [
         l.no || "", l.uraianTugas || "", Number(l.vol) || 0, l.buktiDokumen || "", l.bulan || "", l.tahun || "",
       ]),
     },

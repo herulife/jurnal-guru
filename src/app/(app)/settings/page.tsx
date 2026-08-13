@@ -126,23 +126,19 @@ export default function SettingsPage() {
         </div>
         )}
 
-        {isAdmin && (
         <div className="card">
           <h3 className="font-bold text-gray-800 mb-6 font-[Outfit]">Backup & Restore Database</h3>
-          <p className="text-sm text-gray-500 mb-4">Backup menyimpan seluruh data (Kelas, Siswa, Nilai, Absensi, Jurnal, dll) dalam format JSON.</p>
+          <p className="text-sm text-gray-500 mb-4">Backup menyimpan seluruh data Anda (Kelas, Siswa, Nilai, Absensi, Jurnal, dll) dalam format JSON.</p>
           <div className="flex flex-wrap gap-3">
             <button className="btn btn-accent" onClick={handleBackup}><i className="fas fa-download"></i> Download Backup</button>
             <button className="btn btn-outline" onClick={() => document.getElementById("restoreInput")?.click()}><i className="fas fa-upload"></i> Restore Data</button>
             <input type="file" id="restoreInput" accept=".json" className="hidden" onChange={handleRestore} />
           </div>
         </div>
-        )}
 
-        {isAdmin && (
         <div className="lg:col-span-2">
           <GoogleSheetsSection />
         </div>
-        )}
       </div>
     </div>
   );
