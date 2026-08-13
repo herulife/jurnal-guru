@@ -5,6 +5,7 @@ import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
 import TutorialLink from "@/components/TutorialLink";
+import UploadSiswaModal from "@/components/UploadSiswaModal";
 
 interface Siswa {
   id: string; nis: string; nisn: string; namaSiswa: string;
@@ -90,7 +91,7 @@ export default function SiswaPage() {
           <button className="btn btn-outline btn-sm" onClick={() => downloadTemplate("excel")}>
             <i className="fas fa-download"></i> Template Excel
           </button>
-          <button className="btn btn-accent btn-sm" onClick={() => openUploadModal(kelas, load)}>
+          <button className="btn btn-accent btn-sm" onClick={() => (window as any).__uploadModal?.open(kelas, load)}>
             <i className="fas fa-upload"></i> Upload Data
           </button>
           <button className="btn btn-primary btn-sm" onClick={openAdd}>
@@ -162,12 +163,10 @@ export default function SiswaPage() {
       )}
 
       {modalOpen && <SiswaModal editData={editData} kelas={kelas} onSave={load} onClose={() => setModalOpen(false)} />}
+
+      <UploadSiswaModal kelas={kelas} />
     </div>
   );
-}
-
-function openUploadModal(kelas: Kelas[], onDone: () => void) {
-  (window as any).__uploadModal?.open(kelas, onDone);
 }
 
 function SiswaModal({ editData, kelas, onSave, onClose }: { editData: Siswa | null; kelas: Kelas[]; onSave: () => void; onClose: () => void }) {

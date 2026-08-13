@@ -1,4 +1,4 @@
-import { requireAdmin, AuthError, addLog } from "@/lib/auth";
+import { requireAuth, scopeUserId, AuthError, addLog } from "@/lib/auth";
 import { db } from "@/db";
 import { dataSiswa, dataKelas } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -9,7 +9,8 @@ const MAX_BATCH = 500;
 
 export async function POST(req: Request) {
   try {
-    const session = await requireAdmin();
+    const session = await requireAuth();
+    const scope = scopeUserId(session.role, session.id);
     const body = await req.json();
     const arr = body.data;
     if (!Array.isArray(arr) || !arr.length) {
@@ -18,7 +19,9 @@ export async function POST(req: Request) {
     if (arr.length > MAX_BATCH) {
       return apiError(`Maksimal ${MAX_BATCH} record per upload`);
     }
-    const kelasList = await db.select().from(dataKelas).all();
+    const kelasList = scope
+      ? await db.select().from(dataKelas).where(eq(dataKelas.userId, scope)).all()
+      : await db.select().from(dataKelas).all();
     const kelasMap: Record<string, string> = {};
     for (const k of kelasList) kelasMap[k.namaKelas || ""] = k.id;
 
