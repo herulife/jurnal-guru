@@ -9,3 +9,5 @@ d1-backup-*.sql
 docs/aplikasi/*.json
 next-env.d.ts
 .open-next/
+.vercel
+.env*
