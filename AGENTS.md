@@ -19,6 +19,9 @@ Dashboard guru (Jurnal Guru) untuk kelola absensi, nilai, jurnal mengajar, kelom
 ## Context
 Lihat `.agents/session-backup.md` & `.agents/product-marketing.md` untuk detail lengkap.
 
+## Marketing Skills (GitHub)
+Referensi skill marketing AI-agent + marketing plan 90 hari ada di `.agents/marketing-skills.md`. Utamakan SEO Bahasa Indonesia + GEO (AI citation). Repo utama: `coreyhaines31/marketingskills` & `ekinciio/saas-growth-marketing-skills`.
+
 ## User Preferences
 - Bahasa Indonesia, concise
 - No school names in content

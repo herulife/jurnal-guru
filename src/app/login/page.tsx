@@ -2,22 +2,38 @@
 
 export const dynamic = "force-dynamic";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { apiPost } from "@/lib/useApi";
+import DashboardMockup from "@/components/DashboardMockup";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+
+  useEffect(() => {
+    const v = searchParams.get("verify") || searchParams.get("activated");
+    if (v === "activated" || v === "1") {
+      setNotice("Akun Anda telah aktif. Silakan masuk.");
+    } else if (v === "expired") {
+      setNotice("Link aktivasi telah kedaluwarsa. Kirim ulang link di bawah.");
+    } else if (v === "invalid" || v === "fail") {
+      setNotice("Link aktivasi tidak valid.");
+    }
+  }, [searchParams]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setNotice("");
     try {
       const res = await apiPost("/api/auth/login", { username: email, password });
       if (!res.ok) {
@@ -29,6 +45,24 @@ export default function LoginPage() {
       setError("Koneksi gagal");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleResend() {
+    if (!email) {
+      setError("Masukkan email Anda terlebih dahulu.");
+      return;
+    }
+    setResending(true);
+    setError("");
+    setNotice("");
+    try {
+      const res = await apiPost("/api/auth/resend-verification", { email });
+      setNotice(res.msg || (res.ok ? "Link aktivasi telah dikirim." : "Gagal mengirim."));
+    } catch {
+      setNotice("Koneksi gagal. Coba lagi.");
+    } finally {
+      setResending(false);
     }
   }
 
@@ -52,12 +86,10 @@ export default function LoginPage() {
       >
         <div className="absolute inset-0 bg-[#E8A317]/10 rounded-full blur-3xl w-96 h-96 -top-20 -left-20"></div>
         <div className="absolute inset-0 bg-[#0D7C66]/30 rounded-full blur-3xl w-96 h-96 -bottom-20 -right-20"></div>
-        <div className="relative z-10 text-center px-12">
-          <img 
-            src="/login-illustration.png" 
-            alt="Ilustrasi Jurnal Guru" 
-            className="w-full max-w-md mx-auto mb-8 drop-shadow-2xl"
-          />
+        <div className="relative z-10 text-center px-12 w-full">
+          <div className="max-w-md mx-auto mb-8">
+            <DashboardMockup />
+          </div>
           <h2 className="text-3xl font-bold text-white font-[Outfit] mb-4">
             Selamat Datang di Jurnal Guru
           </h2>
@@ -129,6 +161,13 @@ export default function LoginPage() {
                   </p>
                 </div>
               )}
+              {notice && (
+                <div className={`rounded-xl p-3 mb-4 ${notice.includes("tidak valid") ? "bg-yellow-50 border border-yellow-200" : "bg-green-50 border border-green-200"}`}>
+                  <p className={`text-sm text-center ${notice.includes("tidak valid") ? "text-yellow-700" : "text-green-700"}`}>
+                    <i className={`fas ${notice.includes("tidak valid") ? "fa-triangle-exclamation" : "fa-circle-check"} mr-2`}></i>{notice}
+                  </p>
+                </div>
+              )}
               <button
                 type="submit"
                 disabled={loading}
@@ -145,6 +184,25 @@ export default function LoginPage() {
                   </>
                 )}
               </button>
+              {(error.includes("belum dikonfirmasi") || notice.includes("kedaluwarsa")) && (
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={resending}
+                  className="w-full justify-center text-sm text-[#0D7C66] font-semibold mt-4 hover:underline"
+                >
+                  {resending ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-[#0D7C66]/30 border-t-[#0D7C66] rounded-full animate-spin inline-block mr-2 align-middle"></div>
+                      Mengirim ulang...
+                    </>
+                  ) : (
+                    <>
+                      <i className="fas fa-paper-plane mr-2"></i>Kirim ulang link aktivasi
+                    </>
+                  )}
+                </button>
+              )}
             </form>
           </div>
 

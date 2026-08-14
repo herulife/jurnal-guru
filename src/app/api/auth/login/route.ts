@@ -1,6 +1,9 @@
 import { createSession, verifyCredentials, addLog } from "@/lib/auth";
 import { apiError, apiResponse, apiServerError } from "@/lib/utils";
 import { rateLimited } from "@/lib/rateLimit";
+import { db } from "@/db";
+import { users } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function POST(req: Request) {
   try {
@@ -20,6 +23,17 @@ export async function POST(req: Request) {
     if (!user) {
       return apiError("Email atau password salah");
     }
+
+    const full = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, user.id))
+      .get();
+
+    if (full && full.emailVerified !== 1) {
+      return apiError("Email belum dikonfirmasi. Silakan cek email Anda atau kirim ulang link aktivasi.", 403);
+    }
+
     await createSession(user);
     await addLog(user.id, "LOGIN", `${user.username} login`);
     return apiResponse(true, { user }, "Login berhasil");

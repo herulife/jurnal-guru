@@ -10,6 +10,9 @@ export const users = sqliteTable("users", {
   plan: text("plan").notNull().default("gratis"),
   googleSheetsUrl: text("google_sheets_url"),
   foto: text("foto"),
+  emailVerified: integer("email_verified").default(1),
+  verifyToken: text("verify_token"),
+  verifyTokenExpires: text("verify_token_expires"),
   createdAt: text("created_at").notNull().default("datetime('now')"),
 });
 
