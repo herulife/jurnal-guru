@@ -31,7 +31,7 @@ function resolveDb(): AnyDb {
 
   const url = process.env.DATABASE_URL;
   if (url) {
-    const client = createClient({ url });
+    const client = createClient({ url, authToken: process.env.TURSO_AUTH_TOKEN });
     dbInstance = drizzleLibsql(client, { schema });
     return dbInstance;
   }
