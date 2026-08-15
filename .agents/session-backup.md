@@ -77,3 +77,9 @@
 - **PENTING**: D1 produksi BUKAN skema per-user (tabel tanpa `user_id`; migrasi 0005/0006 belum pernah diterapkan) tapi `users.foto` SUDAH ada (0007 terapkan). → Restore SANGAT selektif: hanya fitur profil (UserMenu + api/me + plan-helpers + foto), JANGAN restore schema per-user.
 - **Tindakan**: checkout HEAD di VPS → tarik file ke lokal → schema.ts + `foto` di users → Sidebar: UserMenu di bawah (desktop) + header mobile + tetap adminOnly utk Profil Sekolah → tsc lolos → deploy.
 - Navbar landing juga diperbaiki (teks selalu gelap di header putih; sebelumnya text-white di bg transparan = tak terlihat).
+
+## 13 Agu 2026 — Pengaturan: User vs Admin
+- Tabel baru `user_settings` (user_id, key, value) + migrasi drizzle/0008 (terpasang di D1).
+- API /api/settings: GET -> { admin, user }; PUT blok user (tahun_ajaran, semester, kkm_default, dark_mode) per akun; blok admin (app_name, invite_code, bank_*) wajib admin (403 utk non-admin).
+- Halaman Pengaturan: 2 kartu — "Pengaturan Saya" (semua user) & "Pengaturan Admin" (hanya admin, + backup/restore + sheets).
+- Dashboard baca tahun_ajaran/semester dari setting user (fallback global). Verifikasi live OK (admin lihat keduanya, user baru hanya miliknya, PUT admin 403). Deploy e1b466a2.

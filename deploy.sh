@@ -18,7 +18,7 @@ ssh $SSH_ARGS "$VPS" "source ~/.cf_token.sh && cd $REMOTE && npm run deploy" 2>&
 
 echo "==> 4/4 verifikasi URL"
 for u in / /checkout /api/auth/check; do
-  code=$(curl -s -o /dev/null -w "%{http_code}" "https://guru.benuatech.web.id$u")
+  code=$(curl -s -o /dev/null -w "%{http_code}" "https://guru.cintabuku.site$u")
   echo "  $u -> $code"
 done
 echo "==> selesai ✓"
