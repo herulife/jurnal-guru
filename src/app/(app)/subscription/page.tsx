@@ -46,9 +46,9 @@ export default function SubscriptionPage() {
   }, []);
 
   const planMeta: Record<Plan, { label: string; desc: string; color: string }> = {
-    gratis: { label: "Gratis", desc: "Absensi, rekap presensi, jurnal mengajar — masa aktif 1 hari untuk akun baru", color: "bg-gray-100 text-gray-700" },
+    gratis: { label: "Gratis", desc: "Absensi, rekap presensi, jurnal mengajar — masa aktif 2 hari untuk akun baru", color: "bg-gray-100 text-gray-700" },
     pro: { label: "Pro", desc: "Semua fitur Gratis + nilai, rekap nilai, kelompok belajar", color: "bg-[#0D7C66]/10 text-[#0D7C66]" },
-    premium: { label: "Premium", desc: "Semua fitur Pro + generate LCKH dan LKB — sekali bayar, aktif selamanya", color: "bg-amber-100 text-amber-700" },
+    premium: { label: "Premium", desc: "Semua fitur Pro + generate LCKH dan LKB — Rp 49.000 / 6 bulan, akses semua", color: "bg-amber-100 text-amber-700" },
   };
 
   const normalizePlan = (p?: string): Plan => {
@@ -95,10 +95,10 @@ export default function SubscriptionPage() {
         ) : plan === "gratis" ? (
           <div className="space-y-2">
             <Link href="/checkout?plan=pro" className="btn btn-primary w-full justify-center">
-              <i className="fas fa-rocket mr-1"></i> Upgrade ke Pro — mulai Rp 29.000/bulan
+              <i className="fas fa-rocket mr-1"></i> Upgrade ke Pro — Rp 29.000/6 bulan
             </Link>
             <Link href="/checkout?plan=premium" className="btn btn-accent w-full justify-center">
-              <i className="fas fa-crown mr-1"></i> Premium Lifetime — Rp 499.000 sekali bayar
+              <i className="fas fa-crown mr-1"></i> Premium — Rp 49.000/6 bulan, akses semua
             </Link>
           </div>
         ) : (

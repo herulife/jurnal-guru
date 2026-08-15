@@ -26,15 +26,14 @@ export function addMonths(base: Date, months: number): Date {
   return d;
 }
 
-/** Trial gratis 1 hari untuk akun baru */
+/** Trial gratis 2 hari untuk akun baru */
 export function trialExpires(now: Date = new Date()): string {
   const d = new Date(now);
-  d.setDate(d.getDate() + 1);
+  d.setDate(d.getDate() + 2);
   return d.toISOString();
 }
 
 export function isPlanExpired(plan: Plan, expiresAt: string | null | undefined): boolean {
-  if (plan === "premium") return false; // premium = sekali bayar, selamanya
   if (!expiresAt) return false; // tanpa batas waktu (akun lama / admin)
   return new Date(expiresAt).getTime() < Date.now();
 }

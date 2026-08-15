@@ -7,19 +7,15 @@ import { apiGet, apiPost } from "@/lib/useApi";
 import { useToast } from "@/components/Feedback";
 
 const PRO_DURATIONS = [
-  { id: "pro_1m", label: "1 Bulan", price: 29000, perBulan: 29000, months: 1 },
-  { id: "pro_3m", label: "3 Bulan", price: 79000, perBulan: 26333, months: 3, hemat: "Hemat 9%" },
-  { id: "pro_6m", label: "6 Bulan", price: 149000, perBulan: 24833, months: 6, hemat: "Hemat 14%" },
-  { id: "pro_12m", label: "1 Tahun", price: 279000, perBulan: 23250, months: 12, hemat: "Hemat 20%", populer: true },
-  { id: "pro_24m", label: "2 Tahun", price: 499000, perBulan: 20792, months: 24, hemat: "Hemat 28%" },
+  { id: "pro_6m", label: "6 Bulan", price: 29000, perBulan: 4834, months: 6 },
 ];
 
 const PREMIUM = {
-  id: "premium",
+  id: "premium_6m",
   name: "Premium",
-  price: 499000,
-  tagline: "Sekali bayar, aktif selamanya",
-  features: ["Semua fitur Pro", "Generate LCKH", "Generate LKB", "Ekspor laporan pegawai", "Support prioritas", "Tanpa biaya bulanan selamanya"],
+  price: 49000,
+  tagline: "6 bulan, akses semua fitur",
+  features: ["Semua fitur Pro", "Generate LCKH", "Generate LKB", "Ekspor laporan pegawai", "Support prioritas"],
 };
 
 export default function CheckoutPage() {
@@ -35,7 +31,7 @@ function CheckoutInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [paket, setPaket] = useState<"pro" | "premium">("pro");
-  const [durasiId, setDurasiId] = useState<string>("pro_12m");
+  const [durasiId, setDurasiId] = useState<string>("pro_6m");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [authState, setAuthState] = useState<"loading" | "ok" | "guest">("loading");
@@ -54,13 +50,13 @@ function CheckoutInner() {
 
   const durasi = PRO_DURATIONS.find((d) => d.id === durasiId)!;
   const harga = paket === "pro" ? durasi.price : PREMIUM.price;
-  const planLabel = paket === "pro" ? `Pro — ${durasi.label}` : "Premium (Lifetime)";
+  const planLabel = paket === "pro" ? "Pro — 6 bulan" : "Premium — 6 bulan";
 
   async function handleCheckout() {
     setLoading(true);
     setError("");
     try {
-      const planId = paket === "pro" ? durasi.id : "premium";
+      const planId = paket === "pro" ? durasi.id : "premium_6m";
       const res = await apiPost<{ paymentId: string }>("/api/payments", { planId });
       if (!res.ok) {
         setError(res.msg || "Gagal membuat order");
@@ -114,9 +110,9 @@ function CheckoutInner() {
               <span className="text-3xl font-extrabold font-[Outfit] text-[#1A2332] tabular-nums">
                 Rp {durasi.price.toLocaleString("id-ID")}
               </span>
-              <span className="text-sm text-gray-500">/{durasi.months === 1 ? "bulan" : durasi.months >= 12 ? (durasi.months === 12 ? "tahun" : `${durasi.months / 12} tahun`) : `${durasi.months} bulan`}</span>
+              <span className="text-sm text-gray-500">/6 bulan</span>
             </div>
-            <p className="text-xs text-gray-400 mb-3">≈ Rp {Math.round(durasi.perBulan).toLocaleString("id-ID")}/bulan</p>
+            <p className="text-xs text-gray-400 mb-3">≈ Rp {Math.round(durasi.perBulan).toLocaleString("id-ID")}/bulan &middot; minimal pembelian 6 bulan</p>
             <ul className="space-y-1.5">
               {["Semua fitur Gratis", "Nilai & KKM", "Rekap Nilai", "Generate Kelompok Belajar", "Unlimited kelas", "Export PDF & Excel"].map((f) => (
                 <li key={f} className="text-sm text-gray-600 flex items-center gap-2">
@@ -146,7 +142,7 @@ function CheckoutInner() {
               <span className="text-3xl font-extrabold font-[Outfit] text-[#1A2332] tabular-nums">
                 Rp {PREMIUM.price.toLocaleString("id-ID")}
               </span>
-              <span className="text-sm text-gray-500">sekali</span>
+              <span className="text-sm text-gray-500">/6 bulan</span>
             </div>
             <p className="text-xs font-semibold text-[#ca8a04] mb-3">{PREMIUM.tagline}</p>
             <ul className="space-y-1.5">
@@ -159,36 +155,11 @@ function CheckoutInner() {
           </button>
         </div>
 
-        {/* Pilih durasi Pro */}
-        {paket === "pro" && (
-          <div className="bg-white rounded-2xl border border-[#E8E4DC] p-6 mb-8">
-            <h3 className="font-bold text-gray-800 mb-4 font-[Outfit] flex items-center gap-2">
-              <i className="fas fa-calendar-alt text-[#0D7C66]"></i> Pilih Durasi Berlangganan
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-              {PRO_DURATIONS.map((d) => (
-                <button
-                  key={d.id}
-                  onClick={() => setDurasiId(d.id)}
-                  className={`relative rounded-xl border-2 p-3 text-center transition-all ${
-                    durasiId === d.id
-                      ? "border-[#0D7C66] bg-[#0D7C66]/5"
-                      : "border-[#E8E4DC] bg-white hover:border-[#0D7C66]/40"
-                  }`}
-                >
-                  {d.populer && (
-                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-[#0D7C66] text-white text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
-                      Paling Dipilih
-                    </span>
-                  )}
-                  <div className={`text-sm font-bold ${durasiId === d.id ? "text-[#0D7C66]" : "text-[#1A2332]"}`}>{d.label}</div>
-                  <div className="text-base font-extrabold text-[#1A2332] tabular-nums mt-1">Rp {d.price.toLocaleString("id-ID")}</div>
-                  {d.hemat && <div className="text-[10px] font-semibold text-emerald-600 mt-1">{d.hemat}</div>}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Catatan durasi */}
+        <div className="bg-[#0D7C66]/5 border border-[#0D7C66]/15 rounded-2xl p-4 text-sm text-gray-600 mb-8">
+          <i className="fas fa-info-circle mr-1 text-[#0D7C66]"></i>
+          Pembelian minimal 6 bulan. Setelah habis, perpanjang dengan membayar lagi.
+        </div>
 
         {authState === "guest" ? (
           <div className="bg-white rounded-2xl border border-[#E8E4DC] p-8 text-center">
@@ -216,9 +187,7 @@ function CheckoutInner() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Masa Aktif</span>
-                <span className="font-semibold text-[#1A2332]">
-                  {paket === "pro" ? (durasi.months === 1 ? "1 bulan" : durasi.months === 12 ? "1 tahun" : durasi.months === 24 ? "2 tahun" : `${durasi.months} bulan`) : "Selamanya (lifetime)"}
-                </span>
+                <span className="font-semibold text-[#1A2332]">6 bulan</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Metode Pembayaran</span>

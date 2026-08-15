@@ -6,13 +6,17 @@ import { v4 as uuidv4 } from "uuid";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
 
 export const PLANS: Record<string, { name: string; price: number; months: number; tagline: string }> = {
+  pro_6m: { name: "Pro", price: 29000, months: 6, tagline: "6 bulan" },
+  premium_6m: { name: "Premium", price: 49000, months: 6, tagline: "6 bulan, akses semua" },
+  // legacy: untuk verifikasi order lama yang masih pending
   pro_1m: { name: "Pro", price: 29000, months: 1, tagline: "1 bulan" },
   pro_3m: { name: "Pro", price: 79000, months: 3, tagline: "3 bulan" },
-  pro_6m: { name: "Pro", price: 149000, months: 6, tagline: "6 bulan" },
   pro_12m: { name: "Pro", price: 279000, months: 12, tagline: "1 tahun" },
   pro_24m: { name: "Pro", price: 499000, months: 24, tagline: "2 tahun" },
-  premium: { name: "Premium", price: 499000, months: 0, tagline: "Sekali bayar, gratis selamanya" },
+  premium: { name: "Premium", price: 499000, months: 6, tagline: "6 bulan" },
 };
+
+const ACTIVE_PLAN_IDS = ["pro_6m", "premium_6m"];
 
 export async function getPaymentSettings() {
   const rows = await db.select().from(settings).all();
@@ -33,7 +37,7 @@ export async function POST(req: Request) {
     const planId = body.planId;
     const plan = PLANS[planId as keyof typeof PLANS];
     if (!plan) return apiError("Paket tidak valid");
-    if (plan.months === 0 && body.planId !== "premium") return apiError("Paket tidak valid");
+    if (!ACTIVE_PLAN_IDS.includes(planId)) return apiError("Paket tidak valid");
 
     const last = await db
       .select()

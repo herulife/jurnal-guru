@@ -17,14 +17,15 @@ interface Payment {
 }
 
 const PLAN_LABEL: Record<string, string> = {
+  pro_6m: "Pro 6 bulan",
+  premium_6m: "Premium 6 bulan",
   pro_1m: "Pro 1 bulan",
   pro_3m: "Pro 3 bulan",
-  pro_6m: "Pro 6 bulan",
   pro_12m: "Pro 1 tahun",
   pro_24m: "Pro 2 tahun",
-  premium: "Premium (Lifetime)",
-  pro: "Pro 1 bulan",
-  sekolah: "Premium (Lifetime)",
+  premium: "Premium 6 bulan",
+  pro: "Pro 6 bulan",
+  sekolah: "Premium 6 bulan",
 };
 
 function planLabel(p: string | null | undefined): string {

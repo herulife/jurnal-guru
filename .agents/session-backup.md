@@ -83,3 +83,8 @@
 - API /api/settings: GET -> { admin, user }; PUT blok user (tahun_ajaran, semester, kkm_default, dark_mode) per akun; blok admin (app_name, invite_code, bank_*) wajib admin (403 utk non-admin).
 - Halaman Pengaturan: 2 kartu — "Pengaturan Saya" (semua user) & "Pengaturan Admin" (hanya admin, + backup/restore + sheets).
 - Dashboard baca tahun_ajaran/semester dari setting user (fallback global). Verifikasi live OK (admin lihat keduanya, user baru hanya miliknya, PUT admin 403). Deploy e1b466a2.
+
+## 13 Agu 2026 — Domain pindah ke guru.cintabuku.site
+- Sesi lain: security update (CSP headers, Next 16.3.1/React 19.2.8/jose), admin dashboard terpadu, upload siswa modal, email lib, seed rewrite — db47484, semua live.
+- benuatech.web.id sekarang 301 permanen ke guru.cintabuku.site. HP: git pull + npm ci + tsc bersih.
+- deploy.sh: verifikasi URL diganti ke guru.cintabuku.site (sebelumnya masih benuatech → salah lapor 301).

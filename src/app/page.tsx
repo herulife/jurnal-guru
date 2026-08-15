@@ -311,7 +311,7 @@ export default async function Home() {
               </div>
               <div className="mb-6">
                 <span className="text-4xl font-extrabold font-[Outfit] text-[#1A2332]">Rp 0</span>
-                <span className="text-gray-500 text-sm">/1 hari trial</span>
+                <span className="text-gray-500 text-sm">/2 hari trial</span>
               </div>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-center gap-2 text-sm text-gray-600">
@@ -349,9 +349,9 @@ export default async function Home() {
               </div>
               <div className="mb-6">
                 <span className="text-4xl font-extrabold font-[Outfit] text-white">Rp 29.000</span>
-                <span className="text-white/70 text-sm">/bulan</span>
+                <span className="text-white/70 text-sm">/6 bulan</span>
               </div>
-              <p className="text-white/70 text-xs mb-4">Durasi fleksibel: 1, 3, 6 bulan, 1 atau 2 tahun — makin lama makin hemat</p>
+              <p className="text-white/70 text-xs mb-4">Minimal pembelian 6 bulan — murah, tanpa biaya bulanan berulang</p>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-center gap-2 text-sm text-white">
                   <i className="fas fa-check text-[#E8A317]"></i> Semua fitur Gratis
@@ -381,10 +381,10 @@ export default async function Home() {
                 <p className="text-gray-500 text-sm">Untuk sekolah & guru berstatus pegawai</p>
               </div>
               <div className="mb-6">
-                <span className="text-4xl font-extrabold font-[Outfit] text-[#1A2332]">Rp 499.000</span>
-                <span className="text-gray-500 text-sm">sekali bayar</span>
+                <span className="text-4xl font-extrabold font-[Outfit] text-[#1A2332]">Rp 49.000</span>
+                <span className="text-gray-500 text-sm">/6 bulan</span>
               </div>
-              <p className="text-gray-500 text-xs mb-4">Aktif selamanya — tanpa biaya bulanan. Cocok untuk sekolah & guru berstatus pegawai</p>
+              <p className="text-gray-500 text-xs mb-4">Akses semua fitur — 6 bulan. Cocok untuk sekolah & guru berstatus pegawai</p>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-center gap-2 text-sm text-gray-600">
                   <i className="fas fa-check text-[#0D7C66]"></i> Semua fitur Pro

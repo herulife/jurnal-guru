@@ -23,14 +23,11 @@ function KonfirmasiInner() {
   const [notes, setNotes] = useState("");
 
   const PLAN_LABEL: Record<string, { name: string; duration: string }> = {
-    pro_1m: { name: "Pro", duration: "1 bulan" },
-    pro_3m: { name: "Pro", duration: "3 bulan" },
     pro_6m: { name: "Pro", duration: "6 bulan" },
-    pro_12m: { name: "Pro", duration: "1 tahun" },
-    pro_24m: { name: "Pro", duration: "2 tahun" },
-    premium: { name: "Premium", duration: "Selamanya (lifetime)" },
-    pro: { name: "Pro", duration: "1 bulan" },
-    sekolah: { name: "Premium", duration: "Selamanya (lifetime)" },
+    premium_6m: { name: "Premium", duration: "6 bulan" },
+    premium: { name: "Premium", duration: "6 bulan" },
+    pro: { name: "Pro", duration: "6 bulan" },
+    sekolah: { name: "Premium", duration: "6 bulan" },
   };
   const planInfo = payment?.planId ? PLAN_LABEL[payment.planId] : null;
 

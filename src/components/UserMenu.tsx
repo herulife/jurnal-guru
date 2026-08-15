@@ -520,7 +520,7 @@ function UpgradeCard() {
           Buka nilai, rekap nilai & kelompok belajar tanpa batas.
         </p>
         <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-[#1A2332] text-[#E8A317] rounded-full px-3 py-1 group-hover:gap-1.5 transition-all">
-          Mulai Rp 29rb/bln <i className="fas fa-arrow-right text-[9px]"></i>
+          Mulai Rp 29rb/6 bulan <i className="fas fa-arrow-right text-[9px]"></i>
         </span>
       </Link>
       <Link
