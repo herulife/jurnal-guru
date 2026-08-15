@@ -408,10 +408,14 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="mt-10 text-center">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm">
               <i className="fas fa-shield-halved"></i>
               <span>Garansi 30 Hari Uang Kembali — Tanpa Pertanyaan</span>
+            </div>
+            <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm">
+              <i className="fas fa-lock"></i>
+              <span>Garansi Keamanan Data - Enkripsi &amp; Backup Otomatis</span>
             </div>
           </div>
         </div>
