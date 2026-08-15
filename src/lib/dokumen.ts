@@ -36,10 +36,7 @@ export function tglPanjang(d: Date = new Date()): string {
 }
 
 export function kapital(s: string): string {
-  return s
-    .split(/\s+/)
-    .map((kata) => (kata ? kata[0]!.toUpperCase() + kata.slice(1).toLowerCase() : kata))
-    .join(" ");
+  return s.replace(/(^|\s)(\S)/g, (_, sp: string, c: string) => sp + c.toUpperCase());
 }
 
 export function kopTeks(p: ProfilDokumen): string {
@@ -78,10 +75,10 @@ export function ttdHtml(
   guruNamaAdditional?: string,
   jabatanGuru = "Guru Mata Pelajaran"
 ): string {
-  const kepala = p.kepalaSekolah?.trim() || "............................";
-  const nipKep = p.nipKepsek?.trim() ? `NIP. ${p.nipKepsek}` : "NIP. ............................";
-  const guruNama = (guruNamaAdditional && guruNamaAdditional.trim()) || p.namaGuru?.trim() || "............................";
-  const nipGuru = p.nipGuru?.trim() ? `NIP. ${p.nipGuru}` : "NIP. ............................";
+  const kepala = p.kepalaSekolah?.trim() || "Nama Kepala Sekolah";
+  const nipKep = p.nipKepsek?.trim() ? `NIP. ${p.nipKepsek}` : "";
+  const guruNama = (guruNamaAdditional && guruNamaAdditional.trim()) || p.namaGuru?.trim() || "Nama Guru";
+  const nipGuru = p.nipGuru?.trim() ? `NIP. ${p.nipGuru}` : "";
   const kota = kapital(p.kota || "");
   return `
   <div class="ttd">
@@ -91,13 +88,13 @@ export function ttdHtml(
         <div class="ttd-jabatan">Kepala Sekolah</div>
         <div class="ttd-spasi"></div>
         <div class="ttd-nama">${esc(kapital(kepala))}</div>
-        <div class="ttd-nip">${esc(nipKep)}</div>
+        ${nipKep ? `<div class="ttd-nip">${esc(nipKep)}</div>` : ""}
       </div>
       <div class="ttd-kanan">
         <div class="ttd-jabatan">${esc(jabatanGuru)}</div>
         <div class="ttd-spasi"></div>
         <div class="ttd-nama">${esc(kapital(guruNama))}</div>
-        <div class="ttd-nip">${esc(nipGuru)}</div>
+        ${nipGuru ? `<div class="ttd-nip">${esc(nipGuru)}</div>` : ""}
       </div>
     </div>
   </div>`;
@@ -124,32 +121,33 @@ const CSS_DOKUMEN = `
   .judul-sub { text-align: center; font-size: 9.5pt; color: #6b7280; margin: 4px 0 2px; }
 
   /* ===== INFORMASI / IDENTITAS (grid 2 kolom simetris) ===== */
-  .identitas { width: 100%; border-collapse: separate; border-spacing: 0 7px; margin: 8px 0 4px; }
+  .identitas { width: 100%; border-collapse: separate; border-spacing: 0 7px; margin: 10px 0 12px; }
   .identitas td.is { width: 50%; background: #f7f8fa; border: 1px solid #e5e7eb; border-radius: 6px; padding: 6px 12px; vertical-align: top; }
   .identitas .il { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; font-weight: 600; }
   .identitas .iv { font-size: 10.5pt; font-weight: 600; color: #111827; margin-top: 1px; }
 
   /* ===== TABEL ===== */
-  table.data { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin-top: 10px; }
-  table.data th, table.data td { border: 1px solid #d1d5db; padding: 7px 8px; text-align: left; vertical-align: top; line-height: 1.4; }
-  table.data th { background: #1f2937; color: #fff; font-weight: 600; font-size: 9pt; letter-spacing: 0.4px; text-align: center; padding: 8px 6px; }
+  table.data { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin-top: 12px; }
+  table.data th, table.data td { border: 1px solid #c9d2dc; padding: 10px 11px; text-align: left; vertical-align: top; line-height: 1.45; }
+  table.data th { background: #1f2937; color: #fff; font-weight: 600; font-size: 9pt; letter-spacing: 0.4px; text-align: center; padding: 9px 8px; }
   table.data td.nomer, table.data th.nomer { text-align: center; }
-  table.data tbody tr:nth-child(even) td { background: #f7f8fa; }
+  table.data tbody tr:nth-child(even) td { background: #eef2f7; }
   table.data td.kosong { text-align: center; font-style: italic; color: #6b7280; padding: 18px 8px; background: #fff; }
   thead { display: table-header-group; }
   table.data tr { page-break-inside: avoid; }
 
   /* ===== TANDA TANGAN ===== */
-  .ttd { margin-top: 28px; }
-  .ttd-kota { text-align: right; font-size: 10.5pt; margin-bottom: 6px; }
+  .ttd { margin-top: 30px; }
+  .ttd-kota { text-align: right; font-size: 10.5pt; margin-bottom: 4px; }
   .ttd-grid { display: grid; grid-template-columns: 1fr 1fr; max-width: 620px; margin-left: auto; text-align: center; font-size: 10.5pt; }
+  .ttd-grid > div { min-height: 96px; display: flex; flex-direction: column; justify-content: flex-end; }
   .ttd-jabatan { font-weight: 600; }
   .ttd-spasi { height: 56px; }
   .ttd-nama { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
   .ttd-nip { font-size: 9pt; color: #4b5563; margin-top: 2px; }
 
   /* ===== FOOTER ===== */
-  .footer { margin-top: 20px; font-size: 8pt; color: #9ca3af; text-align: right; letter-spacing: 0.3px; }
+  .footer { margin-top: 20px; font-size: 8.5pt; color: #6b7280; text-align: right; letter-spacing: 0.3px; }
 `;
 
 export interface DokumenParams {
