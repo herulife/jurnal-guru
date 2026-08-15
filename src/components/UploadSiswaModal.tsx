@@ -101,7 +101,7 @@ export default function UploadSiswaModal({ kelas }: { kelas: Kelas[] }) {
       const name = file.name.toLowerCase();
       if (name.endsWith(".xlsx") || name.endsWith(".xls")) {
         const buf = await file.arrayBuffer();
-        const XLSX = await import("xlsx");
+        const XLSX = await import("xlsx-js-style");
         const wb = XLSX.read(buf);
         const ws = wb.Sheets[wb.SheetNames[0]];
         const aoa = XLSX.utils.sheet_to_json(ws, { header: 1 }) as unknown[][];
