@@ -88,3 +88,11 @@
 - Sesi lain: security update (CSP headers, Next 16.3.1/React 19.2.8/jose), admin dashboard terpadu, upload siswa modal, email lib, seed rewrite — db47484, semua live.
 - benuatech.web.id sekarang 301 permanen ke guru.cintabuku.site. HP: git pull + npm ci + tsc bersih.
 - deploy.sh: verifikasi URL diganti ke guru.cintabuku.site (sebelumnya masih benuatech → salah lapor 301).
+
+## 16 Agu 2026 — Pricing baru + PENEMUAN: live site = Vercel, bukan worker Cloudflare
+- Pricing baru: Gratis = trial 2 hari; Pro = Rp 29.000/6 bulan; Premium = Rp 49.000/6 bulan (akses semua); minimal pembelian 6 bulan. Premium BUKAN lagi lifetime (isPlanExpired kini berlaku untuk semua plan).
+- Diubah: plans.ts (trial +2 hari), payments/route.ts (PLANS: pro_6m/premium_6m + legacy; ACTIVE_PLAN_IDS; tolak paket non-aktif), checkout + konfirmasi + admin/billing labels, subscription, landing (trial 2 hari, kartu Pro/Premium baru), UpgradeBanner, PlanGuard, UserMenu, FAQ. Commit 2e02b87.
+- PENTING: guru.cintabuku.site adalah CNAME -> cname.vercel-dns.com (Vercel, proyek "jurnal-guru", integrasi GitHub). LIVE = push ke GitHub main -> Vercel auto-build. deploy.sh (worker Cloudflare "guru" di zone benuatech.web.id) HANYA untuk domain lama yang 301 ke Vercel — bukan jalan deploy utama lagi. Verifikasi konten harus lewat push, bukan deploy.sh.
+- Troubleshooting worker (jika suatu saat dipakai): opennextjs-cloudflare deploy hanya UPLOAD versi, tidak membuat deployment aktif; harus `npx wrangler versions deploy <version-id> --yes` (atau npm run deploy + versi terakhir). Versi deploy ditemukan: "Current Version ID" di output.
+- Verifikasi live 16 Agu: pro_6m = 29000 & premium_6m = 49000 diterima, pro_1m ditolak, landing/FAQ tampilkan harga baru, tidak ada string 499.000 tersisa.
+- Registrasi sekarang butuh konfirmasi email (fitur keamanan sesi lain) — user tes via curl tidak bisa login langsung.
