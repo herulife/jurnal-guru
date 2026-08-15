@@ -50,6 +50,15 @@ export function kopTeks(p: ProfilDokumen): string {
   return bagian.join(" | ");
 }
 
+function kopInfoHtml(p: ProfilDokumen): string {
+  const kotaProv = [p.kota, p.provinsi].filter(Boolean).join(", ");
+  const alamat = [p.alamat, kotaProv].filter(Boolean).join(", ");
+  const meta = [p.telepon && `Telp. ${p.telepon}`, p.npsn && `NPSN ${p.npsn}`].filter(Boolean);
+  return `
+    ${alamat ? `<div class="kop-alamat">${esc(alamat)}</div>` : ""}
+    ${meta.length ? `<div class="kop-meta">${meta.join("  ·  ")}</div>` : ""}`;
+}
+
 export function kopHtml(p: ProfilDokumen): string {
   const logo = p.logoUrl?.trim() ? p.logoUrl : "/logo.svg";
   const logoAbs = logo.startsWith("http") ? logo : `${window.location.origin}${logo.startsWith("/") ? "" : "/"}${logo}`;
@@ -58,7 +67,7 @@ export function kopHtml(p: ProfilDokumen): string {
     <div class="kop-logo"><img src="${esc(logoAbs)}" alt="logo"/></div>
     <div class="kop-teks">
       <div class="kop-nama">${esc(p.namaSekolah || "SEKOLAH")}</div>
-      <div class="kop-alamat">${esc(kopTeks(p))}</div>
+      ${kopInfoHtml(p)}
     </div>
   </div>
   <div class="kop-garis"></div>`;
@@ -79,13 +88,13 @@ export function ttdHtml(
     <div class="ttd-kota">${esc(kota ? `${kota}, ` : "")}${tglPanjang()}</div>
     <div class="ttd-grid">
       <div class="ttd-kiri">
-        <div>Kepala Sekolah</div>
+        <div class="ttd-jabatan">Kepala Sekolah</div>
         <div class="ttd-spasi"></div>
         <div class="ttd-nama">${esc(kapital(kepala))}</div>
         <div class="ttd-nip">${esc(nipKep)}</div>
       </div>
       <div class="ttd-kanan">
-        <div>${esc(jabatanGuru)}</div>
+        <div class="ttd-jabatan">${esc(jabatanGuru)}</div>
         <div class="ttd-spasi"></div>
         <div class="ttd-nama">${esc(kapital(guruNama))}</div>
         <div class="ttd-nip">${esc(nipGuru)}</div>
@@ -95,34 +104,52 @@ export function ttdHtml(
 }
 
 const CSS_DOKUMEN = `
-  @page { size: A4; margin: 11mm 13mm; }
+  @page { size: A4 portrait; margin: 14mm 15mm; }
   * { box-sizing: border-box; }
-  body { font-family: "Segoe UI", Arial, Helvetica, sans-serif; color: #1a1a1a; font-size: 11pt; margin: 0; }
-  .kop { position: relative; padding: 0 76px; padding-bottom: 6px; }
+  body { font-family: "Segoe UI", Arial, Helvetica, sans-serif; color: #1f2937; font-size: 10.5pt; margin: 0; line-height: 1.45; }
+
+  /* ===== KOP / HEADER ===== */
+  .kop { position: relative; padding-left: 84px; padding-bottom: 9px; }
   .kop-logo { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
-  .kop-logo img { width: 56px; height: 56px; object-fit: contain; display: block; }
+  .kop-logo img { width: 66px; height: 66px; object-fit: contain; display: block; }
   .kop-teks { text-align: center; }
-  .kop-nama { font-size: 15pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
-  .kop-alamat { font-size: 8.5pt; margin-top: 3px; line-height: 1.4; }
-  .kop-garis { border-bottom: 2.6px solid #111; margin-bottom: 2px; }
-  .kop-garis::after { content: ""; display: block; border-bottom: 1px solid #111; margin-top: 2px; }
-  .judul { text-align: center; font-weight: 700; font-size: 12.5pt; text-decoration: underline; margin: 14px 0 6px; }
-  .judul-sub { text-align: center; font-size: 10pt; margin-bottom: 6px; }
-  .identitas { width: 100%; border-collapse: collapse; margin: 4px 0 10px; font-size: 10pt; }
-  .identitas td { padding: 1px 4px; vertical-align: top; }
-  .identitas .lv { width: 30%; padding-left: 0; }
-  table.data { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin-top: 6px; }
-  table.data th, table.data td { border: 1px solid #555; padding: 5px 6px; text-align: left; vertical-align: top; }
-  table.data th { background: #eee; font-weight: 700; }
-  table.data .nomer { text-align: center; }
+  .kop-nama { font-size: 16.5pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: #111827; line-height: 1.25; }
+  .kop-alamat { font-size: 8.5pt; color: #4b5563; margin-top: 4px; line-height: 1.5; }
+  .kop-meta { font-size: 8pt; color: #6b7280; margin-top: 2px; letter-spacing: 0.3px; }
+  .kop-garis { border-bottom: 2px solid #1f2937; }
+  .kop-garis::after { content: ""; display: block; border-bottom: 0.75px solid #1f2937; margin-top: 1.5px; }
+
+  /* ===== JUDUL ===== */
+  .judul { text-align: center; font-weight: 800; font-size: 13.5pt; letter-spacing: 1.5px; text-transform: uppercase; color: #111827; margin: 18px 0 2px; text-decoration: underline; text-underline-offset: 5px; }
+  .judul-sub { text-align: center; font-size: 9.5pt; color: #6b7280; margin: 4px 0 2px; }
+
+  /* ===== INFORMASI / IDENTITAS (grid 2 kolom simetris) ===== */
+  .identitas { width: 100%; border-collapse: separate; border-spacing: 0 7px; margin: 8px 0 4px; }
+  .identitas td.is { width: 50%; background: #f7f8fa; border: 1px solid #e5e7eb; border-radius: 6px; padding: 6px 12px; vertical-align: top; }
+  .identitas .il { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; font-weight: 600; }
+  .identitas .iv { font-size: 10.5pt; font-weight: 600; color: #111827; margin-top: 1px; }
+
+  /* ===== TABEL ===== */
+  table.data { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin-top: 10px; }
+  table.data th, table.data td { border: 1px solid #d1d5db; padding: 7px 8px; text-align: left; vertical-align: top; line-height: 1.4; }
+  table.data th { background: #1f2937; color: #fff; font-weight: 600; font-size: 9pt; letter-spacing: 0.4px; text-align: center; padding: 8px 6px; }
+  table.data td.nomer, table.data th.nomer { text-align: center; }
+  table.data tbody tr:nth-child(even) td { background: #f7f8fa; }
+  table.data td.kosong { text-align: center; font-style: italic; color: #6b7280; padding: 18px 8px; background: #fff; }
   thead { display: table-header-group; }
   table.data tr { page-break-inside: avoid; }
-  .ttd { margin-top: 26px; }
-  .ttd-kota { text-align: right; font-size: 10.5pt; margin-bottom: 34px; }
-  .ttd-grid { display: grid; grid-template-columns: 1fr 1fr; max-width: 660px; margin-left: auto; text-align: center; font-size: 10.5pt; }
-  .ttd-spasi { height: 52px; }
-  .ttd-nama { font-weight: 700; text-decoration: underline; }
-  .footer { margin-top: 22px; font-size: 8.5pt; color: #777; text-align: right; }
+
+  /* ===== TANDA TANGAN ===== */
+  .ttd { margin-top: 28px; }
+  .ttd-kota { text-align: right; font-size: 10.5pt; margin-bottom: 6px; }
+  .ttd-grid { display: grid; grid-template-columns: 1fr 1fr; max-width: 620px; margin-left: auto; text-align: center; font-size: 10.5pt; }
+  .ttd-jabatan { font-weight: 600; }
+  .ttd-spasi { height: 56px; }
+  .ttd-nama { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+  .ttd-nip { font-size: 9pt; color: #4b5563; margin-top: 2px; }
+
+  /* ===== FOOTER ===== */
+  .footer { margin-top: 20px; font-size: 8pt; color: #9ca3af; text-align: right; letter-spacing: 0.3px; }
 `;
 
 export interface DokumenParams {
@@ -137,18 +164,19 @@ export interface DokumenParams {
 
 function identitasHtml(identitas: string[]): string {
   if (!identitas.length) return "";
-  return `<table class="identitas">${identitas
-    .map((baris) => {
-      const cells = baris.split("~");
-      const cols: string[] = [];
-      while (cells.length) {
-        const c = cells.shift()!;
-        const isLabel = c.startsWith(":");
-        cols.push(`<td ${isLabel ? 'class="lv"' : ""}>${esc(isLabel ? c.slice(1) : c)}</td>`);
-      }
-      return `<tr>${cols.join("")}</tr>`;
-    })
-    .join("")}</table>`;
+  const cells = identitas.map((baris) => {
+    const [label, ...rest] = baris.split("~");
+    return { label: label.replace(/^:/, ""), value: rest.join("~") };
+  });
+  const rows: string[] = [];
+  for (let i = 0; i < cells.length; i += 2) {
+    const a = cells[i];
+    const b = cells[i + 1];
+    const cellHtml = (c?: { label: string; value: string }) =>
+      c ? `<div class="il">${esc(c.label)}</div><div class="iv">${esc(c.value)}</div>` : "";
+    rows.push(`<tr><td class="is">${cellHtml(a)}</td><td class="is">${cellHtml(b)}</td></tr>`);
+  }
+  return `<table class="identitas">${rows.join("")}</table>`;
 }
 
 export interface XlsxParams {

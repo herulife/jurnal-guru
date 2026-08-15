@@ -67,17 +67,18 @@ const JK = ["L", "P", "L", "P", "L", "P", "L", "P", "L", "P", "L", "P"];
 export async function seedDummyData(userId: string) {
   const tahun = "2026/2027";
 
-  // Profil sekolah
+  // Profil sekolah — kosong, agar dokumen tidak menampilkan data palsu.
+  // User mengisi data sekolah asli di menu "Profil Sekolah".
   await db.insert(profilSekolah).values({
     id: uuidv4(),
     userId,
-    namaSekolah: "Sekolah Anda",
-    alamat: "Jl. Pendidikan No. 1",
-    npsn: "12345678",
-    kota: "Kota Anda",
-    provinsi: "Provinsi Anda",
-    telepon: "021-0000000",
-    kepalaSekolah: "Drs. Kepala Sekolah, M.Pd.",
+    namaSekolah: "",
+    alamat: "",
+    npsn: "",
+    kota: "",
+    provinsi: "",
+    telepon: "",
+    kepalaSekolah: "",
     nipKepsek: "",
     namaGuru: "",
     nipGuru: "",

@@ -86,14 +86,17 @@ export default function JurnalPage() {
 
   async function printJurnalPdf() {
     const kelasNama = kelas.find((k) => k.id === filterKelas)?.namaKelas || "Semua Kelas";
-    const tbody = filtered
-      .map(
-        (j, i) =>
-          `<tr><td class="nomer">${i + 1}</td><td>${esc(j.tanggal)}</td><td>${esc(j.namaKelas)}</td><td>${esc(j.mataPelajaran)}</td><td>${esc(j.jamKe)}</td><td>${esc(j.materi)}</td><td>${esc(j.kendala || "-")}</td><td>${esc(j.kehadiranSiswa || "-")}</td></tr>`
-      )
-      .join("");
+    const tbody = filtered.length
+      ? filtered
+          .map(
+            (j, i) =>
+              `<tr><td class="nomer">${i + 1}</td><td>${esc(j.tanggal)}</td><td>${esc(j.namaKelas)}</td><td>${esc(j.mataPelajaran)}</td><td class="nomer">${esc(j.jamKe)}</td><td>${esc(j.materi)}</td><td>${esc(j.kendala || "-")}</td><td class="nomer">${esc(j.kehadiranSiswa || "-")}</td></tr>`
+          )
+          .join("")
+      : `<tr><td class="kosong" colspan="8">Belum ada data jurnal mengajar pada periode ini.</td></tr>`;
     await bukaDokumen({
       judul: "JURNAL MENGAJAR GURU",
+      subtitle: "Rekapitulasi Kegiatan Pembelajaran",
       identitas: [`:Kelas~${kelasNama}`, `:Periode~${filterTanggalDari || "Awal"} s.d. ${filterTanggalSampai || "Akhir"}`],
       body: `<table class="data"><thead><tr><th class="nomer">No</th><th>Tanggal</th><th>Kelas</th><th>Mapel</th><th class="nomer">Jam Ke</th><th>Materi</th><th>Kendala</th><th>Kehadiran</th></tr></thead><tbody>${tbody}</tbody></table>`,
     });
