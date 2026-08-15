@@ -212,3 +212,29 @@ body.dark .btn-outline:hover { border-color: #0D7C66; color: #0D7C66; background
 }
 .animate-float { animation: float-y 4s ease-in-out infinite; }
 .animate-float-slow { animation: float-y 6s ease-in-out infinite; }
+
+/* Print: dokumen resmi A4 */
+@media print {
+  body {
+    background: #fff !important;
+  }
+  .card {
+    box-shadow: none !important;
+    transform: none !important;
+    border-color: #d1d5db;
+    break-inside: avoid;
+  }
+  .table-wrap {
+    overflow: visible !important;
+    border-radius: 0;
+  }
+  .table-wrap thead {
+    display: table-header-group;
+  }
+  .table-wrap tbody tr {
+    break-inside: avoid;
+  }
+  .sidebar, .navbar, main > header, .modal-overlay, .print-hidden {
+    display: none !important;
+  }
+}
