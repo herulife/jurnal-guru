@@ -101,7 +101,7 @@ export function ttdHtml(
 }
 
 const CSS_DOKUMEN = `
-  @page { size: A4 portrait; margin: 14mm 15mm; }
+  @page { size: A4 portrait; margin: 14mm 20mm; }
   * { box-sizing: border-box; }
   body { font-family: "Segoe UI", Arial, Helvetica, sans-serif; color: #1f2937; font-size: 10.5pt; margin: 0; line-height: 1.45; }
 
@@ -139,7 +139,7 @@ const CSS_DOKUMEN = `
   /* ===== TANDA TANGAN ===== */
   .ttd { margin-top: 30px; }
   .ttd-kota { text-align: right; font-size: 10.5pt; margin-bottom: 4px; }
-  .ttd-grid { display: grid; grid-template-columns: 1fr 1fr; max-width: 620px; margin-left: auto; text-align: center; font-size: 10.5pt; }
+  .ttd-grid { display: grid; grid-template-columns: 1fr 1fr; max-width: 100%; text-align: center; font-size: 10.5pt; }
   .ttd-grid > div { min-height: 96px; display: flex; flex-direction: column; justify-content: flex-end; }
   .ttd-jabatan { font-weight: 600; }
   .ttd-spasi { height: 56px; }
