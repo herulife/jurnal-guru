@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { apiGet, apiPost } from "@/lib/useApi";
+import { useToast } from "@/components/Feedback";
 
 const plans = [
   {
@@ -33,6 +34,7 @@ export default function CheckoutPage() {
 }
 
 function CheckoutInner() {
+  const { show } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [planId, setPlanId] = useState<string>("pro");
@@ -57,11 +59,14 @@ function CheckoutInner() {
       const res = await apiPost<{ paymentId: string }>("/api/payments", { planId });
       if (!res.ok) {
         setError(res.msg || "Gagal membuat order");
+        show(res.msg || "Gagal membuat order", "error");
         return;
       }
+      show("Pesanan berhasil dibuat, lanjutkan ke pembayaran", "success");
       router.push(`/checkout/konfirmasi?payment=${res.data?.paymentId}`);
     } catch {
       setError("Koneksi gagal");
+      show("Koneksi gagal", "error");
     } finally {
       setLoading(false);
     }

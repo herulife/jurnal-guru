@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { apiGet, apiPut } from "@/lib/useApi";
 import HeaderActions from "@/components/HeaderActions";
 import TutorialLink from "@/components/TutorialLink";
+import { useToast } from "@/components/Feedback";
 
 export default function ProfilPage() {
+  const { show } = useToast();
   const [form, setForm] = useState({
     namaSekolah: "", alamat: "", npsn: "", kota: "", provinsi: "",
     telepon: "", kepalaSekolah: "", nipKepsek: "", namaGuru: "", nipGuru: "",
@@ -18,7 +20,12 @@ export default function ProfilPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    await apiPut("/api/profil", form);
+    const res = await apiPut("/api/profil", form);
+    if (res.ok) {
+      show("Profil sekolah berhasil disimpan", "success");
+    } else {
+      show(res.msg || "Gagal menyimpan profil sekolah", "error");
+    }
   }
 
   return (

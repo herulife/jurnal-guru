@@ -6,6 +6,7 @@ import { bukaDokumen, exportXlsx, esc } from "@/lib/dokumen";
 import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
 import TutorialLink from "@/components/TutorialLink";
+import { useToast } from "@/components/Feedback";
 
 interface Jurnal { id: string; tanggal: string; namaKelas: string; mataPelajaran: string; jamKe: string; materi: string; kendala: string; deskripsi: string; solusi: string; kehadiranSiswa: string; catatan: string; kelasId: string; }
 interface Kelas { id: string; namaKelas: string; }
@@ -22,6 +23,7 @@ export default function JurnalPage() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(25);
   const [selected, setSelected] = useState(new Set<string>());
+  const { show } = useToast();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -57,6 +59,7 @@ export default function JurnalPage() {
   async function handleBulkDelete() {
     if (!confirm(`Hapus ${selected.size} data?`)) return;
     for (const id of selected) { await apiDelete(`/api/jurnal/${id}`); }
+    show("Data jurnal berhasil dihapus", "success");
     setSelected(new Set()); load();
   }
 
@@ -154,7 +157,7 @@ export default function JurnalPage() {
                 <td>{j.kendala}</td>
                 <td>
                   <button className="btn btn-outline btn-sm mr-1" onClick={() => openEdit(j)}><i className="fas fa-edit"></i></button>
-                  <button className="btn btn-danger btn-sm" onClick={async () => { if (confirm("Hapus?")) { await apiDelete(`/api/jurnal/${j.id}`); load(); } }}><i className="fas fa-trash"></i></button>
+                  <button className="btn btn-danger btn-sm" onClick={async () => { if (confirm("Hapus?")) { await apiDelete(`/api/jurnal/${j.id}`); show("Data jurnal berhasil dihapus", "success"); load(); } }}><i className="fas fa-trash"></i></button>
                 </td>
               </tr>
             ))}
@@ -171,6 +174,7 @@ export default function JurnalPage() {
 
 function JurnalModal({ editData, kelas, onSave, onClose }: { editData: Jurnal | null; kelas: Kelas[]; onSave: () => void; onClose: () => void }) {
   const [form, setForm] = useState({ tanggal: new Date().toISOString().split("T")[0], kelasId: "", mataPelajaran: "", jamKe: "", materi: "", deskripsi: "", kendala: "", solusi: "", kehadiranSiswa: "", catatan: "" });
+  const { show } = useToast();
 
   useEffect(() => {
     if (editData) {
@@ -180,10 +184,15 @@ function JurnalModal({ editData, kelas, onSave, onClose }: { editData: Jurnal | 
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const ok = editData
-      ? (await apiPut(`/api/jurnal/${editData.id}`, form)).ok
-      : (await apiPost("/api/jurnal", form)).ok;
-    if (ok) { onClose(); onSave(); }
+    const res = editData
+      ? await apiPut(`/api/jurnal/${editData.id}`, form)
+      : await apiPost("/api/jurnal", form);
+    if (res.ok) {
+      show(editData ? "Jurnal berhasil diperbarui" : "Jurnal berhasil ditambahkan", "success");
+      onClose(); onSave();
+    } else {
+      show(res.msg || "Gagal menyimpan jurnal", "error");
+    }
   }
 
   return (

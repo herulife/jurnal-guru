@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import HeaderActions from "@/components/HeaderActions";
 import TutorialLink from "@/components/TutorialLink";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
+import { useToast } from "@/components/Feedback";
 
 interface User {
   id: string;
@@ -21,6 +22,7 @@ export default function UsersPage() {
   const [editUser, setEditUser] = useState<User | null>(null);
   const [form, setForm] = useState({ username: "", password: "", namaLengkap: "", role: "guru" });
   const [saving, setSaving] = useState(false);
+  const { show } = useToast();
 
   useEffect(() => {
     loadUsers();
@@ -45,8 +47,6 @@ export default function UsersPage() {
     setModalOpen(true);
   }
 
-  const [toast, setToast] = useState<{msg: string; type: "success"|"error"} | null>(null);
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -58,18 +58,18 @@ export default function UsersPage() {
       if (res.ok) {
         setModalOpen(false);
         loadUsers();
-        setToast({ msg: "User berhasil diperbarui", type: "success" });
+        show("User berhasil diperbarui", "success");
       } else {
-        setToast({ msg: res.msg || "Gagal menyimpan", type: "error" });
+        show(res.msg || "Gagal menyimpan", "error");
       }
     } else {
       const res = await apiPost("/api/users", form);
       if (res.ok) {
         setModalOpen(false);
         loadUsers();
-        setToast({ msg: "User berhasil ditambahkan", type: "success" });
+        show("User berhasil ditambahkan", "success");
       } else {
-        setToast({ msg: res.msg || "Gagal menambah user", type: "error" });
+        show(res.msg || "Gagal menambah user", "error");
       }
     }
     setSaving(false);
@@ -80,27 +80,14 @@ export default function UsersPage() {
     const res = await apiDelete(`/api/users/${u.id}`);
     if (res.ok) {
       loadUsers();
-      setToast({ msg: "User berhasil dihapus", type: "success" });
+      show("User berhasil dihapus", "success");
     } else {
-      setToast({ msg: res.msg || "Gagal menghapus", type: "error" });
+      show(res.msg || "Gagal menghapus", "error");
     }
   }
 
   return (
     <div className="p-6 fade-in">
-      {toast && (
-        <div className={`fixed bottom-4 right-4 z-50 px-4 py-3 rounded-xl shadow-lg border ${
-          toast.type === "success" ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-red-50 text-red-800 border-red-200"
-        }`}>
-          <div className="flex items-center gap-2">
-            <i className={`fas ${toast.type === "success" ? "fa-check-circle" : "fa-exclamation-circle"}`}></i>
-            <span className="text-sm font-medium">{toast.msg}</span>
-            <button onClick={() => setToast(null)} className="ml-2 text-gray-400 hover:text-gray-600" aria-label="Tutup">
-              <i className="fas fa-times text-xs"></i>
-            </button>
-          </div>
-        </div>
-      )}
       <header className="sticky top-14 md:top-0 z-20 md:z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
         <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">Kelola User</h1>
         <div className="flex items-center gap-2">

@@ -1,63 +1,139 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 
-interface ToastProps {
+export type ToastType = "success" | "error" | "warning" | "info";
+
+interface ToastItem {
+  id: number;
   message: string;
-  type: "success" | "error";
-  onClose: () => void;
+  type: ToastType;
+  duration: number;
 }
 
-export function Toast({ message, type, onClose }: ToastProps) {
-  useEffect(() => {
-    const timer = setTimeout(onClose, 5000);
-    return () => clearTimeout(timer);
-  }, [onClose]);
+interface ToastContextValue {
+  show: (message: string, type?: ToastType) => void;
+  showSuccess: (message: string) => void;
+  showError: (message: string) => void;
+  showWarning: (message: string) => void;
+  showInfo: (message: string) => void;
+  /** Kompatibilitas dengan pemakaian lama; toasts dirender oleh provider global */
+  ToastComponent: null;
+}
+
+const ToastContext = createContext<ToastContextValue | null>(null);
+
+const TYPE_META: Record<ToastType, { icon: string; bar: string; ring: string; iconColor: string; textColor: string }> = {
+  success: {
+    icon: "fa-circle-check",
+    bar: "bg-emerald-500",
+    ring: "border-emerald-200",
+    iconColor: "text-emerald-500",
+    textColor: "text-emerald-800",
+  },
+  error: {
+    icon: "fa-circle-xmark",
+    bar: "bg-red-500",
+    ring: "border-red-200",
+    iconColor: "text-red-500",
+    textColor: "text-red-800",
+  },
+  warning: {
+    icon: "fa-triangle-exclamation",
+    bar: "bg-amber-500",
+    ring: "border-amber-200",
+    iconColor: "text-amber-500",
+    textColor: "text-amber-800",
+  },
+  info: {
+    icon: "fa-circle-info",
+    bar: "bg-sky-500",
+    ring: "border-sky-200",
+    iconColor: "text-sky-500",
+    textColor: "text-sky-800",
+  },
+};
+
+function ToastItemView({
+  toast,
+  onClose,
+}: {
+  toast: ToastItem;
+  onClose: () => void;
+}) {
+  const meta = TYPE_META[toast.type];
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 animate-fade-in">
-      <div className={`rounded-xl shadow-lg p-4 min-w-[300px] border ${
-        type === "success" 
-          ? "bg-emerald-50 text-emerald-800 border-emerald-200" 
-          : "bg-red-50 text-red-800 border-red-200"
-      }`}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <i className={`fas ${type === "success" ? "fa-check-circle" : "fa-exclamation-circle"} text-sm`}></i>
-            <span className="text-sm font-medium">{message}</span>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 ml-2"
-            aria-label="Tutup pesan"
-          >
-            <i className="fas fa-times text-xs"></i>
-          </button>
-        </div>
+    <div
+      role="status"
+      className={`toast-item bg-white border ${meta.ring} rounded-xl shadow-xl overflow-hidden pointer-events-auto`}
+    >
+      <div className="flex items-start gap-3 p-3.5 pr-2.5">
+        <i className={`fas ${meta.icon} ${meta.iconColor} text-lg mt-0.5 shrink-0`} aria-hidden="true"></i>
+        <p className={`flex-1 text-sm font-medium leading-snug ${meta.textColor} min-w-0`}>{toast.message}</p>
+        <button
+          onClick={onClose}
+          className="text-gray-300 hover:text-gray-500 transition-colors cursor-pointer bg-transparent border-none p-1"
+          aria-label="Tutup pesan"
+        >
+          <i className="fas fa-xmark text-xs"></i>
+        </button>
       </div>
+      <div className={`toast-progress ${meta.bar}`} style={{ animationDuration: `${toast.duration}ms` }} />
     </div>
   );
 }
 
-export function useToast() {
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+export function ToastProvider({ children }: { children: React.ReactNode }) {
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const idRef = useRef(0);
 
-  const show = (message: string, type: "success" | "error" = "success") => {
-    setToast({ message, type });
-  };
+  const dismiss = useCallback((id: number) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
-  const hide = () => setToast(null);
+  const show = useCallback(
+    (message: string, type: ToastType = "success") => {
+      const id = ++idRef.current;
+      const duration = type === "error" ? 6000 : type === "warning" ? 5500 : 4500;
+      setToasts((prev) => [...prev.slice(-4), { id, message, type, duration }]);
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id));
+      }, duration);
+    },
+    []
+  );
 
-  const ToastComponent = toast ? (
-    <Toast message={toast.message} type={toast.type} onClose={hide} />
-  ) : null;
+  const showSuccess = useCallback((m: string) => show(m, "success"), [show]);
+  const showError = useCallback((m: string) => show(m, "error"), [show]);
+  const showWarning = useCallback((m: string) => show(m, "warning"), [show]);
+  const showInfo = useCallback((m: string) => show(m, "info"), [show]);
 
-  return { show, hide, ToastComponent };
+  return (
+    <ToastContext.Provider value={{ show, showSuccess, showError, showWarning, showInfo, ToastComponent: null }}>
+      {children}
+      <div className="fixed bottom-4 right-4 z-[200] flex flex-col items-end gap-2.5 w-[min(92vw,380px)] pointer-events-none" aria-live="polite">
+        {toasts.map((t) => (
+          <div key={t.id} className="toast-anim w-full pointer-events-auto">
+            <ToastItemView toast={t} onClose={() => dismiss(t.id)} />
+          </div>
+        ))}
+      </div>
+    </ToastContext.Provider>
+  );
+}
+
+export function useToast(): ToastContextValue {
+  const ctx = useContext(ToastContext);
+  if (!ctx) {
+    throw new Error("useToast harus dipakai di dalam <ToastProvider>");
+  }
+  return ctx;
 }
 
 export function useFormFeedback() {
-  const { show, ToastComponent } = useToast();
-  
+  const { show } = useToast();
+
   const handleApiResult = async (
     promise: Promise<{ ok: boolean; msg?: string }>,
     options?: {
@@ -82,5 +158,5 @@ export function useFormFeedback() {
     }
   };
 
-  return { handleApiResult, ToastComponent, show };
+  return { handleApiResult, ToastComponent: null, show };
 }

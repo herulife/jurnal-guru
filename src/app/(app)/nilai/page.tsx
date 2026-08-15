@@ -7,6 +7,7 @@ import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
 import TutorialLink from "@/components/TutorialLink";
 import PlanGuard from "@/components/PlanGuard";
+import { useToast } from "@/components/Feedback";
 
 interface Nilai { id: string; namaSiswa: string; siswaId: string; namaKelas: string; kelasId: string; mataPelajaran: string; kategori: string; nilai: number; kkm: number; bab: string; remedial: string; }
 interface Kelas { id: string; namaKelas: string; }
@@ -24,6 +25,7 @@ function NilaiPageInner() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(25);
   const [selected, setSelected] = useState(new Set<string>());
+  const { show } = useToast();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -60,6 +62,7 @@ function NilaiPageInner() {
   async function handleBulkDelete() {
     if (!confirm(`Hapus ${selected.size} data?`)) return;
     for (const id of selected) { await apiDelete(`/api/nilai/${id}`); }
+    show("Data nilai berhasil dihapus", "success");
     setSelected(new Set()); load();
   }
 
@@ -155,7 +158,7 @@ function NilaiPageInner() {
                 <td><span className={`badge ${n.nilai >= n.kkm ? "badge-hadir" : "badge-alpha"}`}>{n.nilai >= n.kkm ? "Tuntas" : "Belum Tuntas"}</span></td>
                 <td>
                   <button className="btn btn-outline btn-sm mr-1" onClick={() => openEdit(n)}><i className="fas fa-edit"></i></button>
-                  <button className="btn btn-danger btn-sm" onClick={async () => { if (confirm("Hapus?")) { await apiDelete(`/api/nilai/${n.id}`); load(); } }}><i className="fas fa-trash"></i></button>
+                  <button className="btn btn-danger btn-sm" onClick={async () => { if (confirm("Hapus?")) { await apiDelete(`/api/nilai/${n.id}`); show("Data nilai berhasil dihapus", "success"); load(); } }}><i className="fas fa-trash"></i></button>
                 </td>
               </tr>
             ))}
@@ -175,6 +178,7 @@ function NilaiEditModal({ editData, kelas, onSave, onClose }: { editData: Nilai 
   const [kelasId, setKelasId] = useState("");
   const [siswa, setSiswa] = useState<Siswa[]>([]);
   const [selectedSiswa, setSelectedSiswa] = useState("");
+  const { show } = useToast();
 
   useEffect(() => {
     if (editData) {
@@ -191,12 +195,22 @@ function NilaiEditModal({ editData, kelas, onSave, onClose }: { editData: Nilai 
     e.preventDefault();
     const payload = { ...form, nilai: Number(form.nilai), kkm: Number(form.kkm) };
     if (editData) {
-      const ok = (await apiPut(`/api/nilai/${editData.id}`, payload)).ok;
-      if (ok) { onClose(); onSave(); }
+      const res = await apiPut(`/api/nilai/${editData.id}`, payload);
+      if (res.ok) {
+        show("Nilai berhasil diperbarui", "success");
+        onClose(); onSave();
+      } else {
+        show(res.msg || "Gagal memperbarui nilai", "error");
+      }
     } else {
       if (!selectedSiswa) return alert("Pilih siswa");
-      const ok = (await apiPost("/api/nilai", { ...payload, siswaId: selectedSiswa, kelasId })).ok;
-      if (ok) { onClose(); onSave(); }
+      const res = await apiPost("/api/nilai", { ...payload, siswaId: selectedSiswa, kelasId });
+      if (res.ok) {
+        show("Nilai berhasil ditambahkan", "success");
+        onClose(); onSave();
+      } else {
+        show(res.msg || "Gagal menambah nilai", "error");
+      }
     }
   }
 
@@ -236,6 +250,7 @@ function NilaiBatchInline({ kelas, mapelList, onSave }: { kelas: Kelas[]; mapelL
   const [bab, setBab] = useState("");
   const [siswa, setSiswa] = useState<Siswa[]>([]);
   const [nilaiMap, setNilaiMap] = useState<Record<string, string>>({});
+  const { show } = useToast();
 
   useEffect(() => {
     if (!kelasId) { setSiswa([]); return; }
@@ -251,7 +266,12 @@ function NilaiBatchInline({ kelas, mapelList, onSave }: { kelas: Kelas[]; mapelL
     }));
     if (!records.length) return;
     const res = await apiPost("/api/nilai/batch", { records });
-    if (res.ok) { onSave(); }
+    if (res.ok) {
+      show("Nilai batch berhasil disimpan", "success");
+      onSave();
+    } else {
+      show(res.msg || "Gagal menyimpan nilai batch", "error");
+    }
   }
 
   return (

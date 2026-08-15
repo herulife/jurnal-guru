@@ -5,12 +5,14 @@ import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
 import TutorialLink from "@/components/TutorialLink";
+import { useToast } from "@/components/Feedback";
 
 interface Surat {
   id: string; judul: string; jenis: string; tujuan: string; template: string;
 }
 
 export default function SuratPage() {
+  const { show } = useToast();
   const [data, setData] = useState<Surat[]>([]);
   const [loading, setLoading] = useState(true);
   const [editData, setEditData] = useState<Surat | null>(null);
@@ -41,8 +43,14 @@ export default function SuratPage() {
   }
   async function handleBulkDelete() {
     if (!confirm(`Hapus ${selected.size} data?`)) return;
-    for (const id of selected) { await apiDelete(`/api/surat/${id}`); }
+    let gagal = false;
+    for (const id of selected) {
+      const res = await apiDelete(`/api/surat/${id}`);
+      if (!res.ok) gagal = true;
+    }
     setSelected(new Set()); load();
+    if (gagal) show("Gagal menghapus sebagian data surat", "error");
+    else show("Data surat berhasil dihapus", "success");
   }
 
   function openEdit(s: Surat) { setEditData(s); setModalOpen(true); }
@@ -137,7 +145,7 @@ export default function SuratPage() {
                       <td>{s.tujuan}</td>
                       <td>
                         <button className="btn btn-outline btn-sm mr-1" onClick={() => openEdit(s)}><i className="fas fa-edit"></i></button>
-                        <button className="btn btn-danger btn-sm" onClick={async () => { if (confirm("Hapus?")) { await apiDelete(`/api/surat/${s.id}`); load(); } }}><i className="fas fa-trash"></i></button>
+                        <button className="btn btn-danger btn-sm" onClick={async () => { if (confirm("Hapus?")) { const res = await apiDelete(`/api/surat/${s.id}`); if (res.ok) { show("Data surat berhasil dihapus", "success"); load(); } else { show(res.msg || "Gagal menghapus data surat", "error"); } } }}><i className="fas fa-trash"></i></button>
                       </td>
                     </tr>
                   ))}
@@ -155,6 +163,7 @@ export default function SuratPage() {
 }
 
 function SuratModal({ editData, onSave, onClose }: { editData: Surat | null; onSave: () => void; onClose: () => void }) {
+  const { show } = useToast();
   const [form, setForm] = useState({ judul: "", jenis: "panggilan", tujuan: "", template: "" });
 
   useEffect(() => {
@@ -165,10 +174,15 @@ function SuratModal({ editData, onSave, onClose }: { editData: Surat | null; onS
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const ok = editData
-      ? (await apiPut(`/api/surat/${editData.id}`, form)).ok
-      : (await apiPost("/api/surat", form)).ok;
-    if (ok) { onClose(); onSave(); }
+    const res = editData
+      ? await apiPut(`/api/surat/${editData.id}`, form)
+      : await apiPost("/api/surat", form);
+    if (res.ok) {
+      show(editData ? "Surat berhasil diperbarui" : "Surat berhasil ditambahkan", "success");
+      onClose(); onSave();
+    } else {
+      show(res.msg || "Gagal menyimpan surat", "error");
+    }
   }
 
   const jenisLabel: Record<string, string> = { panggilan: "Surat Panggilan", keterangan: "Surat Keterangan", tugas: "Tugas/PR" };

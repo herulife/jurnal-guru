@@ -8,12 +8,14 @@ import HeaderActions from "@/components/HeaderActions";
 import TutorialLink from "@/components/TutorialLink";
 import { bukaDokumen, exportXlsx, esc } from "@/lib/dokumen";
 import PlanGuard from "@/components/PlanGuard";
+import { useToast } from "@/components/Feedback";
 
 interface Row { id: string; no: string | null; uraianTugas: string | null; vol: number; buktiDokumen: string | null; bulan: string | null; tahun: string | null; }
 
 const BULAN = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 
 function LKBPageInner() {
+  const { show } = useToast();
   const now = new Date();
   const [bulan, setBulan] = useState(String(now.getMonth() + 1).padStart(2, "0"));
   const [tahun, setTahun] = useState(String(now.getFullYear()));
@@ -45,8 +47,10 @@ function LKBPageInner() {
     if (res.ok && res.data?.data) {
       setData(res.data.data);
       setMsg("LKB di-generate dari LCKH. Klik Simpan untuk menyimpan.");
+      show("LKB berhasil di-generate dari LCKH", "success");
     } else {
       setMsg(res.msg || "Generate gagal");
+      show(res.msg || "Gagal generate LKB", "error");
     }
   }
 
@@ -58,7 +62,12 @@ function LKBPageInner() {
     });
     setLoading(false);
     setMsg(res.msg || (res.ok ? "Disimpan" : "Gagal"));
-    if (res.ok) load();
+    if (res.ok) {
+      show("LKB berhasil disimpan", "success");
+      load();
+    } else {
+      show(res.msg || "Gagal menyimpan LKB", "error");
+    }
   }
 
   function addRow() {

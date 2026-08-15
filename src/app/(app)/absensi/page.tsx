@@ -7,6 +7,7 @@ import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
 import TutorialLink from "@/components/TutorialLink";
 import { ConfirmModal, AlertModal } from "@/components/ConfirmModal";
+import { useToast } from "@/components/Feedback";
 
 interface Siswa { id: string; namaSiswa: string; }
 interface Kelas { id: string; namaKelas: string; }
@@ -31,6 +32,7 @@ export default function AbsensiPage() {
   // Confirm/Alert modal state
   const [confirmModal, setConfirmModal] = useState<{open: boolean; title: string; message: string; variant: "danger"|"warning"|"info"; onConfirm: () => void; onCancel?: () => void; confirmText?: string; cancelText?: string} | null>(null);
   const [alertModal, setAlertModal] = useState<{open: boolean; title: string; message: string; variant: "success"|"error"|"info"} | null>(null);
+  const { show } = useToast();
 
   function showConfirm(options: {title?: string; message: string; variant?: "danger"|"warning"|"info"; confirmText?: string; cancelText?: string; onConfirm: () => void; onCancel?: () => void}) {
     setConfirmModal({ open: true, title: options.title || "Konfirmasi", message: options.message, variant: options.variant || "danger", onConfirm: options.onConfirm, onCancel: options.onCancel, confirmText: options.confirmText, cancelText: options.cancelText });
@@ -126,7 +128,12 @@ export default function AbsensiPage() {
     });
     if (!records.length) return showAlert({ message: "Tidak ada data", variant: "error" });
     const res = await apiPost("/api/absensi", { records });
-    if (res.ok) { loadRiwayat(); }
+    if (res.ok) {
+      show("Absensi berhasil disimpan", "success");
+      loadRiwayat();
+    } else {
+      show(res.msg || "Gagal menyimpan absensi", "error");
+    }
   }
 
   function toggleSelect(id: string) {
@@ -152,6 +159,7 @@ export default function AbsensiPage() {
       for (const id of selected) {
         await apiDelete(`/api/absensi/${id}`);
       }
+      show("Data absensi berhasil dihapus", "success");
       setSelected(new Set());
       setSelectAll(false);
       loadRiwayat();
@@ -248,7 +256,7 @@ export default function AbsensiPage() {
                   <td>{a.keterangan}</td>
                   <td>
                     <EditAbsenModal absen={a} onSave={loadRiwayat} />
-                    <button className="btn btn-danger btn-sm ml-1" onClick={() => showConfirm({ title: "Hapus", message: "Hapus data absensi ini?", variant: "danger", confirmText: "Hapus", cancelText: "Batal", onConfirm: async () => { await apiDelete(`/api/absensi/${a.id}`); loadRiwayat(); } })}><i className="fas fa-trash"></i></button>
+                    <button className="btn btn-danger btn-sm ml-1" onClick={() => showConfirm({ title: "Hapus", message: "Hapus data absensi ini?", variant: "danger", confirmText: "Hapus", cancelText: "Batal", onConfirm: async () => { await apiDelete(`/api/absensi/${a.id}`); show("Data absensi berhasil dihapus", "success"); loadRiwayat(); } })}><i className="fas fa-trash"></i></button>
                   </td>
                 </tr>
               ))}
@@ -284,6 +292,7 @@ function EditAbsenModal({ absen, onSave }: { absen: Absen; onSave: () => void })
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState(absen.status);
   const [keterangan, setKeterangan] = useState(absen.keterangan);
+  const { show } = useToast();
 
   useEffect(() => {
     if (open) { setStatus(absen.status); setKeterangan(absen.keterangan); }
@@ -292,7 +301,13 @@ function EditAbsenModal({ absen, onSave }: { absen: Absen; onSave: () => void })
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const res = await apiPut(`/api/absensi/${absen.id}`, { status, keterangan });
-    if (res.ok) { setOpen(false); onSave(); }
+    if (res.ok) {
+      show("Absensi berhasil diperbarui", "success");
+      setOpen(false);
+      onSave();
+    } else {
+      show(res.msg || "Gagal memperbarui absensi", "error");
+    }
   }
 
   return (

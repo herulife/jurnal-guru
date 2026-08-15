@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import HeaderActions from "@/components/HeaderActions";
 import TutorialLink from "@/components/TutorialLink";
+import { useToast } from "@/components/Feedback";
 
 interface Event { date: string; title: string; time: string; type: string; id?: string; }
 
@@ -11,6 +12,7 @@ const months = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustu
 const hariNames = ["Min","Sen","Sel","Rab","Kam","Jum","Sab"];
 
 export default function KalenderPage() {
+  const { show } = useToast();
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
@@ -59,12 +61,14 @@ export default function KalenderPage() {
     setSaving(false);
     if (res.ok) {
       setMsg(res.msg || "Tersimpan");
+      show(editingId ? "Catatan berhasil diperbarui" : "Catatan berhasil disimpan", "success");
       setNoteText("");
       setEditingId(null);
       load();
       setTimeout(() => setMsg(""), 2500);
     } else {
       setMsg(res.msg || "Gagal menyimpan");
+      show(res.msg || "Gagal menyimpan catatan", "error");
     }
   }
 
@@ -73,10 +77,12 @@ export default function KalenderPage() {
     const res = await apiDelete(`/api/kalender?id=${id}`);
     if (res.ok) {
       setMsg("Catatan dihapus");
+      show("Catatan berhasil dihapus", "success");
       load();
       setTimeout(() => setMsg(""), 2500);
     } else {
       setMsg(res.msg || "Gagal menghapus");
+      show(res.msg || "Gagal menghapus catatan", "error");
     }
   }
 

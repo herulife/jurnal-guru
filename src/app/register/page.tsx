@@ -5,9 +5,11 @@ export const dynamic = "force-dynamic";
 import { useState } from "react";
 import Link from "next/link";
 import { apiPost } from "@/lib/useApi";
+import { useToast } from "@/components/Feedback";
 import DashboardMockup from "@/components/DashboardMockup";
 
 export default function RegisterPage() {
+  const { show } = useToast();
   const [namaLengkap, setNamaLengkap] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,11 +39,14 @@ export default function RegisterPage() {
       });
       if (!res.ok) {
         setError(res.msg || "Registrasi gagal");
+        show(res.msg || "Registrasi gagal", "error");
         return;
       }
       setRegistered(email);
+      show("Registrasi berhasil, cek email untuk aktivasi", "success");
     } catch {
       setError("Koneksi gagal");
+      show("Koneksi gagal", "error");
     } finally {
       setLoading(false);
     }
@@ -53,8 +58,14 @@ export default function RegisterPage() {
     try {
       const res = await apiPost("/api/auth/resend-verification", { email: registered });
       setResendMsg(res.msg || (res.ok ? "Email aktivasi telah dikirim." : "Gagal mengirim."));
+      if (res.ok) {
+        show(res.msg || "Email aktivasi telah dikirim", "success");
+      } else {
+        show(res.msg || "Gagal mengirim email aktivasi", "error");
+      }
     } catch {
       setResendMsg("Koneksi gagal. Coba lagi.");
+      show("Koneksi gagal. Coba lagi.", "error");
     } finally {
       setResending(false);
     }

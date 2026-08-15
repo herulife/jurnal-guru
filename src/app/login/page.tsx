@@ -6,9 +6,11 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { apiPost } from "@/lib/useApi";
+import { useToast } from "@/components/Feedback";
 import DashboardMockup from "@/components/DashboardMockup";
 
 export default function LoginPage() {
+  const { show } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
@@ -38,11 +40,14 @@ export default function LoginPage() {
       const res = await apiPost("/api/auth/login", { username: email, password });
       if (!res.ok) {
         setError(res.msg || "Login gagal");
+        show(res.msg || "Login gagal", "error");
         return;
       }
+      show("Login berhasil", "success");
       router.push("/dashboard");
     } catch {
       setError("Koneksi gagal");
+      show("Koneksi gagal", "error");
     } finally {
       setLoading(false);
     }
@@ -59,8 +64,14 @@ export default function LoginPage() {
     try {
       const res = await apiPost("/api/auth/resend-verification", { email });
       setNotice(res.msg || (res.ok ? "Link aktivasi telah dikirim." : "Gagal mengirim."));
+      if (res.ok) {
+        show(res.msg || "Link aktivasi telah dikirim", "success");
+      } else {
+        show(res.msg || "Gagal mengirim link aktivasi", "error");
+      }
     } catch {
       setNotice("Koneksi gagal. Coba lagi.");
+      show("Koneksi gagal. Coba lagi.", "error");
     } finally {
       setResending(false);
     }

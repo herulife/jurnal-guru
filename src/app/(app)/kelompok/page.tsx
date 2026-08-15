@@ -7,6 +7,7 @@ import ExportButton from "@/components/ExportButton";
 import HeaderActions from "@/components/HeaderActions";
 import TutorialLink from "@/components/TutorialLink";
 import PlanGuard from "@/components/PlanGuard";
+import { useToast } from "@/components/Feedback";
 
 interface Kelas { id: string; namaKelas: string; }
 interface Row {
@@ -16,6 +17,7 @@ interface Row {
 const GROUP_COUNT = 2;
 
 function KelompokBelajarPageInner() {
+  const { show } = useToast();
   const [kelas, setKelas] = useState<Kelas[]>([]);
   const [kelasId, setKelasId] = useState("");
   const [data, setData] = useState<Row[]>([]);
@@ -87,7 +89,12 @@ function KelompokBelajarPageInner() {
     });
     setLoading(false);
     setMsg(res.msg || (res.ok ? "Disimpan" : "Gagal menyimpan"));
-    if (res.ok) load();
+    if (res.ok) {
+      show("Data kelompok berhasil disimpan", "success");
+      load();
+    } else {
+      show(res.msg || "Gagal menyimpan data kelompok", "error");
+    }
   }
 
   async function reset() {
@@ -96,7 +103,12 @@ function KelompokBelajarPageInner() {
     const res = await apiDelete(`/api/kelompok?kelasId=${kelasId}`);
     setLoading(false);
     setMsg(res.msg || "");
-    if (res.ok) setData([]);
+    if (res.ok) {
+      show("Data kelompok berhasil dihapus", "success");
+      setData([]);
+    } else {
+      show(res.msg || "Gagal menghapus data kelompok", "error");
+    }
     setShowConfirm(false);
   }
 
@@ -131,7 +143,12 @@ function KelompokBelajarPageInner() {
       const res = await apiPost("/api/kelompok", { kelasId, records });
       setLoading(false);
       setMsg(res.msg || (res.ok ? `${records.length} data berhasil diimpor` : "Gagal import"));
-      if (res.ok) load();
+      if (res.ok) {
+        show(`${records.length} data berhasil diimpor`, "success");
+        load();
+      } else {
+        show(res.msg || "Gagal mengimpor data kelompok", "error");
+      }
     } catch {
       setLoading(false);
       setMsg("Gagal membaca file");

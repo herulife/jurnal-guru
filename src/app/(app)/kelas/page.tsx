@@ -5,6 +5,7 @@ import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
 import TutorialLink from "@/components/TutorialLink";
+import { useToast } from "@/components/Feedback";
 
 interface Kelas {
   id: string;
@@ -23,6 +24,7 @@ export default function KelasPage() {
   const [pageSize] = useState(25);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [selectAll, setSelectAll] = useState(false);
+  const { show } = useToast();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -49,13 +51,23 @@ export default function KelasPage() {
     waliKelas: string;
   }) {
     const res = await apiPost("/api/kelas", form);
+    if (res.ok) {
+      show("Kelas berhasil ditambahkan", "success");
+    } else {
+      show(res.msg || "Gagal menambah kelas", "error");
+    }
     return res.ok;
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Hapus kelas ini?")) return;
     const res = await apiDelete(`/api/kelas/${id}`);
-    if (res.ok) load();
+    if (res.ok) {
+      show("Data kelas berhasil dihapus", "success");
+      load();
+    } else {
+      show(res.msg || "Gagal menghapus kelas", "error");
+    }
   }
 
   function toggleSelect(id: string) {
@@ -81,6 +93,7 @@ export default function KelasPage() {
     for (const id of selected) {
       await apiDelete(`/api/kelas/${id}`);
     }
+    show("Data kelas berhasil dihapus", "success");
     setSelected(new Set());
     setSelectAll(false);
     load();
@@ -198,6 +211,7 @@ function KelasModal({ onSave }: { onSave: () => void }) {
     tahunAjaran: "2024/2025",
     waliKelas: "",
   });
+  const { show } = useToast();
 
   useEffect(() => {
     (window as any).__kelasModal = { open: (k: Kelas | null) => {
@@ -219,12 +233,15 @@ function KelasModal({ onSave }: { onSave: () => void }) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const ok = edit
-      ? (await apiPut(`/api/kelas/${edit.id}`, form)).ok
-      : (await apiPost("/api/kelas", form)).ok;
-    if (ok) {
+    const res = edit
+      ? await apiPut(`/api/kelas/${edit.id}`, form)
+      : await apiPost("/api/kelas", form);
+    if (res.ok) {
+      show(edit ? "Kelas berhasil diperbarui" : "Kelas berhasil ditambahkan", "success");
       setOpen(false);
       onSave();
+    } else {
+      show(res.msg || "Gagal menyimpan kelas", "error");
     }
   }
 

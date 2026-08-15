@@ -6,6 +6,7 @@ import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
 import TutorialLink from "@/components/TutorialLink";
 import UploadSiswaModal from "@/components/UploadSiswaModal";
+import { useToast } from "@/components/Feedback";
 
 interface Siswa {
   id: string; nis: string; nisn: string; namaSiswa: string;
@@ -25,6 +26,7 @@ export default function SiswaPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
   const [selected, setSelected] = useState(new Set<string>());
+  const { show } = useToast();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -73,6 +75,7 @@ export default function SiswaPage() {
   async function handleBulkDelete() {
     if (!confirm(`Hapus ${selected.size} data?`)) return;
     for (const id of selected) { await apiDelete(`/api/siswa/${id}`); }
+    show("Data siswa berhasil dihapus", "success");
     setSelected(new Set()); load();
   }
 
@@ -142,7 +145,7 @@ export default function SiswaPage() {
                 <td>{s.namaOrtu}</td>
                 <td>
                   <button className="btn btn-outline btn-sm mr-1" onClick={() => openEdit(s)}><i className="fas fa-edit"></i></button>
-                  <button className="btn btn-danger btn-sm" onClick={async () => { if (confirm("Hapus?")) { await apiDelete(`/api/siswa/${s.id}`); load(); } }}><i className="fas fa-trash"></i></button>
+                  <button className="btn btn-danger btn-sm" onClick={async () => { if (confirm("Hapus?")) { await apiDelete(`/api/siswa/${s.id}`); show("Data siswa berhasil dihapus", "success"); load(); } }}><i className="fas fa-trash"></i></button>
                 </td>
               </tr>
             ))}
@@ -171,6 +174,7 @@ export default function SiswaPage() {
 
 function SiswaModal({ editData, kelas, onSave, onClose }: { editData: Siswa | null; kelas: Kelas[]; onSave: () => void; onClose: () => void }) {
   const [form, setForm] = useState({ nis: "", nisn: "", namaSiswa: "", jenisKelamin: "L", kelasId: "", alamat: "", telepon: "", email: "", namaOrtu: "" });
+  const { show } = useToast();
 
   useEffect(() => {
     if (editData) {
@@ -180,10 +184,15 @@ function SiswaModal({ editData, kelas, onSave, onClose }: { editData: Siswa | nu
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const ok = editData
-      ? (await apiPut(`/api/siswa/${editData.id}`, form)).ok
-      : (await apiPost("/api/siswa", form)).ok;
-    if (ok) { onClose(); onSave(); }
+    const res = editData
+      ? await apiPut(`/api/siswa/${editData.id}`, form)
+      : await apiPost("/api/siswa", form);
+    if (res.ok) {
+      show(editData ? "Siswa berhasil diperbarui" : "Siswa berhasil ditambahkan", "success");
+      onClose(); onSave();
+    } else {
+      show(res.msg || "Gagal menyimpan data siswa", "error");
+    }
   }
 
   return (

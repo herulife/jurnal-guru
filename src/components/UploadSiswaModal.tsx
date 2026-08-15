@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { apiPost } from "@/lib/useApi";
+import { useToast } from "@/components/Feedback";
 
 interface Kelas { id: string; namaKelas: string; }
 
@@ -19,6 +20,7 @@ const HEADER_MAP: Record<string, string> = {
 };
 
 export default function UploadSiswaModal({ kelas }: { kelas: Kelas[] }) {
+  const { show } = useToast();
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState<Row[]>([]);
   const [parsedKelas, setParsedKelas] = useState<string[]>([]);
@@ -135,12 +137,14 @@ export default function UploadSiswaModal({ kelas }: { kelas: Kelas[] }) {
     setLoading(false);
     if (res.ok) {
       setMsg({ text: res.data?.msg || "Upload berhasil", type: "success" });
+      show(res.data?.msg || "Upload berhasil", "success");
       setRows([]);
       setFileName("");
       if (fileRef.current) fileRef.current.value = "";
       onDone?.();
     } else {
       setMsg({ text: res.msg || "Upload gagal", type: "error" });
+      show(res.msg || "Upload gagal", "error");
     }
   }
 

@@ -5,6 +5,7 @@ import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
 import Pagination from "@/components/Pagination";
 import HeaderActions from "@/components/HeaderActions";
 import TutorialLink from "@/components/TutorialLink";
+import { useToast } from "@/components/Feedback";
 
 interface Jadwal {
   id: string; hari: string; jamMulai: string; jamSelesai: string;
@@ -15,6 +16,7 @@ interface Kelas { id: string; namaKelas: string; }
 const hariUrut: Record<string, number> = { Senin: 1, Selasa: 2, Rabu: 3, Kamis: 4, Jumat: 5, Sabtu: 6 };
 
 export default function JadwalPage() {
+  const { show } = useToast();
   const [data, setData] = useState<Jadwal[]>([]);
   const [kelas, setKelas] = useState<Kelas[]>([]);
   const [filterHari, setFilterHari] = useState("");
@@ -54,8 +56,14 @@ export default function JadwalPage() {
   }
   async function handleBulkDelete() {
     if (!confirm(`Hapus ${selected.size} data?`)) return;
-    for (const id of selected) { await apiDelete(`/api/jadwal/${id}`); }
+    let gagal = false;
+    for (const id of selected) {
+      const res = await apiDelete(`/api/jadwal/${id}`);
+      if (!res.ok) gagal = true;
+    }
     setSelected(new Set()); load();
+    if (gagal) show("Gagal menghapus sebagian data jadwal", "error");
+    else show("Data jadwal berhasil dihapus", "success");
   }
 
   function openEdit(j: Jadwal) { setEditData(j); setModalOpen(true); }
@@ -104,7 +112,7 @@ export default function JadwalPage() {
                 <td>{j.ruangan}</td>
                 <td>
                   <button className="btn btn-outline btn-sm mr-1" onClick={() => openEdit(j)}><i className="fas fa-edit"></i></button>
-                  <button className="btn btn-danger btn-sm" onClick={async () => { if (confirm("Hapus?")) { await apiDelete(`/api/jadwal/${j.id}`); load(); } }}><i className="fas fa-trash"></i></button>
+                  <button className="btn btn-danger btn-sm" onClick={async () => { if (confirm("Hapus?")) { const res = await apiDelete(`/api/jadwal/${j.id}`); if (res.ok) { show("Data jadwal berhasil dihapus", "success"); load(); } else { show(res.msg || "Gagal menghapus data jadwal", "error"); } } }}><i className="fas fa-trash"></i></button>
                 </td>
               </tr>
             ))}
@@ -120,6 +128,7 @@ export default function JadwalPage() {
 }
 
 function JadwalModal({ editData, kelas, onSave, onClose }: { editData: Jadwal | null; kelas: Kelas[]; onSave: () => void; onClose: () => void }) {
+  const { show } = useToast();
   const [form, setForm] = useState({ hari: "Senin", kelasId: "", mataPelajaran: "", jamMulai: "", jamSelesai: "", ruangan: "" });
 
   useEffect(() => {
@@ -130,10 +139,15 @@ function JadwalModal({ editData, kelas, onSave, onClose }: { editData: Jadwal | 
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const ok = editData
-      ? (await apiPut(`/api/jadwal/${editData.id}`, form)).ok
-      : (await apiPost("/api/jadwal", form)).ok;
-    if (ok) { onClose(); onSave(); }
+    const res = editData
+      ? await apiPut(`/api/jadwal/${editData.id}`, form)
+      : await apiPost("/api/jadwal", form);
+    if (res.ok) {
+      show(editData ? "Jadwal berhasil diperbarui" : "Jadwal berhasil ditambahkan", "success");
+      onClose(); onSave();
+    } else {
+      show(res.msg || "Gagal menyimpan jadwal", "error");
+    }
   }
 
   return (

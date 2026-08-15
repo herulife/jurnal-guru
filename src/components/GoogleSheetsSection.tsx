@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { apiGet, apiPost } from "@/lib/useApi";
+import { useToast } from "@/components/Feedback";
 
 interface SheetsInfo {
   spreadsheetUrl: string;
@@ -10,6 +11,7 @@ interface SheetsInfo {
 }
 
 export default function GoogleSheetsSection() {
+  const { show } = useToast();
   const [info, setInfo] = useState<SheetsInfo | null>(null);
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(true);
@@ -32,10 +34,12 @@ export default function GoogleSheetsSection() {
     setLoading(false);
     if (res.ok) {
       setMsg({ type: "ok", text: res.msg || "URL spreadsheet disimpan" });
+      show(res.msg || "URL spreadsheet disimpan", "success");
       const r = await apiGet<SheetsInfo>("/api/sheets");
       if (r.ok && r.data) setInfo(r.data);
     } else {
       setMsg({ type: "er", text: res.msg || "Gagal menyimpan" });
+      show(res.msg || "Gagal menyimpan", "error");
     }
   }
 
@@ -47,8 +51,10 @@ export default function GoogleSheetsSection() {
     if (res.ok && res.data) {
       const d = res.data as { msg: string };
       setMsg({ type: "ok", text: d.msg });
+      show(d.msg, "success");
     } else {
       setMsg({ type: "er", text: res.msg || "Sinkronisasi gagal" });
+      show(res.msg || "Sinkronisasi gagal", "error");
     }
   }
 

@@ -5,7 +5,7 @@ import { apiGet, apiPut, apiPost } from "@/lib/useApi";
 import HeaderActions from "@/components/HeaderActions";
 import GoogleSheetsSection from "@/components/GoogleSheetsSection";
 import TutorialLink from "@/components/TutorialLink";
-import { Toast, useToast } from "@/components/Feedback";
+import { useToast } from "@/components/Feedback";
 
 interface SettingsData {
   admin: Record<string, string>;
@@ -17,7 +17,7 @@ export default function SettingsPage() {
   const [userForm, setUserForm] = useState({ tahun_ajaran: "", semester: "1", kkm_default: "75", dark_mode: "off" });
   const [adminForm, setAdminForm] = useState({ app_name: "", invite_code: "", bank_name: "", bank_account_number: "", bank_account_name: "", bank_note: "" });
   const [saving, setSaving] = useState(false);
-  const [toast, setToast] = useState<{msg: string; type: "success"|"error"} | null>(null);
+  const { show } = useToast();
 
   useEffect(() => {
     apiGet<SettingsData>("/api/settings").then((r) => {
@@ -37,7 +37,7 @@ export default function SettingsPage() {
     setSaving(true);
     const res = await apiPut("/api/settings", { user: userForm });
     setSaving(false);
-    setToast({ msg: res.ok ? "Pengaturan pribadi disimpan" : (res.msg || "Gagal menyimpan"), type: res.ok ? "success" : "error" });
+    show(res.ok ? "Pengaturan pribadi disimpan" : (res.msg || "Gagal menyimpan"), res.ok ? "success" : "error");
   }
 
   async function handleSaveAdmin(e: React.FormEvent) {
@@ -45,7 +45,7 @@ export default function SettingsPage() {
     setSaving(true);
     const res = await apiPut("/api/settings", { admin: adminForm });
     setSaving(false);
-    setToast({ msg: res.ok ? "Pengaturan aplikasi disimpan" : (res.msg || "Gagal menyimpan"), type: res.ok ? "success" : "error" });
+    show(res.ok ? "Pengaturan aplikasi disimpan" : (res.msg || "Gagal menyimpan"), res.ok ? "success" : "error");
   }
 
   async function handleBackup() {
@@ -55,9 +55,9 @@ export default function SettingsPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a"); a.href = url; a.download = `backup_${new Date().toISOString().split("T")[0]}.json`;
       a.click(); URL.revokeObjectURL(url);
-      setToast({ msg: "Backup berhasil diunduh", type: "success" });
+      show("Backup berhasil diunduh", "success");
     } else {
-      setToast({ msg: res.msg || "Backup gagal", type: "error" });
+      show(res.msg || "Backup gagal", "error");
     }
   }
 
@@ -68,24 +68,11 @@ export default function SettingsPage() {
     const data = JSON.parse(text);
     const res = await apiPost("/api/backup", { mode: "import", data });
     e.target.value = "";
-    setToast({ msg: res.ok ? "Restore berhasil" : (res.msg || "Restore gagal"), type: res.ok ? "success" : "error" });
+    show(res.ok ? "Restore berhasil" : (res.msg || "Restore gagal"), res.ok ? "success" : "error");
   }
 
   return (
     <div className="p-6 fade-in">
-      {toast && (
-        <div className={`fixed bottom-4 right-4 z-50 px-4 py-3 rounded-xl shadow-lg border ${
-          toast.type === "success" ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-red-50 text-red-800 border-red-200"
-        }`}>
-          <div className="flex items-center gap-2">
-            <i className={`fas ${toast.type === "success" ? "fa-check-circle" : "fa-exclamation-circle"}`}></i>
-            <span className="text-sm font-medium">{toast.msg}</span>
-            <button onClick={() => setToast(null)} className="ml-2 text-gray-400 hover:text-gray-600" aria-label="Tutup">
-              <i className="fas fa-times text-xs"></i>
-            </button>
-          </div>
-        </div>
-      )}
       <header className="sticky top-14 md:top-0 z-20 md:z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
         <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">Pengaturan</h1>
         <div className="flex items-center gap-2"><HeaderActions /></div>

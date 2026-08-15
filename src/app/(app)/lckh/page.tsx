@@ -8,12 +8,14 @@ import HeaderActions from "@/components/HeaderActions";
 import TutorialLink from "@/components/TutorialLink";
 import { bukaDokumen, exportXlsx, esc } from "@/lib/dokumen";
 import PlanGuard from "@/components/PlanGuard";
+import { useToast } from "@/components/Feedback";
 
 interface Row { id: string; no: string; kegiatan: string; pekerjaan: string; tanggal: string; jurnalId: string; }
 
 const BULAN = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 
 function LCKHPageInner() {
+  const { show } = useToast();
   const now = new Date();
   const [bulan, setBulan] = useState(String(now.getMonth() + 1).padStart(2, "0"));
   const [tahun, setTahun] = useState(String(now.getFullYear()));
@@ -45,8 +47,10 @@ function LCKHPageInner() {
     if (res.ok && res.data?.data) {
       setData(res.data.data);
       setMsg("LCKH di-generate dari jurnal. Klik Simpan untuk menyimpan.");
+      show("LCKH berhasil di-generate dari jurnal", "success");
     } else {
       setMsg(res.msg || "Generate gagal");
+      show(res.msg || "Gagal generate LCKH", "error");
     }
   }
 
@@ -55,7 +59,12 @@ function LCKHPageInner() {
     const res = await apiPost("/api/lckh", { records: data, bulan, tahun });
     setLoading(false);
     setMsg(res.msg || (res.ok ? "Disimpan" : "Gagal"));
-    if (res.ok) load();
+    if (res.ok) {
+      show("LCKH berhasil disimpan", "success");
+      load();
+    } else {
+      show(res.msg || "Gagal menyimpan LCKH", "error");
+    }
   }
 
   function addRow() {
