@@ -141,6 +141,8 @@ const CSS_DOKUMEN = `
   .ttd-kota { text-align: right; font-size: 10.5pt; margin-bottom: 4px; }
   .ttd-grid { display: grid; grid-template-columns: 1fr 1fr; max-width: 100%; text-align: center; font-size: 10.5pt; }
   .ttd-grid > div { min-height: 96px; display: flex; flex-direction: column; justify-content: flex-end; }
+  .ttd-kiri { align-items: flex-start; text-align: left; }
+  .ttd-kanan { align-items: flex-end; text-align: right; }
   .ttd-jabatan { font-weight: 600; }
   .ttd-spasi { height: 56px; }
   .ttd-nama { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
@@ -280,22 +282,22 @@ export async function exportXlsx(params: XlsxParams): Promise<void> {
   push(st(pad([]), 0, {}));
   push(st(pad([]), 0, {}));
   const barisKepala = pad([]);
-  barisKepala[0] = st(["Kepala Sekolah"], 0, ST_LABEL)[0];
-  barisKepala[halfR] = st(["Guru Mata Pelajaran"], 0, ST_LABEL)[0];
+  barisKepala[0] = st(["Kepala Sekolah"], 0, { font: { bold: true } as XStyle["font"], alignment: { horizontal: "left" as const } })[0];
+  barisKepala[halfR] = st(["Guru Mata Pelajaran"], 0, { font: { bold: true } as XStyle["font"], alignment: { horizontal: "right" as const } })[0];
   const rKep = push(barisKepala, false);
   merges.push({ s: { r: rKep, c: 0 }, e: { r: rKep, c: halfL } });
   merges.push({ s: { r: rKep, c: halfR }, e: { r: rKep, c: nCol - 1 } });
   push(pad([]));
   push(pad([]));
   const barisNama = pad([]);
-  barisNama[0] = st([kepala ? kapital(kepala) : "............................"], 0, { font: { bold: true } as XStyle["font"], alignment: { horizontal: "center" as const } })[0];
-  barisNama[halfR] = st([guru ? kapital(guru) : "............................"], 0, { font: { bold: true } as XStyle["font"], alignment: { horizontal: "center" as const } })[0];
+  barisNama[0] = st([kepala ? kapital(kepala) : "............................"], 0, { font: { bold: true } as XStyle["font"], alignment: { horizontal: "left" as const } })[0];
+  barisNama[halfR] = st([guru ? kapital(guru) : "............................"], 0, { font: { bold: true } as XStyle["font"], alignment: { horizontal: "right" as const } })[0];
   const rNama = push(barisNama, false);
   merges.push({ s: { r: rNama, c: 0 }, e: { r: rNama, c: halfL } });
   merges.push({ s: { r: rNama, c: halfR }, e: { r: rNama, c: nCol - 1 } });
   const barisNip = pad([]);
-  barisNip[0] = st([nipKep || "NIP. ............................"], 0, { font: { sz: 9 } as XStyle["font"], alignment: { horizontal: "center" as const } })[0];
-  barisNip[halfR] = st([nipGuru || "NIP. ............................"], 0, { font: { sz: 9 } as XStyle["font"], alignment: { horizontal: "center" as const } })[0];
+  barisNip[0] = st([nipKep || "NIP. ............................"], 0, { font: { sz: 9 } as XStyle["font"], alignment: { horizontal: "left" as const } })[0];
+  barisNip[halfR] = st([nipGuru || "NIP. ............................"], 0, { font: { sz: 9 } as XStyle["font"], alignment: { horizontal: "right" as const } })[0];
   const rNip = push(barisNip, false);
   merges.push({ s: { r: rNip, c: 0 }, e: { r: rNip, c: halfL } });
   merges.push({ s: { r: rNip, c: halfR }, e: { r: rNip, c: nCol - 1 } });
