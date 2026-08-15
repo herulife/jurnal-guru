@@ -19,13 +19,44 @@ export function normalizePlan(p: string | null | undefined): Plan {
   return "gratis";
 }
 
+/** Tambah bulan ke tanggal sekarang (untuk durasi langganan) */
+export function addMonths(base: Date, months: number): Date {
+  const d = new Date(base);
+  d.setMonth(d.getMonth() + months);
+  return d;
+}
+
+/** Trial gratis 1 hari untuk akun baru */
+export function trialExpires(now: Date = new Date()): string {
+  const d = new Date(now);
+  d.setDate(d.getDate() + 1);
+  return d.toISOString();
+}
+
+export function isPlanExpired(plan: Plan, expiresAt: string | null | undefined): boolean {
+  if (plan === "premium") return false; // premium = sekali bayar, selamanya
+  if (!expiresAt) return false; // tanpa batas waktu (akun lama / admin)
+  return new Date(expiresAt).getTime() < Date.now();
+}
+
 export async function getUserPlan(userId: string): Promise<Plan> {
   const user = await db
-    .select({ plan: users.plan })
+    .select({ plan: users.plan, planExpires: users.planExpires })
     .from(users)
     .where(eq(users.id, userId))
     .get();
-  return normalizePlan(user?.plan);
+  const plan = normalizePlan(user?.plan);
+  if (isPlanExpired(plan, user?.planExpires)) return "gratis";
+  return plan;
+}
+
+export async function getPlanExpiry(userId: string): Promise<string | null> {
+  const user = await db
+    .select({ planExpires: users.planExpires })
+    .from(users)
+    .where(eq(users.id, userId))
+    .get();
+  return user?.planExpires ?? null;
 }
 
 export function hasExportAccess(plan: Plan): boolean {

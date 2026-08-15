@@ -8,8 +8,17 @@ type Plan = "gratis" | "pro" | "premium";
 
 interface SubsInfo {
   plan: Plan;
+  planExpires?: string | null;
   payment?: { amount: number; status: string; createdAt: string } | null;
   bank?: { bank_name: string; bank_account_number: string; bank_account_name: string };
+}
+
+function sisaHari(expires?: string | null): string | null {
+  if (!expires) return null;
+  const ms = new Date(expires).getTime() - Date.now();
+  if (ms <= 0) return "Trial telah berakhir";
+  const hari = Math.ceil(ms / 86400000);
+  return hari <= 1 ? "Berakhir hari ini" : `Berakhir dalam ${hari} hari`;
 }
 
 export default function SubscriptionPage() {
@@ -18,27 +27,28 @@ export default function SubscriptionPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    apiGet<{ user?: { plan?: string; role?: string } }>("/api/auth/check").then((r) => {
+    apiGet<{ user?: { plan?: string; role?: string; planExpires?: string | null } }>("/api/auth/check").then((r) => {
       if (r.ok && r.data?.user) {
-        setInfo((p) => ({ plan: (r.data!.user!.plan as Plan) || "gratis", payment: p?.payment ?? null }));
+        setInfo((p) => ({ plan: (r.data!.user!.plan as Plan) || "gratis", planExpires: r.data!.user!.planExpires ?? null, payment: p?.payment ?? null }));
         setRole(r.data!.user!.role ?? null);
       }
     });
     apiGet<{ plan?: string; payments?: any[] }>("/api/payments").then((r) => {
       if (r.ok && r.data) {
         const latest = r.data.payments?.[0] || null;
-        setInfo({
-          plan: (r.data.plan as Plan) || "gratis",
-          payment: latest ? { amount: latest.amount, status: latest.status, createdAt: latest.createdAt } : null,
-        });
+        setInfo((prev) => ({
+          plan: prev?.plan ?? "gratis",
+          planExpires: prev?.planExpires ?? null,
+          payment: latest ? { amount: latest.amount, status: latest.status, createdAt: latest.createdAt } : prev?.payment ?? null,
+        }));
       }
     }).finally(() => setLoading(false));
   }, []);
 
   const planMeta: Record<Plan, { label: string; desc: string; color: string }> = {
-    gratis: { label: "Gratis", desc: "Absensi, rekap presensi, jurnal mengajar", color: "bg-gray-100 text-gray-700" },
+    gratis: { label: "Gratis", desc: "Absensi, rekap presensi, jurnal mengajar — masa aktif 1 hari untuk akun baru", color: "bg-gray-100 text-gray-700" },
     pro: { label: "Pro", desc: "Semua fitur Gratis + nilai, rekap nilai, kelompok belajar", color: "bg-[#0D7C66]/10 text-[#0D7C66]" },
-    premium: { label: "Premium", desc: "Semua fitur Pro + generate LCKH dan LKB", color: "bg-amber-100 text-amber-700" },
+    premium: { label: "Premium", desc: "Semua fitur Pro + generate LCKH dan LKB — sekali bayar, aktif selamanya", color: "bg-amber-100 text-amber-700" },
   };
 
   const normalizePlan = (p?: string): Plan => {
@@ -49,10 +59,13 @@ export default function SubscriptionPage() {
 
   if (loading) return <div className="p-6 flex justify-center py-20"><div className="w-8 h-8 border-2 border-[#0D7C66]/20 border-t-[#0D7C66] rounded-full animate-spin"></div></div>;
 
-  const meta = planMeta[normalizePlan(info?.plan)];
+  const plan = normalizePlan(info?.plan);
+  const meta = planMeta[plan];
   const isAdmin = role === "Admin";
   const metaLabel = isAdmin ? "Admin — Akses Penuh" : meta.label;
   const metaColor = isAdmin ? "bg-[#1A2332] text-white" : meta.color;
+  const sisa = sisaHari(info?.planExpires);
+  const isTrial = plan === "gratis" && !!info?.planExpires;
 
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -68,17 +81,24 @@ export default function SubscriptionPage() {
         </div>
         <p className="text-sm text-gray-600 mb-4">{isAdmin ? "Akun administrator aplikasi. Semua fitur di semua paket terbuka tanpa berlangganan." : meta.desc}</p>
 
+        {isTrial && (
+          <div className="bg-[#E8A317]/10 border border-[#E8A317]/30 rounded-xl p-3 text-sm text-[#a16207] flex items-center gap-2 mb-4">
+            <i className="fas fa-hourglass-half"></i>
+            <span className="font-medium">{sisa} — upgrade untuk fitur lengkap tanpa batas</span>
+          </div>
+        )}
+
         {isAdmin ? (
           <div className="bg-[#1A2332]/5 border border-[#1A2332]/15 rounded-xl p-3 text-sm text-[#1A2332] flex items-center gap-2">
             <i className="fas fa-shield-halved"></i> Admin tidak perlu berlangganan
           </div>
-        ) : normalizePlan(info?.plan) === "gratis" ? (
+        ) : plan === "gratis" ? (
           <div className="space-y-2">
             <Link href="/checkout?plan=pro" className="btn btn-primary w-full justify-center">
-              <i className="fas fa-rocket mr-1"></i> Upgrade ke Pro — Rp 29.000/bln
+              <i className="fas fa-rocket mr-1"></i> Upgrade ke Pro — mulai Rp 29.000/bulan
             </Link>
-            <Link href="/checkout?plan=premium" className="btn btn-outline w-full justify-center">
-              <i className="fas fa-crown mr-1"></i> Upgrade ke Premium — Rp 49.000/bln
+            <Link href="/checkout?plan=premium" className="btn btn-accent w-full justify-center">
+              <i className="fas fa-crown mr-1"></i> Premium Lifetime — Rp 499.000 sekali bayar
             </Link>
           </div>
         ) : (

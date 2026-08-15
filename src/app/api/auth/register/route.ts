@@ -6,6 +6,7 @@ import { users } from "@/db/schema";
 import { eq, or } from "drizzle-orm";
 import { sql } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
+import { trialExpires } from "@/lib/plans";
 import { seedDummyData } from "@/lib/seed";
 import { emailConfigured, sendVerificationEmail, generateVerifyToken, verifyTokenExpiry } from "@/lib/email";
 
@@ -65,6 +66,7 @@ export async function POST(req: Request) {
       emailVerified: 0,
       verifyToken,
       verifyTokenExpires: verifyExpires,
+      planExpires: trialExpires(),
     });
 
     // Isi data dummy agar akun baru langsung punya data contoh

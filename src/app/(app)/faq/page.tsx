@@ -1,11 +1,11 @@
 const faqs = [
   {
     q: "Apakah Jurnal Guru benar-benar gratis?",
-    a: "Ya. Paket Gratis aktif selamanya tanpa kartu kredit: dashboard, data siswa/kelas, jadwal, absensi, rekap & cetak presensi, jurnal mengajar, kalender, dan surat. Tidak ada batas waktu.",
+    a: "Ya. Akun baru mendapat masa percobaan gratis 1 hari untuk mencoba seluruh fitur. Setelah itu Anda bisa terus memakai fitur dasar (dashboard, data siswa/kelas, absensi, rekap & cetak presensi, jurnal mengajar, kalender, dan surat) atau upgrade ke Pro/Premium untuk fitur lengkap.",
   },
   {
     q: "Apa bedanya paket Gratis, Pro, dan Premium?",
-    a: "Gratis: fitur dasar presensi & jurnal. Pro (Rp 29.000/bln): gratis + nilai, rekap nilai, dan generate kelompok belajar. Premium (Rp 49.000/bln): semua fitur Pro + generate LCKH dan LKB bagi pegawai.",
+    a: "Gratis: fitur dasar presensi & jurnal, masa aktif 1 hari untuk akun baru. Pro (mulai Rp 29.000/bln, pilihan durasi 1, 3, 6 bulan, 1 tahun, atau 2 tahun — makin lama makin hemat): gratis + nilai, rekap nilai, dan generate kelompok belajar. Premium (Rp 499.000 sekali bayar, aktif selamanya): semua fitur Pro + generate LCKH dan LKB bagi pegawai.",
   },
   {
     q: "Bagaimana cara membayar paket Pro/Premium?",

@@ -9,7 +9,20 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   try {
     const session = await requireAuth();
     const { id } = await params;
-    const row = await db.select().from(payments).where(eq(payments.id, id)).get();
+    const row = await db
+      .select({
+        id: payments.id,
+        userId: payments.userId,
+        amount: payments.amount,
+        notes: payments.notes,
+        status: payments.status,
+        planId: subscriptions.planId,
+        createdAt: payments.createdAt,
+      })
+      .from(payments)
+      .leftJoin(subscriptions, eq(payments.subscriptionId, subscriptions.id))
+      .where(eq(payments.id, id))
+      .get();
     if (!row) return apiError("Pembayaran tidak ditemukan", 404);
     if (row.userId !== session.id) {
       await requireAdmin();
@@ -69,17 +82,19 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
           .where(eq(subscriptions.id, user.subscriptionId))
           .get();
         if (sub) {
-          const months = PLANS[sub.planId]?.months || 1;
+          const planDef = PLANS[sub.planId];
+          const months = planDef?.months ?? 1;
           const now = new Date();
-          const expires = new Date(now);
-          expires.setMonth(expires.getMonth() + months);
+          const expires = months > 0 ? new Date(now) : null;
+          if (expires) expires.setMonth(expires.getMonth() + months);
           await db
             .update(subscriptions)
-            .set({ status: "active", startedAt: now.toISOString(), expiresAt: expires.toISOString() })
+            .set({ status: "active", startedAt: now.toISOString(), expiresAt: expires ? expires.toISOString() : null })
             .where(eq(subscriptions.id, sub.id));
+          const planDb = sub.planId === "sekolah" ? "premium" : planDef?.name === "Premium" ? "premium" : "pro";
           await db
             .update(users)
-            .set({ plan: sub.planId === "sekolah" ? "premium" : sub.planId })
+            .set({ plan: planDb, planExpires: expires ? expires.toISOString() : null })
             .where(eq(users.id, user.userId));
         }
       }

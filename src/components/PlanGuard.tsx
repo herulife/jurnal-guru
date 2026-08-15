@@ -36,8 +36,8 @@ export default function PlanGuard({ min, children }: { min: Plan; children: Reac
         <h1 className="text-xl font-bold text-[#1A2332] font-[Outfit] mb-2">{judul} Terkunci</h1>
         <p className="text-sm text-gray-500 mb-6 leading-relaxed">
           {isPremium
-            ? "Fitur ini tersedia untuk paket Premium (Rp 49.000/bulan). Upgrade sekarang dan generate LCKH serta LKB untuk pegawai."
-            : "Fitur ini tersedia untuk paket Pro (Rp 29.000/bulan). Upgrade sekarang dan buka nilai, rekap nilai, dan kelompok belajar."}
+            ? "Fitur ini tersedia untuk paket Premium (Rp 499.000 sekali bayar, aktif selamanya). Upgrade sekarang dan generate LCKH serta LKB untuk pegawai."
+            : "Fitur ini tersedia untuk paket Pro (mulai Rp 29.000/bulan). Upgrade sekarang dan buka nilai, rekap nilai, dan kelompok belajar."}
         </p>
 
         <div className="space-y-2.5">
@@ -53,7 +53,7 @@ export default function PlanGuard({ min, children }: { min: Plan; children: Reac
             href={isPremium ? "/checkout?plan=premium" : "/checkout?plan=pro"}
             className="block w-full py-3 px-5 bg-[#E8A317] hover:bg-[#ca8a04] text-[#1A2332] font-semibold rounded-xl transition-all shadow-lg"
           >
-            <i className="fas fa-rocket mr-1"></i> Upgrade ke {isPremium ? "Premium" : "Pro"} — Rp {isPremium ? "49.000" : "29.000"}/bln
+            <i className="fas fa-rocket mr-1"></i> Upgrade ke {isPremium ? "Premium (Lifetime)" : "Pro"} — Rp {isPremium ? "499.000 sekali bayar" : "29.000/bln"}
           </Link>
           <Link href="/subscription" className="block w-full py-2 px-5 text-sm text-gray-500 hover:text-[#0D7C66] transition-colors">
             Lihat status langganan saya

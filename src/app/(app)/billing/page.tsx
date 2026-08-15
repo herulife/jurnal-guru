@@ -16,6 +16,22 @@ interface Payment {
   verifiedAt: string;
 }
 
+const PLAN_LABEL: Record<string, string> = {
+  pro_1m: "Pro 1 bulan",
+  pro_3m: "Pro 3 bulan",
+  pro_6m: "Pro 6 bulan",
+  pro_12m: "Pro 1 tahun",
+  pro_24m: "Pro 2 tahun",
+  premium: "Premium (Lifetime)",
+  pro: "Pro 1 bulan",
+  sekolah: "Premium (Lifetime)",
+};
+
+function planLabel(p: string | null | undefined): string {
+  if (!p) return "Paket";
+  return PLAN_LABEL[p] || `Paket ${p}`;
+}
+
 export default function BillingPage() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,7 +98,7 @@ export default function BillingPage() {
             <div className="flex flex-wrap justify-between items-center gap-3 mb-3">
               <div>
                 <p className="font-bold text-[#1A2332]">{p.username}</p>
-                <p className="text-xs text-gray-500">{p.plan ? `Paket ${p.plan}` : "Paket"} &middot; {p.createdAt ? new Date(p.createdAt).toLocaleString("id-ID") : "-"}</p>
+                <p className="text-xs text-gray-500">{planLabel(p.plan)} &middot; {p.createdAt ? new Date(p.createdAt).toLocaleString("id-ID") : "-"}</p>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-lg font-extrabold text-[#0D7C66]">Rp {p.amount.toLocaleString("id-ID")}</span>

@@ -22,17 +22,29 @@ function KonfirmasiInner() {
   const [payment, setPayment] = useState<{ amount: number; planId?: string } | null>(null);
   const [notes, setNotes] = useState("");
 
+  const PLAN_LABEL: Record<string, { name: string; duration: string }> = {
+    pro_1m: { name: "Pro", duration: "1 bulan" },
+    pro_3m: { name: "Pro", duration: "3 bulan" },
+    pro_6m: { name: "Pro", duration: "6 bulan" },
+    pro_12m: { name: "Pro", duration: "1 tahun" },
+    pro_24m: { name: "Pro", duration: "2 tahun" },
+    premium: { name: "Premium", duration: "Selamanya (lifetime)" },
+    pro: { name: "Pro", duration: "1 bulan" },
+    sekolah: { name: "Premium", duration: "Selamanya (lifetime)" },
+  };
+  const planInfo = payment?.planId ? PLAN_LABEL[payment.planId] : null;
+
   useEffect(() => {
     if (!paymentId) {
       setLoading(false);
       return;
     }
-    apiGet<{ payment: { amount: number; notes?: string } }>(`/api/payments/${paymentId}`)
+    apiGet<{ payment: { amount: number; notes?: string; planId?: string } }>(`/api/payments/${paymentId}`)
       .then((r) => {
         if (r.ok) {
           const p = r.data?.payment;
           if (p) {
-            setPayment({ amount: p.amount });
+            setPayment({ amount: p.amount, planId: p.planId });
             setNotes(p.notes ?? "");
           }
         } else {
@@ -108,6 +120,14 @@ function KonfirmasiInner() {
           <p className="text-4xl font-extrabold font-[Outfit] tabular-nums">
             Rp {payment?.amount?.toLocaleString("id-ID") ?? "-"}
           </p>
+          {planInfo && (
+            <p className="text-white/80 text-sm mt-2">
+              <span className="bg-white/10 rounded-full px-3 py-1 inline-flex items-center gap-1.5">
+                <i className="fas fa-crown text-[#E8A317]"></i>
+                {planInfo.name} &middot; {planInfo.duration}
+              </span>
+            </p>
+          )}
           <p className="text-white/60 text-xs mt-2">Jangan transfer nominal lain agar mudah diverifikasi</p>
         </div>
 
@@ -140,8 +160,7 @@ function KonfirmasiInner() {
           <label className="label">Catatan / Bukti Transfer</label>
           <textarea
             className="input min-h-[100px]"
-            placeholder="Contoh: Sudah transfer Rp 29.000 dari a.n. Bu Ratna (No. HP 08xx) pada tanggal 2026-08-07"
-            value={notes}
+            placeholder="Contoh: Sudah transfer Rp 29.000 dari a.n. Bu Ratna (No. HP 08xx) pada tanggal 2026-08-07"            value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />
           <p className="text-xs text-gray-400 mt-2">

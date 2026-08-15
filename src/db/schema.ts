@@ -8,6 +8,7 @@ export const users = sqliteTable("users", {
   namaLengkap: text("nama_lengkap").notNull(),
   role: text("role").notNull().default("admin"),
   plan: text("plan").notNull().default("gratis"),
+  planExpires: text("plan_expires"),
   googleSheetsUrl: text("google_sheets_url"),
   foto: text("foto"),
   emailVerified: integer("email_verified").default(1),

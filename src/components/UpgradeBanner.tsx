@@ -41,7 +41,7 @@ export default function UpgradeBanner() {
         <div className="flex-1 min-w-0">
           <p className="text-xs text-gray-300">
             <span className="font-semibold text-white">Upgrade ke Pro</span>
-            {" "}— unlimited kelas + export PDF Rp 29rb/bulan.
+            {" "}— unlimited kelas + export PDF & Excel, mulai Rp 29rb/bulan. Atau Premium lifetime Rp 499rb sekali bayar.
           </p>
         </div>
         <Link

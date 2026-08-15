@@ -165,7 +165,7 @@ export default function Sidebar() {
                         <span className="flex-1">{item.label}</span>
                         {locked && (
                           <span className="flex items-center gap-1 text-[10px] font-bold bg-[#E8A317]/15 text-[#E8A317] px-1.5 py-0.5 rounded">
-                            <i className="fas fa-lock text-[9px]"></i> {item.minPlan === "premium" ? "49K" : "29K"}
+                            <i className="fas fa-lock text-[9px]"></i> {item.minPlan === "premium" ? "499K" : "29K"}
                           </span>
                         )}
                       </Link>
