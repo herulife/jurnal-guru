@@ -54,12 +54,8 @@ const menuItems: { section: string; items: MenuItem[] }[] = [
   {
     section: "Sistem",
     items: [
-      { label: "Dashboard Admin", icon: "fa-gauge-high", href: "/admin", adminOnly: true },
-      { label: "Marketing Plan", icon: "fa-bullhorn", href: "/marketing-plan", adminOnly: true },
-      { label: "Kelola User", icon: "fa-users-cog", href: "/users", adminOnly: true },
       { label: "Profil Sekolah", icon: "fa-school", href: "/profil" },
       { label: "Pengaturan", icon: "fa-cog", href: "/settings" },
-      { label: "Activity Log", icon: "fa-history", href: "/log", adminOnly: true },
       { label: "Kalender", icon: "fa-calendar", href: "/kalender" },
       { label: "Langganan", icon: "fa-crown", href: "/subscription" },
       { label: "FAQ", icon: "fa-circle-question", href: "/faq" },
@@ -70,7 +66,16 @@ const menuItems: { section: string; items: MenuItem[] }[] = [
     items: [
       { label: "Template Surat", icon: "fa-envelope", href: "/surat" },
       { label: "Panduan", icon: "fa-book", href: "/panduan" },
+    ],
+  },
+  {
+    section: "Panel Admin",
+    items: [
+      { label: "Dashboard Admin", icon: "fa-gauge-high", href: "/admin", adminOnly: true },
+      { label: "Kelola User", icon: "fa-users-cog", href: "/users", adminOnly: true },
       { label: "Tagihan", icon: "fa-credit-card", href: "/billing", adminOnly: true },
+      { label: "Activity Log", icon: "fa-history", href: "/log", adminOnly: true },
+      { label: "Marketing Plan", icon: "fa-bullhorn", href: "/marketing-plan", adminOnly: true },
     ],
   },
 ];
@@ -144,7 +149,19 @@ export default function Sidebar() {
               if (items.length === 0) return null;
               return (
                 <div key={group.section}>
-                  <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider px-8 mb-2 mt-4 first:mt-0">
+                  {group.section === "Panel Admin" && (
+                    <div className="mt-5 mx-6 border-t border-[#E8A317]/30 pt-4 mb-1"></div>
+                  )}
+                  <p
+                    className={`text-xs font-semibold uppercase tracking-wider px-8 mb-2 mt-4 first:mt-0 ${
+                      group.section === "Panel Admin"
+                        ? "text-[#E8A317] flex items-center gap-1.5"
+                        : "text-gray-600"
+                    }`}
+                  >
+                    {group.section === "Panel Admin" && (
+                      <i className="fas fa-shield-halved text-[10px]"></i>
+                    )}
                     {group.section}
                   </p>
                   {items.map((item) => {
