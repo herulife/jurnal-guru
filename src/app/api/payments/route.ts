@@ -104,7 +104,11 @@ export async function POST(req: Request) {
       date: new Date().toLocaleString("id-ID", { dateStyle: "long" }),
     };
     const waSent = await sendWaNotification(whatsapp, invoiceWaText(invoiceInfo, "pending"));
-    const user = await db.select({ email: users.email }).from(users).where(eq(users.id, session.id)).get();
+    const user = await db
+      .select({ nama: users.namaLengkap, username: users.username, email: users.email })
+      .from(users)
+      .where(eq(users.id, session.id))
+      .get();
     const emailSent = user?.email
       ? await sendInvoiceEmail(
           user.email,
@@ -112,6 +116,18 @@ export async function POST(req: Request) {
           invoiceHtml(invoiceInfo, "pending")
         )
       : false;
+    const adminNotifSent = await sendWaNotification(
+      "628567302110",
+      [
+        "ORDER BARU - Jurnal Guru",
+        `Nama: ${user?.nama || user?.username || session.id}`,
+        `Paket: ${plan.name} (${plan.tagline})`,
+        `Nominal: Rp ${plan.price.toLocaleString("id-ID")}`,
+        `No. WA: ${whatsapp}`,
+        `Invoice: ${invoiceNumber(paymentId)}`,
+        "Segera verifikasi di panel admin.",
+      ].join("\n")
+    );
     return apiOk({
       paymentId,
       planId,
@@ -119,6 +135,7 @@ export async function POST(req: Request) {
       bank,
       waSent,
       emailSent,
+      adminNotifSent,
     });
   } catch (e: unknown) {
     if (e instanceof AuthError) return apiError(e.message, e.status);
