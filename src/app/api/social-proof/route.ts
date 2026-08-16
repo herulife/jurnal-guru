@@ -81,11 +81,21 @@ export async function GET(req: NextRequest) {
         title: `${userCount} guru telah menggunakan Jurnal Guru`,
         sub: "dan terus bertambah setiap hari",
       });
+      if (paidCount > 0) {
+        events.push({
+          id: "stat-paid",
+          icon: "fa-badge-check",
+          title: `${paidCount} guru telah upgrade ke paket berbayar`,
+          sub: "kepercayaan guru-guru di seluruh Indonesia",
+        });
+      }
+    }
+    if (events.length < 2) {
       events.push({
-        id: "stat-paid",
-        icon: "fa-badge-check",
-        title: `${paidCount} guru telah upgrade ke paket berbayar`,
-        sub: "kepercayaan guru-guru di seluruh Indonesia",
+        id: "stat-fast",
+        icon: "fa-bolt",
+        title: "Pembayaran transfer diverifikasi admin dalam hitungan jam",
+        sub: "upgrade langsung aktif setelah verifikasi",
       });
     }
 
