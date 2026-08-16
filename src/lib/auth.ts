@@ -26,14 +26,14 @@ export type SessionUser = {
 export async function createSession(user: SessionUser) {
   const token = await new SignJWT({ ...user })
     .setProtectedHeader({ alg: "HS256" })
-    .setExpirationTime("8h")
+    .setExpirationTime("30d")
     .sign(SECRET);
   const cookieStore = await cookies();
   cookieStore.set(COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: 8 * 60 * 60,
+    maxAge: 30 * 24 * 60 * 60,
     path: "/",
   });
 }
