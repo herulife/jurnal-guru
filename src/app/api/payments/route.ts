@@ -5,6 +5,8 @@ import { eq, and } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
 import { normalizePhone, sendWaNotification } from "@/lib/notifWa";
+import { invoiceWaText, invoiceHtml, invoiceNumber } from "@/lib/invoice";
+import { sendInvoiceEmail } from "@/lib/email";
 
 export const PLANS: Record<string, { name: string; price: number; months: number; tagline: string }> = {
   pro_6m: { name: "Pro", price: 29000, months: 6, tagline: "6 bulan" },
@@ -91,16 +93,32 @@ export async function POST(req: Request) {
     await addLog(session.id, "CREATE_PAYMENT", `Order ${plan.name} Rp ${plan.price}`);
 
     const bank = await getPaymentSettings();
-    const waSent = await sendWaNotification(
-      whatsapp,
-      `Halo! Pesanan *${plan.name}* (Rp ${plan.price.toLocaleString("id-ID")}) kamu di Jurnal Guru sudah dibuat.\n\nNo. Order: ${paymentId.slice(0, 8).toUpperCase()}\nTransfer ke ${bank.bank_name} ${bank.bank_account_number} a.n. ${bank.bank_account_name}.\n\nKonfirmasi pembayaran di dashboard, paket aktif otomatis setelah diverifikasi admin.`
-    );
+    const invoiceInfo = {
+      paymentId,
+      planName: plan.name,
+      duration: plan.tagline,
+      amount: plan.price,
+      bankName: bank.bank_name,
+      bankAccountNumber: bank.bank_account_number,
+      bankAccountName: bank.bank_account_name,
+      date: new Date().toLocaleString("id-ID", { dateStyle: "long" }),
+    };
+    const waSent = await sendWaNotification(whatsapp, invoiceWaText(invoiceInfo, "pending"));
+    const user = await db.select({ email: users.email }).from(users).where(eq(users.id, session.id)).get();
+    const emailSent = user?.email
+      ? await sendInvoiceEmail(
+          user.email,
+          `Invoice Pesanan ${plan.name} — Jurnal Guru (${invoiceNumber(paymentId)})`,
+          invoiceHtml(invoiceInfo, "pending")
+        )
+      : false;
     return apiOk({
       paymentId,
       planId,
       amount: plan.price,
       bank,
       waSent,
+      emailSent,
     });
   } catch (e: unknown) {
     if (e instanceof AuthError) return apiError(e.message, e.status);

@@ -28,7 +28,7 @@ const PRO_FEATURES = [
   "Export PDF & Excel",
 ];
 
-type Stage = "paket" | "kontak" | "bayar" | "konfirmasi" | "sukses";
+type Stage = "paket" | "bayar" | "konfirmasi" | "sukses";
 
 type PaymentData = {
   amount: number;
@@ -199,9 +199,9 @@ function CheckoutInner() {
             <i className="fas fa-arrow-left"></i> Kembali ke Beranda
           </Link>
           <h1 className="text-2xl md:text-3xl font-extrabold font-[Outfit] mb-6 text-center">
-            {stage === "paket" || stage === "kontak" ? "Checkout — Pesanan Anda" : "Selesaikan Pembayaran"}
+            {stage === "paket" ? "Checkout — Pesanan Anda" : "Selesaikan Pembayaran"}
           </h1>
-          <OrderSteps step={stage === "paket" || stage === "kontak" ? 1 : stage === "sukses" ? 3 : 2} />
+          <OrderSteps step={stage === "paket" ? 1 : stage === "sukses" ? 3 : 2} />
         </div>
       </div>
 
@@ -363,10 +363,10 @@ function CheckoutInner() {
                     </div>
 
                     <button
-                      onClick={() => { setError(""); setStage("kontak"); }}
+                      onClick={() => { setError(""); setStage("bayar"); }}
                       className="btn btn-primary w-full justify-center text-base py-3"
                     >
-                      <i className="fas fa-arrow-right mr-1"></i> Lanjut ke Data Kontak
+                      <i className="fas fa-arrow-right mr-1"></i> Lanjut ke Pembayaran
                     </button>
                     <p className="text-center text-xs text-gray-400 mt-3">
                       <i className="fas fa-shield-halved mr-1"></i> Garansi 30 hari: tidak hemat waktu? Uang kembali penuh
@@ -377,112 +377,31 @@ function CheckoutInner() {
             </div>
           )}
 
-          {/* ===== TAHAP 2: DATA KONTAK ===== */}
-          {stage === "kontak" && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-              <div className="lg:col-span-2">
-                <div className="bg-white rounded-2xl border border-[#E8E4DC] overflow-hidden">
-                  <div className="px-6 py-4 border-b border-[#E8E4DC]">
-                    <h2 className="font-bold text-gray-800 font-[Outfit] text-lg">
-                      <i className="fas fa-mobile-screen mr-2 text-[#0D7C66]"></i>2. Data Kontak
-                    </h2>
-                  </div>
-                  <div className="p-6">
-                    <label htmlFor="wa" className="label">
-                      <i className="fab fa-whatsapp mr-1 text-[#0D7C66]"></i>Nomor WhatsApp
-                    </label>
-                    <input
-                      id="wa"
-                      type="tel"
-                      inputMode="tel"
-                      autoComplete="tel"
-                      value={whatsapp}
-                      onChange={(e) => setWhatsapp(e.target.value)}
-                      placeholder="Contoh: 081234567890"
-                      className="input"
-                    />
-                    <p className="text-xs text-gray-400 mt-2">
-                      <i className="fas fa-info-circle mr-1"></i> Notifikasi status pesanan & konfirmasi pembayaran dikirim ke nomor ini.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="lg:sticky lg:top-6">
-                <div className="bg-white rounded-2xl border border-[#E8E4DC] overflow-hidden shadow-sm">
-                  <div className="px-6 py-4 bg-[#1A2332] text-white flex items-center gap-2">
-                    <i className="fas fa-file-invoice text-[#E8A317]"></i>
-                    <span className="font-bold font-[Outfit]">Ringkasan Pesanan</span>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center gap-3 pb-4 border-b border-[#E8E4DC] mb-4">
-                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-white shrink-0 ${paket === "pro" ? "bg-[#0D7C66]" : "bg-gradient-to-br from-[#E8A317] to-[#ca8a04]"}`}>
-                        <i className={`${paket === "pro" ? "fas fa-chart-bar" : "fas fa-crown"}`}></i>
-                      </div>
-                      <div className="min-w-0">
-                        <p className="font-bold text-[#1A2332] text-sm">{planLabel}</p>
-                        <p className="text-xs text-gray-400">Berlaku 6 bulan sejak verifikasi</p>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-between items-center border-t border-dashed border-[#E8E4DC] pt-4 mb-5">
-                      <span className="font-bold text-gray-800">Total</span>
-                      <span className="font-extrabold text-[#1A2332] text-xl tabular-nums">
-                        Rp {harga.toLocaleString("id-ID")}
-                      </span>
-                    </div>
-
-                    <button
-                      onClick={handleBuatPesanan}
-                      disabled={loading}
-                      className="btn btn-primary w-full justify-center text-base py-3"
-                    >
-                      {loading ? (
-                        <>
-                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                          Membuat pesanan...
-                        </>
-                      ) : (
-                        <>
-                          <i className="fas fa-lock mr-1"></i> Buat Pesanan
-                        </>
-                      )}
-                    </button>
-                    <button
-                      onClick={() => { setError(""); setStage("paket"); }}
-                      className="text-xs text-gray-400 hover:text-[#0D7C66] w-full text-center mt-3 transition-colors"
-                    >
-                      <i className="fas fa-arrow-left mr-1"></i> Kembali pilih paket
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ===== TAHAP 3: PEMBAYARAN ===== */}
+          {/* ===== TAHAP 2: PEMBAYARAN ===== */}
           {stage === "bayar" && (
             <div className="max-w-2xl mx-auto">
-              <div className="flex items-center justify-center gap-2 mb-6">
-                <span className="inline-flex items-center gap-2 text-xs font-bold rounded-full px-4 py-1.5 bg-amber-100 text-amber-700">
-                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                  Menunggu Pembayaran
-                </span>
-              </div>
+              {paymentId && (
+                <div className="flex items-center justify-center gap-2 mb-6">
+                  <span className="inline-flex items-center gap-2 text-xs font-bold rounded-full px-4 py-1.5 bg-amber-100 text-amber-700">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    Menunggu Pembayaran
+                  </span>
+                </div>
+              )}
 
               <div className="bg-white rounded-2xl border border-[#E8E4DC] overflow-hidden mb-5">
                 <div className="px-6 py-4 bg-[#0D7C66] text-white flex items-center gap-2">
                   <i className="fas fa-university"></i>
-                  <span className="font-bold font-[Outfit] text-sm">Langkah 1 dari 2 — Transfer ke Rekening BRI</span>
+                  <span className="font-bold font-[Outfit] text-sm">Silakan Transfer ke Rekening</span>
                 </div>
                 <div className="p-6">
                   <div className="bg-[#0D7C66]/5 border border-[#0D7C66]/15 rounded-2xl p-6 mb-5 text-center">
                     <p className="text-gray-500 text-xs mb-1">Total yang harus ditransfer</p>
                     <p className="text-4xl font-extrabold font-[Outfit] text-[#0D7C66] tabular-nums mb-3">
-                      Rp {payment?.amount?.toLocaleString("id-ID") ?? "-"}
+                      Rp {(payment?.amount ?? harga).toLocaleString("id-ID")}
                     </p>
                     <button
-                      onClick={() => payment?.amount && copyText(String(payment.amount), "Nominal transfer")}
+                      onClick={() => copyText(String(payment?.amount ?? harga), "Nominal transfer")}
                       className="text-xs font-semibold text-[#0D7C66] bg-white border border-[#0D7C66]/20 rounded-full px-4 py-1.5 hover:bg-[#0D7C66] hover:text-white transition-colors"
                     >
                       <i className="fas fa-copy mr-1"></i> Salin Nominal
@@ -528,37 +447,88 @@ function CheckoutInner() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl border border-[#E8E4DC] p-6 mb-5">
-                <p className="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2">
-                  <i className="fas fa-route text-[#0D7C66]"></i> Setelah transfer
-                </p>
-                <ol className="space-y-2 text-sm text-gray-600">
-                  <li className="flex items-start gap-2">
-                    <span className="w-5 h-5 rounded-full bg-[#0D7C66]/10 text-[#0D7C66] text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
-                    Transfer sesuai nominal di atas
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="w-5 h-5 rounded-full bg-[#0D7C66]/10 text-[#0D7C66] text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
-                    Klik <strong>Saya Sudah Transfer</strong> lalu kirim bukti
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="w-5 h-5 rounded-full bg-[#0D7C66]/10 text-[#0D7C66] text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
-                    Admin verifikasi maksimal <strong>24 jam</strong>, paket langsung aktif
-                  </li>
-                </ol>
-                {!waSent && (
-                  <p className="text-xs text-gray-400 mt-3 flex items-center gap-1.5">
-                    <i className="fab fa-whatsapp text-[#25D366]"></i> Notifikasi status pesanan akan dikirim via WhatsApp ke {whatsapp || "nomor kamu"}
-                  </p>
-                )}
-              </div>
+              {paymentId ? (
+                <>
+                  <div className="bg-white rounded-2xl border border-[#E8E4DC] p-6 mb-5">
+                    <p className="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2">
+                      <i className="fas fa-route text-[#0D7C66]"></i> Setelah transfer
+                    </p>
+                    <ol className="space-y-2 text-sm text-gray-600">
+                      <li className="flex items-start gap-2">
+                        <span className="w-5 h-5 rounded-full bg-[#0D7C66]/10 text-[#0D7C66] text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
+                        Transfer sesuai nominal di atas
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="w-5 h-5 rounded-full bg-[#0D7C66]/10 text-[#0D7C66] text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
+                        Klik <strong>Saya Sudah Transfer</strong> lalu kirim bukti
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="w-5 h-5 rounded-full bg-[#0D7C66]/10 text-[#0D7C66] text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
+                        Admin verifikasi maksimal <strong>24 jam</strong>, paket langsung aktif
+                      </li>
+                    </ol>
+                    {!waSent && (
+                      <p className="text-xs text-gray-400 mt-3 flex items-center gap-1.5">
+                        <i className="fab fa-whatsapp text-[#25D366]"></i> Notifikasi status pesanan akan dikirim via WhatsApp ke {whatsapp || "nomor kamu"}
+                      </p>
+                    )}
+                  </div>
 
-              <button
-                onClick={() => { setError(""); setStage("konfirmasi"); }}
-                className="btn btn-primary w-full justify-center text-base py-3.5"
-              >
-                <i className="fas fa-check-circle mr-1"></i> Saya Sudah Transfer
-              </button>
+                  <button
+                    onClick={() => { setError(""); setStage("konfirmasi"); }}
+                    className="btn btn-primary w-full justify-center text-base py-3.5"
+                  >
+                    <i className="fas fa-check-circle mr-1"></i> Saya Sudah Transfer
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="bg-white rounded-2xl border border-[#E8E4DC] overflow-hidden mb-5">
+                    <div className="px-6 py-4 border-b border-[#E8E4DC]">
+                      <h2 className="font-bold text-gray-800 font-[Outfit] text-sm flex items-center gap-2">
+                        <i className="fab fa-whatsapp text-[#0D7C66]"></i> Nomor WhatsApp
+                      </h2>
+                    </div>
+                    <div className="p-6">
+                      <p className="text-xs text-gray-400 mb-3">
+                        Notifikasi status pesanan & konfirmasi pembayaran dikirim ke nomor ini.
+                      </p>
+                      <input
+                        id="wa"
+                        type="tel"
+                        inputMode="tel"
+                        autoComplete="tel"
+                        value={whatsapp}
+                        onChange={(e) => setWhatsapp(e.target.value)}
+                        placeholder="Contoh: 081234567890"
+                        className="input"
+                      />
+                      <button
+                        onClick={handleBuatPesanan}
+                        disabled={loading}
+                        className="btn btn-primary w-full justify-center text-base py-3 mt-4"
+                      >
+                        {loading ? (
+                          <>
+                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            Membuat pesanan...
+                          </>
+                        ) : (
+                          <>
+                            <i className="fas fa-lock mr-1"></i> Buat Pesanan
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => { setError(""); setStage("paket"); }}
+                        className="text-xs text-gray-400 hover:text-[#0D7C66] w-full text-center mt-3 transition-colors"
+                      >
+                        <i className="fas fa-arrow-left mr-1"></i> Kembali pilih paket
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
               <p className="text-center text-xs text-gray-400 mt-3">
                 <i className="fas fa-shield-halved mr-1"></i> Garansi 30 hari: tidak hemat waktu? Uang kembali penuh
               </p>

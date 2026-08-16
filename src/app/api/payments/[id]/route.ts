@@ -5,6 +5,8 @@ import { eq } from "drizzle-orm";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
 import { PLANS } from "@/app/api/payments/route";
 import { normalizePhone, sendWaNotification } from "@/lib/notifWa";
+import { invoiceWaText, invoiceHtml, invoiceNumber } from "@/lib/invoice";
+import { sendInvoiceEmail } from "@/lib/email";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -113,10 +115,30 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
             .where(eq(users.id, user.userId));
 
           if (user.whatsapp) {
-            await sendWaNotification(
-              user.whatsapp,
-              `Pembayaran kamu sudah diverifikasi!\nPaket *${planDef?.name ?? "Premium"}* aktif ${planDef?.months ? `selama ${planDef.months} bulan` : ""} di Jurnal Guru.\nTerima kasih sudah berlangganan!`
-            );
+            const planDef = PLANS[sub.planId];
+            const invoiceInfo = {
+              paymentId: id,
+              planName: planDef?.name ?? "Premium",
+              duration: planDef?.tagline ?? "6 bulan",
+              amount: user.amount,
+              bankName: "BRI",
+              bankAccountNumber: "",
+              bankAccountName: "Jurnal Guru",
+              date: new Date().toLocaleString("id-ID", { dateStyle: "long" }),
+            };
+            await sendWaNotification(user.whatsapp, invoiceWaText(invoiceInfo, "paid"));
+            const buyer = await db
+              .select({ email: users.email })
+              .from(users)
+              .where(eq(users.id, user.userId))
+              .get();
+            if (buyer?.email) {
+              await sendInvoiceEmail(
+                buyer.email,
+                `Invoice Lunas ${planDef?.name ?? "Premium"} — Jurnal Guru (${invoiceNumber(id)})`,
+                invoiceHtml(invoiceInfo, "paid")
+              );
+            }
           }
         }
       }

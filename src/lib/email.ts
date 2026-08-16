@@ -74,3 +74,25 @@ export function generateVerifyToken(): string {
 export function verifyTokenExpiry(): string {
   return new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 }
+
+export async function sendInvoiceEmail(to: string, subject: string, html: string): Promise<boolean> {
+  if (!RESEND_API_KEY) return false;
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ from: FROM_EMAIL, to, subject, html }),
+    });
+    if (!res.ok) {
+      console.error("[EMAIL ERROR]", res.status, await res.text());
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.error("[EMAIL ERROR]", e);
+    return false;
+  }
+}
