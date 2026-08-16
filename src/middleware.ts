@@ -15,7 +15,7 @@ export async function middleware(request: NextRequest) {
   res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   res.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), interest-cohort=()");
 
-  if (publicPaths.some((p) => pathname.startsWith(p))) {
+  if (publicPaths.some((p) => (p === "/" ? pathname === "/" : pathname.startsWith(p)))) {
     return res;
   }
 
@@ -37,7 +37,9 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith("/api/")) {
     return NextResponse.json({ ok: false, msg: "Unauthorized" }, { status: 401 });
   }
-  return NextResponse.redirect(new URL("/login", request.url));
+  const url = new URL("/login", request.url);
+  url.searchParams.set("returnUrl", pathname + request.nextUrl.search);
+  return NextResponse.redirect(url);
 }
 
 export const config = {

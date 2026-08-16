@@ -16,7 +16,7 @@ export async function api<T = unknown>(
     };
     if (res.status === 401 && path !== "/api/auth/login" && path !== "/api/auth/check") {
       if (typeof window !== "undefined") {
-        window.location.href = "/login";
+        window.location.href = "/login?returnUrl=" + encodeURIComponent(window.location.pathname + window.location.search);
       }
     }
     return {

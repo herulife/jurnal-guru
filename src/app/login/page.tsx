@@ -44,7 +44,9 @@ export default function LoginPage() {
         return;
       }
       show("Login berhasil", "success");
-      router.push("/dashboard");
+      const returnUrl = searchParams.get("returnUrl");
+      const target = returnUrl && returnUrl.startsWith("/") && !returnUrl.startsWith("//") ? returnUrl : "/dashboard";
+      router.push(target);
     } catch {
       setError("Koneksi gagal");
       show("Koneksi gagal", "error");
