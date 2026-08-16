@@ -35,8 +35,8 @@ export default function UpgradeBanner() {
   };
 
   return (
-    <div className="mx-6 my-4 print-hidden">
-      <div className="relative overflow-hidden bg-gradient-to-r from-[#1A2332] via-[#14334a] to-[#0D7C66] text-white rounded-2xl px-5 py-4 flex flex-wrap md:flex-nowrap items-center gap-3 md:gap-5 shadow-lg">
+    <div className="fixed bottom-4 right-4 z-40 w-[calc(100vw-2rem)] max-w-sm print-hidden">
+      <div className="relative overflow-hidden bg-gradient-to-br from-[#1A2332] via-[#14334a] to-[#0D7C66] text-white rounded-2xl px-4 py-3.5 shadow-2xl flex flex-col gap-3">
         <div
           className="absolute -top-16 -right-10 w-48 h-48 rounded-full opacity-20"
           style={{ background: "radial-gradient(circle, #E8A317 0%, transparent 70%)" }}
@@ -44,6 +44,7 @@ export default function UpgradeBanner() {
         ></div>
         <div className="absolute -bottom-20 -left-10 w-40 h-40 rounded-full opacity-15" style={{ background: "radial-gradient(circle, #0D7C66 0%, transparent 70%)" }} aria-hidden="true"></div>
 
+        <div className="flex items-start gap-3">
         <div className="w-11 h-11 shrink-0 rounded-xl bg-gradient-to-br from-[#E8A317] to-[#ca8a04] flex items-center justify-center shadow-md">
           <i className="fas fa-crown text-[#1A2332] text-lg"></i>
         </div>
@@ -61,8 +62,9 @@ export default function UpgradeBanner() {
             </span>
           </div>
         </div>
+        </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center justify-end gap-2 shrink-0">
           <Link
             href="/checkout?plan=pro"
             className="inline-flex items-center gap-1.5 text-xs font-bold bg-[#E8A317] hover:bg-[#ca8a04] text-[#1A2332] px-4 py-2 rounded-lg transition-all shadow-md hover:shadow-lg"
