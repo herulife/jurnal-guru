@@ -4,6 +4,7 @@ import { payments, subscriptions, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
 import { PLANS } from "@/app/api/payments/route";
+import { normalizePhone } from "@/lib/notifWa";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -16,6 +17,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         amount: payments.amount,
         notes: payments.notes,
         status: payments.status,
+        whatsapp: payments.whatsapp,
         planId: subscriptions.planId,
         createdAt: payments.createdAt,
       })
@@ -38,6 +40,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 type VerifyBody = {
   status?: string;
   notes?: string;
+  whatsapp?: string;
 };
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -50,6 +53,18 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
     if (user.userId !== session.id) {
       await requireAdmin();
+    }
+
+    if (body.whatsapp !== undefined) {
+      const whatsapp = normalizePhone(body.whatsapp);
+      if (!whatsapp || !/^62\d{8,13}$/.test(whatsapp)) {
+        return apiError("Nomor WhatsApp tidak valid. Gunakan format 08xxxxxxxxxx");
+      }
+      await db
+        .update(payments)
+        .set({ whatsapp })
+        .where(eq(payments.id, id));
+      return apiOk(null, "Nomor WhatsApp disimpan");
     }
 
     if (body.notes !== undefined) {

@@ -45,6 +45,7 @@ function CheckoutInner() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [authState, setAuthState] = useState<"loading" | "ok" | "guest">("loading");
+  const [whatsapp, setWhatsapp] = useState("");
 
   useEffect(() => {
     const p = searchParams.get("plan");
@@ -63,11 +64,17 @@ function CheckoutInner() {
   const planLabel = paket === "pro" ? "Pro — 6 bulan" : "Premium — 6 bulan";
 
   async function handleCheckout() {
+    const wa = whatsapp.replace(/[^\d]/g, "");
+    if (!/^(08|62|8)\d{8,13}$/.test(wa)) {
+      setError("Masukkan nomor WhatsApp yang valid, contoh: 081234567890");
+      show("Nomor WhatsApp belum valid", "error");
+      return;
+    }
     setLoading(true);
     setError("");
     try {
       const planId = paket === "pro" ? durasi.id : "premium_6m";
-      const res = await apiPost<{ paymentId: string }>("/api/payments", { planId });
+      const res = await apiPost<{ paymentId: string; waSent?: boolean }>("/api/payments", { planId, whatsapp: wa });
       if (!res.ok) {
         setError(res.msg || "Gagal membuat order");
         show(res.msg || "Gagal membuat order", "error");
@@ -239,6 +246,23 @@ function CheckoutInner() {
                         <i className="fas fa-university mr-1 text-[#0D7C66]"></i>Transfer BRI
                       </span>
                     </div>
+                  </div>
+
+                  <div className="border-t border-[#E8E4DC] pt-4 mb-4">
+                    <label htmlFor="wa" className="block text-sm font-semibold text-[#1A2332] mb-1">
+                      <i className="fab fa-whatsapp mr-1 text-[#0D7C66]"></i>Nomor WhatsApp
+                    </label>
+                    <p className="text-xs text-gray-400 mb-2">Untuk notifikasi status pesanan & konfirmasi pembayaran.</p>
+                    <input
+                      id="wa"
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="tel"
+                      value={whatsapp}
+                      onChange={(e) => setWhatsapp(e.target.value)}
+                      placeholder="Contoh: 081234567890"
+                      className="input"
+                    />
                   </div>
 
                   <div className="flex justify-between items-center border-t border-dashed border-[#E8E4DC] pt-4 mb-5">

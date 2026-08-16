@@ -27,6 +27,7 @@ interface Payment {
   paymentMethod: string;
   bankName: string;
   notes: string;
+  whatsapp?: string;
   createdAt: string;
   verifiedAt: string;
 }
@@ -267,6 +268,7 @@ export default function AdminPage() {
                           <div className="min-w-0">
                             <p className="font-bold text-gray-800">{p.username}</p>
                             <p className="text-xs text-gray-500">{planLabel(p.plan)} &middot; {p.bankName || "-"} &middot; {new Date(p.createdAt).toLocaleString("id-ID")}</p>
+                            {p.whatsapp && <p className="text-xs text-gray-500 mt-1">WA: {p.whatsapp}</p>}
                             {p.notes && <p className="text-xs text-gray-500 mt-1">Catatan: {p.notes}</p>}
                           </div>
                           <div className="flex items-center gap-3">
@@ -293,13 +295,14 @@ export default function AdminPage() {
                   </div>
                   <div className="table-wrap">
                     <table>
-                      <thead><tr><th>Pengguna</th><th>Paket</th><th>Jumlah</th><th>Status</th><th>Tanggal</th></tr></thead>
+                      <thead><tr><th>Pengguna</th><th>Paket</th><th>Jumlah</th><th>WA</th><th>Status</th><th>Tanggal</th></tr></thead>
                       <tbody>
                         {payments.filter((p) => p.status !== "pending").slice(0, showAll ? undefined : 20).map((p) => (
                           <tr key={p.id}>
                             <td className="font-medium">{p.username}</td>
                             <td>{planLabel(p.plan)}</td>
                             <td className="font-semibold">{fmtRp(p.amount)}</td>
+                            <td>{p.whatsapp || "-"}</td>
                             <td>
                               <span className={`badge ${p.status === "paid" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}>{p.status}</span>
                             </td>
@@ -307,7 +310,7 @@ export default function AdminPage() {
                           </tr>
                         ))}
                         {payments.filter((p) => p.status !== "pending").length === 0 && (
-                          <tr><td colSpan={5} className="text-center text-gray-400 py-8">Belum ada riwayat pembayaran.</td></tr>
+                          <tr><td colSpan={6} className="text-center text-gray-400 py-8">Belum ada riwayat pembayaran.</td></tr>
                         )}
                       </tbody>
                     </table>

@@ -4,6 +4,7 @@ import { payments, subscriptions, users, settings } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
+import { normalizePhone, sendWaNotification } from "@/lib/notifWa";
 
 export const PLANS: Record<string, { name: string; price: number; months: number; tagline: string }> = {
   pro_6m: { name: "Pro", price: 29000, months: 6, tagline: "6 bulan" },
@@ -27,6 +28,7 @@ export async function getPaymentSettings() {
     bank_account_name: map.bank_account_name || "Jurnal Guru",
     bank_account_number: map.bank_account_number || "",
     bank_note: map.bank_note || "Konfirmasi otomatis setelah admin verifikasi bukti transfer.",
+    wa_admin: map.wa_admin || "",
   };
 }
 
@@ -38,6 +40,11 @@ export async function POST(req: Request) {
     const plan = PLANS[planId as keyof typeof PLANS];
     if (!plan) return apiError("Paket tidak valid");
     if (!ACTIVE_PLAN_IDS.includes(planId)) return apiError("Paket tidak valid");
+
+    const whatsapp = normalizePhone(String(body.whatsapp || ""));
+    if (!whatsapp || !/^62\d{8,13}$/.test(whatsapp)) {
+      return apiError("Nomor WhatsApp tidak valid. Gunakan format 08xxxxxxxxxx");
+    }
 
     const last = await db
       .select()
@@ -77,17 +84,23 @@ export async function POST(req: Request) {
       status: "pending",
       paymentMethod: "bank_transfer",
       bankName: "BRI",
+      whatsapp,
       createdAt: new Date().toISOString(),
     });
 
     await addLog(session.id, "CREATE_PAYMENT", `Order ${plan.name} Rp ${plan.price}`);
 
     const bank = await getPaymentSettings();
+    const waSent = await sendWaNotification(
+      whatsapp,
+      `Halo! Pesanan *${plan.name}* (Rp ${plan.price.toLocaleString("id-ID")}) kamu di Jurnal Guru sudah dibuat.\n\nNo. Order: ${paymentId.slice(0, 8).toUpperCase()}\nTransfer ke ${bank.bank_name} ${bank.bank_account_number} a.n. ${bank.bank_account_name}.\n\nKonfirmasi pembayaran di dashboard, paket aktif otomatis setelah diverifikasi admin.`
+    );
     return apiOk({
       paymentId,
       planId,
       amount: plan.price,
       bank,
+      waSent,
     });
   } catch (e: unknown) {
     if (e instanceof AuthError) return apiError(e.message, e.status);
@@ -114,6 +127,7 @@ export async function GET(req: Request) {
           createdAt: payments.createdAt,
           notes: payments.notes,
           verifiedAt: payments.verifiedAt,
+          whatsapp: payments.whatsapp,
           userId: payments.userId,
           plan: subscriptions.planId,
           username: users.username,

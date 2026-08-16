@@ -209,5 +209,6 @@ export const payments = sqliteTable("payments", {
   notes: text("notes"),
   verifiedAt: text("verified_at"),
   verifiedBy: text("verified_by"),
+  whatsapp: text("whatsapp"),
   createdAt: text("created_at").notNull().default("datetime('now')"),
 });

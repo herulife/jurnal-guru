@@ -15,14 +15,15 @@ function KonfirmasiInner() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [bank, setBank] = useState<{ bank_name: string; bank_account_number: string; bank_account_name: string; bank_note: string }>({
+  const [bank, setBank] = useState<{ bank_name: string; bank_account_number: string; bank_account_name: string; bank_note: string; wa_admin?: string }>({
     bank_name: "BRI",
     bank_account_name: "Jurnal Guru",
     bank_account_number: "",
     bank_note: "",
   });
-  const [payment, setPayment] = useState<{ amount: number; planId?: string } | null>(null);
+  const [payment, setPayment] = useState<{ amount: number; planId?: string; whatsapp?: string } | null>(null);
   const [notes, setNotes] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
 
   const PLAN_LABEL: Record<string, { name: string; duration: string }> = {
     pro_6m: { name: "Pro", duration: "6 bulan" },
@@ -38,13 +39,14 @@ function KonfirmasiInner() {
       setLoading(false);
       return;
     }
-    apiGet<{ payment: { amount: number; notes?: string; planId?: string } }>(`/api/payments/${paymentId}`)
+    apiGet<{ payment: { amount: number; notes?: string; planId?: string; whatsapp?: string } }>(`/api/payments/${paymentId}`)
       .then((r) => {
         if (r.ok) {
           const p = r.data?.payment;
           if (p) {
-            setPayment({ amount: p.amount, planId: p.planId });
+            setPayment({ amount: p.amount, planId: p.planId, whatsapp: p.whatsapp });
             setNotes(p.notes ?? "");
+            setWhatsapp(p.whatsapp ?? "");
           }
         } else {
           setError(r.msg || "Pembayaran tidak ditemukan");
@@ -52,7 +54,7 @@ function KonfirmasiInner() {
       })
       .catch(() => setError("Koneksi gagal"))
       .finally(() => setLoading(false));
-    apiGet<{ bank: { bank_name: string; bank_account_number: string; bank_account_name: string; bank_note: string } }>("/api/payments")
+    apiGet<{ bank: { bank_name: string; bank_account_number: string; bank_account_name: string; bank_note: string; wa_admin?: string } }>("/api/payments")
       .then((r) => {
         if (r.ok && r.data?.bank) {
           setBank(r.data.bank);
@@ -62,12 +64,17 @@ function KonfirmasiInner() {
   }, [paymentId]);
 
   async function handleSave() {
+    const wa = whatsapp.replace(/[^\d]/g, "");
+    if (!/^(08|62|8)\d{8,13}$/.test(wa)) {
+      setError("Nomor WhatsApp tidak valid, contoh: 081234567890");
+      return;
+    }
     setSaving(true);
     setError("");
     try {
-      const res = await apiPatch(`/api/payments/${paymentId}`, { notes });
+      const res = await apiPatch(`/api/payments/${paymentId}`, { notes, whatsapp: wa });
       if (!res.ok) setError(res.msg || "Gagal menyimpan");
-      else show("Catatan pembayaran tersimpan", "success");
+      else show("Nomor WhatsApp & catatan tersimpan", "success");
     } catch {
       setError("Koneksi gagal");
     } finally {
@@ -185,6 +192,22 @@ function KonfirmasiInner() {
                 <span className="font-bold text-gray-800 font-[Outfit]">Konfirmasi Transfer</span>
               </div>
               <div className="p-6">
+                <label htmlFor="wa" className="label">
+                  <i className="fab fa-whatsapp mr-1 text-[#0D7C66]"></i>Nomor WhatsApp
+                </label>
+                <input
+                  id="wa"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  className="input mb-4"
+                  placeholder="Contoh: 081234567890"
+                  value={whatsapp}
+                  onChange={(e) => setWhatsapp(e.target.value)}
+                />
+                <p className="text-xs text-gray-400 mb-4">
+                  <i className="fas fa-info-circle mr-1"></i> Nomor ini dipakai untuk notifikasi status pesanan via WhatsApp.
+                </p>
                 <label className="label">Catatan / Bukti Transfer</label>
                 <textarea
                   className="input min-h-[100px]"
@@ -255,6 +278,20 @@ function KonfirmasiInner() {
                   </button>
                 </div>
 
+                {whatsapp && (
+                  <div className="flex items-center gap-2 pb-4 border-b border-[#E8E4DC] mb-4">
+                    <span className="text-xs font-semibold text-gray-400">No. WhatsApp:</span>
+                    <span className="text-xs font-bold text-[#1A2332] tabular-nums">{whatsapp}</span>
+                    <button
+                      onClick={() => copyText(whatsapp, "Nomor WhatsApp")}
+                      className="text-[#0D7C66] text-xs ml-auto"
+                      title="Salin nomor WhatsApp"
+                    >
+                      <i className="fas fa-copy"></i>
+                    </button>
+                  </div>
+                )}
+
                 <div className={`inline-flex items-center gap-2 text-xs font-bold rounded-full px-3 py-1.5 mb-5 ${"bg-amber-100 text-amber-700"}`}>
                   <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
                   Menunggu Pembayaran
@@ -281,11 +318,23 @@ function KonfirmasiInner() {
 
                 <div className="bg-[#0D7C66]/5 border border-[#0D7C66]/15 rounded-xl p-4 text-xs text-gray-600 mb-5">
                   <p className="font-semibold text-[#0D7C66] mb-1 flex items-center gap-2">
-                    <i className="fas fa-circle-question"></i> Butuh bantuan?
+                    <i className="fab fa-whatsapp"></i> Butuh bantuan?
                   </p>
                   <p>
                     Hubungi kami via WhatsApp untuk pertanyaan atau kendala pembayaran.
                   </p>
+                  {bank.wa_admin && (
+                    <a
+                      href={`https://wa.me/${bank.wa_admin}?text=${encodeURIComponent(
+                        `Halo Jurnal Guru, saya butuh bantuan.\nNo. Order: #${paymentId}\nNominal: Rp ${payment?.amount?.toLocaleString("id-ID") ?? "-"}\nNama Paket: ${planInfo ? `${planInfo.name} (${planInfo.duration})` : "-"}`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1fb457] text-white font-semibold rounded-xl px-4 py-2.5 transition-colors w-full justify-center"
+                    >
+                      <i className="fab fa-whatsapp text-base"></i> Chat Admin via WhatsApp
+                    </a>
+                  )}
                 </div>
 
                 <Link href="/dashboard" className="btn btn-outline w-full justify-center">
