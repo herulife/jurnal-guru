@@ -96,3 +96,8 @@
 - Troubleshooting worker (jika suatu saat dipakai): opennextjs-cloudflare deploy hanya UPLOAD versi, tidak membuat deployment aktif; harus `npx wrangler versions deploy <version-id> --yes` (atau npm run deploy + versi terakhir). Versi deploy ditemukan: "Current Version ID" di output.
 - Verifikasi live 16 Agu: pro_6m = 29000 & premium_6m = 49000 diterima, pro_1m ditolak, landing/FAQ tampilkan harga baru, tidak ada string 499.000 tersisa.
 - Registrasi sekarang butuh konfirmasi email (fitur keamanan sesi lain) — user tes via curl tidak bisa login langsung.
+
+## 16 Agu — Preview fitur terkunci + sosial proof (commit 9720f8e, 40ec693)
+- PlanGuard kini punya prop `feature` (nilai/rekap-nilai/kelompok/lckh/lkb) → menampilkan `FeaturePreview` (src/components/FeaturePreview.tsx): mockup animasi CSS loop seperti GIF (tabel nilai terisi, grafik rekap, chip kelompok, dokumen LCKH/LKB + stempel VALID) di atas CTA upgrade. Keyframes di globals.css (fp-*).
+- Notifikasi sosial proof: API baru src/app/api/social-proof/route.ts (requireAuth; event asli dari DB: upgrade terverifikasi terbaru + registrasi terbaru, dinormalisasi "Nama dari Kota", fallback statistik nyata jumlah guru/pembayaran — TIDAK memakai testimoni palsu). Komponen SocialProofToast.tsx di (app)/layout.tsx: toast kiri-bawah tiap ~45 dtk, auto-dismiss 7 dtk.
+- Verifikasi live: /api/social-proof 200 (6 guru, fallback trust msg), /nilai 200.
