@@ -4,25 +4,25 @@ import { ToastProvider } from "@/components/Feedback";
 
 export const metadata: Metadata = {
   title: {
-    default: "Jurnal Guru — Sistem Manajemen Sekolah",
+    default: "Jurnal Guru — Aplikasi Jurnal Mengajar & Administrasi Guru Gratis",
     template: "%s — Jurnal Guru",
   },
   description:
-    "Dashboard guru gratis untuk kelola absensi, nilai, jurnal mengajar, dan data siswa. Hemat waktu administrasi, rekap otomatis.",
-  metadataBase: new URL("https://benuatech.web.id/guru"),
+    "Aplikasi jurnal mengajar gratis untuk guru Indonesia: kelola absensi, nilai, rekap otomatis, LCKH/LKB, dan data siswa dalam satu dashboard. Hemat waktu administrasi, rekap otomatis.",
+  metadataBase: new URL("https://guru.cintabuku.site"),
   openGraph: {
     type: "website",
     locale: "id_ID",
     siteName: "Jurnal Guru",
-    title: "Jurnal Guru — Sistem Manajemen Sekolah",
+    title: "Jurnal Guru — Aplikasi Jurnal Mengajar & Administrasi Guru Gratis",
     description:
-      "Sistem manajemen sekolah untuk guru: absensi, nilai, jurnal mengajar, dan data siswa dalam satu dashboard yang aman dan mudah digunakan.",
+      "Aplikasi jurnal mengajar gratis untuk guru Indonesia: absensi, nilai, jurnal mengajar, LCKH/LKB, dan data siswa dalam satu dashboard yang aman dan mudah digunakan.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Jurnal Guru — Sistem Manajemen Sekolah",
+    title: "Jurnal Guru — Aplikasi Jurnal Mengajar & Administrasi Guru Gratis",
     description:
-      "Sistem manajemen sekolah untuk guru: absensi, nilai, jurnal mengajar, dan data siswa dalam satu dashboard yang aman dan mudah digunakan.",
+      "Aplikasi jurnal mengajar gratis untuk guru Indonesia: absensi, nilai, jurnal mengajar, LCKH/LKB, dan data siswa dalam satu dashboard yang aman dan mudah digunakan.",
   },
   alternates: {
     canonical: "/",

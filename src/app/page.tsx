@@ -67,7 +67,7 @@ export default async function Home() {
       {
         "@type": "Organization",
         name: "Jurnal Guru",
-        url: "https://guru.benuatech.web.id",
+        url: "https://guru.cintabuku.site",
         description:
           "Dashboard guru gratis untuk mengelola absensi, nilai, jurnal mengajar, dan data siswa.",
       },
@@ -76,14 +76,9 @@ export default async function Home() {
         name: "Jurnal Guru",
         applicationCategory: "EducationalApplication",
         operatingSystem: "Web",
-        url: "https://guru.benuatech.web.id",
+        url: "https://guru.cintabuku.site",
         description:
           "Dashboard guru gratis: absensi digital, nilai, jurnal mengajar, jadwal, data siswa.",
-        offers: {
-          "@type": "Offer",
-          price: "0",
-          priceCurrency: "IDR",
-        },
       },
     ],
   };
@@ -429,7 +424,7 @@ export default async function Home() {
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm">
               <i className="fas fa-shield-halved"></i>
-              <span>Garansi 30 Hari Uang Kembali — Tanpa Pertanyaan</span>
+              <span>Garansi 30 Hari: Tidak Hemat Waktu? Uang Kembali Penuh</span>
             </div>
             <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm">
               <i className="fas fa-lock"></i>

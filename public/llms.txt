@@ -1,0 +1,30 @@
+# Jurnal Guru
+
+Jurnal Guru adalah dashboard administrasi guru gratis untuk Indonesia: absensi digital, rekap nilai otomatis, jurnal mengajar, kelompok belajar, LCKH/LKB, dan data siswa. Gratis untuk mulai, akses dari HP, rekap otomatis.
+
+## Halaman
+
+- [Beranda — Jurnal Guru](https://guru.cintabuku.site/): Dashboard guru gratis untuk kelola absensi, nilai, jurnal mengajar, LCKH/LKB, dan data siswa. Rekap otomatis, hemat waktu administrasi.
+- [Daftar Akun](https://guru.cintabuku.site/register): Buat akun guru gratis, trial 2 hari semua fitur.
+- [Checkout Paket](https://guru.cintabuku.site/checkout): Paket Pro Rp29.000/6 bulan dan Premium Rp49.000/6 bulan, sekali bayar, transfer bank.
+
+## Fitur Utama
+
+- Absensi digital dengan rekap otomatis (10 detik per kelas)
+- Input nilai & KKM dengan cek ketuntasan otomatis
+- Jurnal mengajar tersusun rapi per pertemuan
+- Generate LCKH & LKB otomatis
+- Rekap nilai dan laporan ekspor Excel/PDF
+- Kelompok belajar dan jadwal mengajar
+- Data siswa terpusat
+
+## Harga
+
+- Gratis: trial 2 hari semua fitur, lalu fitur dasar
+- Pro: Rp29.000/6 bulan (nilai, rekap nilai, kelompok belajar)
+- Premium: Rp49.000/6 bulan (akses semua: LCKH, LKB, ekspor pegawai)
+
+## Kebijakan Konten
+
+- Konten boleh dirujuk (reference) dengan atribusi Jurnal Guru.
+- Konten tidak boleh digunakan untuk melatih model AI (ai-train).

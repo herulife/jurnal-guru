@@ -4,6 +4,13 @@ import { jwtVerify } from "jose";
 
 const publicPaths = ["/", "/login", "/register", "/checkout", "/api/auth/login", "/api/auth/register", "/api/auth/check"];
 
+const protectedPrefixes = [
+  "/dashboard", "/absensi", "/admin", "/billing", "/faq", "/jadwal", "/jurnal",
+  "/kalender", "/kelas", "/kelompok", "/lckh", "/lkb", "/log", "/marketing-plan",
+  "/nilai", "/panduan", "/profil", "/rekap-absensi", "/rekap-nilai", "/settings",
+  "/siswa", "/subscription", "/surat", "/users", "/api/",
+];
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const session = request.cookies.get("session")?.value;
@@ -15,9 +22,11 @@ export async function middleware(request: NextRequest) {
   res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   res.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), interest-cohort=()");
 
-  if (publicPaths.some((p) => (p === "/" ? pathname === "/" : pathname.startsWith(p)))) {
-    return res;
-  }
+  const isPublic = publicPaths.some((p) => (p === "/" ? pathname === "/" : pathname.startsWith(p)));
+  if (isPublic) return res;
+
+  const isProtected = protectedPrefixes.some((p) => pathname.startsWith(p));
+  if (!isProtected) return res; // rute tak dikenal -> Next.js 404 (bukan redirect login)
 
   if (session) {
     const secret = process.env.JWT_SECRET;
@@ -43,5 +52,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?|css|js)$).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?|css|js|txt|xml|json)$).*)"],
 };
