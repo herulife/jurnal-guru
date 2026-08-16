@@ -212,7 +212,7 @@ export default function DashboardPage() {
             ].map((r) => (
               <div
                 key={r.label}
-                className="flex items-center justify-between p-3 bg-[#F5F3EF] rounded-xl dark:bg-[#1a2332]"
+                className="flex items-center justify-between p-3.5 bg-[#F5F3EF] rounded-xl row-soft"
               >
                 <div className="flex items-center gap-3">
                   <div
@@ -220,9 +220,9 @@ export default function DashboardPage() {
                   >
                     <i className={`fas ${r.icon}`}></i>
                   </div>
-                  <span className="text-sm font-medium">{r.label}</span>
+                  <span className="text-sm font-medium text-gray-600">{r.label}</span>
                 </div>
-                <span className="font-bold">{r.value}</span>
+                <span className="font-bold text-gray-800">{r.value}</span>
               </div>
             ))}
           </div>

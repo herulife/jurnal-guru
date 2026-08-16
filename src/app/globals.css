@@ -198,6 +198,7 @@ body.dark .table-wrap thead th { background: #1a2332; }
 body.dark .table-wrap tbody td { border-color: #334155; }
 body.dark .table-wrap tbody tr { background: #1e293b; }
 body.dark .table-wrap tbody tr:nth-child(even) { background: #1a2332; }
+body.dark .row-soft { background: #1a2332; }
 body.dark .table-wrap tbody tr:hover { background: #233348; }
 body.dark header { background: #1a2332 !important; border-color: #334155 !important; }
 body.dark header h1 { color: #f1f5f9; }
