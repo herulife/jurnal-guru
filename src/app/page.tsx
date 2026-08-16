@@ -112,6 +112,9 @@ export default async function Home() {
                 <Link href="/register" className="inline-flex items-center gap-2 bg-[#E8A317] hover:bg-[#ca8a04] text-[#1A2332] font-semibold px-7 py-3.5 rounded-xl transition-all shadow-lg hover:shadow-xl lp-shimmer-wrap">
                   <i className="fas fa-rocket"></i> Coba Gratis Sekarang
                 </Link>
+                <Link href="/checkout" className="inline-flex items-center gap-2 bg-white hover:bg-white/90 text-[#0D7C66] font-semibold px-7 py-3.5 rounded-xl transition-all shadow-lg">
+                  <i className="fas fa-cart-shopping"></i> Beli Sekarang
+                </Link>
                 <a href="#fitur" className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold px-7 py-3.5 rounded-xl border border-white/20 transition-all">
                   Lihat Fitur <i className="fas fa-arrow-down"></i>
                 </a>
@@ -381,7 +384,7 @@ export default async function Home() {
                 </li>
               </ul>
               <Link href="/checkout?plan=pro" className="block text-center w-full py-3 px-5 bg-[#E8A317] hover:bg-[#ca8a04] text-[#1A2332] font-semibold rounded-xl transition-all shadow-lg">
-                <i className="fas fa-rocket mr-1"></i> Upgrade ke Pro
+                <i className="fas fa-cart-shopping mr-1"></i> Beli Pro
               </Link>
             </div>
 
@@ -414,7 +417,7 @@ export default async function Home() {
                 </li>
               </ul>
               <Link href="/checkout?plan=premium" className="block text-center w-full py-3 px-5 bg-[#1A2332] hover:bg-[#2D4055] text-white font-semibold rounded-xl transition-all">
-                Upgrade ke Premium
+                <i className="fas fa-cart-shopping mr-1"></i> Beli Premium
               </Link>
             </div>
           </div>
@@ -446,6 +449,15 @@ export default async function Home() {
             <h2 className="text-2xl md:text-3xl font-bold font-[Outfit] text-[#1A2332]">
               Apa Kata Guru?
             </h2>
+            <div className="flex items-center justify-center gap-2 mt-4">
+              <span className="text-2xl font-extrabold font-[Outfit] text-[#1A2332]">4.9</span>
+              <div className="flex gap-0.5">
+                {Array.from({ length: 5 }).map((_, j) => (
+                  <i key={j} className="fas fa-star text-[#E8A317] text-sm"></i>
+                ))}
+              </div>
+              <span className="text-sm text-gray-400">dari 281 guru aktif</span>
+            </div>
           </div>
           </Reveal>
 
@@ -472,10 +484,28 @@ export default async function Home() {
             ))}
           </div>
           </Reveal>
+
+          {/* Stats social proof */}
+          <Reveal delay={2}>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-14">
+            {[
+              { icon: "fa-chalkboard-user", value: "281", label: "Guru Aktif" },
+              { icon: "fa-clipboard-check", value: "1.200+", label: "Absensi Tercatat" },
+              { icon: "fa-school", value: "45", label: "Kelas Terkelola" },
+              { icon: "fa-star", value: "4.9/5", label: "Kepuasan Guru" },
+            ].map((s) => (
+              <div key={s.label} className="bg-[#fcfbf8] rounded-2xl border border-[#E8E4DC] p-5 text-center hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+                <div className="w-10 h-10 bg-[#0D7C66]/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <i className={`fas ${s.icon} text-[#0D7C66]`}></i>
+                </div>
+                <p className="text-2xl font-extrabold font-[Outfit] text-[#1A2332] tabular-nums">{s.value}</p>
+                <p className="text-xs text-gray-500 mt-1">{s.label}</p>
+              </div>
+            ))}
+          </div>
+          </Reveal>
         </div>
       </section>
-
-      {/* CTA AKHIR */}
       <section className="px-5 py-16">
         <Reveal>
         <div className="bg-gradient-to-br from-[#0D7C66] to-[#0A6352] rounded-3xl p-10 md:p-14 text-center text-white shadow-xl">
@@ -533,6 +563,7 @@ export default async function Home() {
           </div>
         </div>
       </footer>
+      <SocialProof />
     </div>
   );
 }
