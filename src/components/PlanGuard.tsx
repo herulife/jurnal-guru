@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useUserPlan, canUsePro, canUsePremium } from "@/lib/useUserPlan";
 import type { Plan } from "@/lib/useUserPlan";
+import FeaturePreview from "@/components/FeaturePreview";
 
 /**
- * Menampilkan layar "Fitur Terkunci" + CTA upgrade bila plan user belum cukup.
+ * Menampilkan layar "Fitur Terkunci" + preview animasi + CTA upgrade bila plan user belum cukup.
  * Konten fitur hanya dirender setelah plan memenuhi syarat.
  */
-export default function PlanGuard({ min, children }: { min: Plan; children: React.ReactNode }) {
+export default function PlanGuard({ min, feature, children }: { min: Plan; feature?: string; children: React.ReactNode }) {
   const { plan, role, loading } = useUserPlan();
 
   if (loading || !plan) {
@@ -30,6 +31,7 @@ export default function PlanGuard({ min, children }: { min: Plan; children: Reac
   return (
     <div className="p-6 fade-in max-w-lg mx-auto">
       <div className="card p-10 text-center">
+        {feature && <FeaturePreview feature={feature} />}
         <div className="w-16 h-16 bg-[#0D7C66]/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
           <i className={`fas ${isPremium ? "fa-crown" : "fa-lock"} text-[#0D7C66] text-2xl`}></i>
         </div>

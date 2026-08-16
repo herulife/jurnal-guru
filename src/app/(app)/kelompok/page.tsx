@@ -288,7 +288,7 @@ function KelompokBelajarPageInner() {
 }
 export default function KelompokBelajarPage() {
   return (
-    <PlanGuard min="pro">
+    <PlanGuard min="pro" feature="kelompok">
       <KelompokBelajarPageInner />
     </PlanGuard>
   );

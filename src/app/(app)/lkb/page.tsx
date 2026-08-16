@@ -248,7 +248,7 @@ function LKBPageInner() {
 }
 export default function LKBPage() {
   return (
-    <PlanGuard min="premium">
+    <PlanGuard min="premium" feature="lkb">
       <LKBPageInner />
     </PlanGuard>
   );

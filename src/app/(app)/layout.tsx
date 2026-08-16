@@ -1,5 +1,6 @@
 import Sidebar from "@/components/Sidebar";
 import UpgradeBanner from "@/components/UpgradeBanner";
+import SocialProofToast from "@/components/SocialProofToast";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -9,6 +10,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
       <UpgradeBanner />
+      <SocialProofToast />
     </div>
   );
 }

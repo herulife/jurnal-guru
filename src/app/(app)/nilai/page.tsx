@@ -303,7 +303,7 @@ function NilaiBatchInline({ kelas, mapelList, onSave }: { kelas: Kelas[]; mapelL
 }
 export default function NilaiPage() {
   return (
-    <PlanGuard min="pro">
+    <PlanGuard min="pro" feature="nilai">
       <NilaiPageInner />
     </PlanGuard>
   );

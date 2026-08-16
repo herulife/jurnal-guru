@@ -248,7 +248,7 @@ function LCKHPageInner() {
 type LCKHJson = { id: string; no: string | null; kegiatan: string | null; pekerjaan: string | null; tanggal: string | null; jurnalId: string | null };
 export default function LCKHPage() {
   return (
-    <PlanGuard min="premium">
+    <PlanGuard min="premium" feature="lckh">
       <LCKHPageInner />
     </PlanGuard>
   );

@@ -166,7 +166,7 @@ function RekapNilaiPageInner() {
 }
 export default function RekapNilaiPage() {
   return (
-    <PlanGuard min="pro">
+    <PlanGuard min="pro" feature="rekap-nilai">
       <RekapNilaiPageInner />
     </PlanGuard>
   );
