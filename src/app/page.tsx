@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth";
 import SocialProof from "@/components/SocialProof";
 import Navbar from "@/components/Navbar";
 import DashboardMockup from "@/components/DashboardMockup";
+import Reveal from "@/components/Reveal";
 
 const features = [
   {
@@ -101,34 +102,34 @@ export default async function Home() {
         <div className="relative max-w-6xl mx-auto px-5 py-16 md:py-24">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <div className="text-white">
-              <span className="inline-flex items-center gap-2 text-xs font-semibold bg-[#E8A317] text-[#1A2332] rounded-full px-4 py-1.5 mb-6">
+              <span className="inline-flex items-center gap-2 text-xs font-semibold bg-[#E8A317] text-[#1A2332] rounded-full px-4 py-1.5 mb-6 lp-anim">
                 <i className="fas fa-check-circle"></i> Platform Digital Guru
               </span>
-              <h1 className="text-3xl md:text-5xl font-extrabold font-[Outfit] leading-tight mb-5">
+              <h1 className="text-3xl md:text-5xl font-extrabold font-[Outfit] leading-tight mb-5 lp-anim lp-d1">
                 Dashboard Guru untuk Kelola
                 <span className="text-[#E8A317]"> Absensi, Nilai, & Jurnal</span>
               </h1>
-              <p className="text-white/80 md:text-lg mb-8 leading-relaxed">
+              <p className="text-white/80 md:text-lg mb-8 leading-relaxed lp-anim lp-d2">
                 Masih admin guru manual? Waktu habis untuk urusan administrasi?
                 <strong className="text-white"> Jurnal Guru</strong> bantu semuanya dalam satu tempat — gratis.
               </p>
-              <div className="flex flex-wrap items-center gap-4">
-                <Link href="/register" className="inline-flex items-center gap-2 bg-[#E8A317] hover:bg-[#ca8a04] text-[#1A2332] font-semibold px-7 py-3.5 rounded-xl transition-all shadow-lg hover:shadow-xl">
+              <div className="flex flex-wrap items-center gap-4 lp-anim lp-d3">
+                <Link href="/register" className="inline-flex items-center gap-2 bg-[#E8A317] hover:bg-[#ca8a04] text-[#1A2332] font-semibold px-7 py-3.5 rounded-xl transition-all shadow-lg hover:shadow-xl lp-shimmer-wrap">
                   <i className="fas fa-rocket"></i> Coba Gratis Sekarang
                 </Link>
                 <a href="#fitur" className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold px-7 py-3.5 rounded-xl border border-white/20 transition-all">
                   Lihat Fitur <i className="fas fa-arrow-down"></i>
                 </a>
               </div>
-              <p className="text-white/60 text-sm mt-5">
+              <p className="text-white/60 text-sm mt-5 lp-anim lp-d4">
                 <i className="fas fa-shield-halved mr-1"></i> Tidak perlu kartu kredit &middot; Tanpa biaya tersembunyi
               </p>
             </div>
-            <div className="relative flex justify-center mt-8 md:mt-0">
+            <div className="relative flex justify-center mt-8 md:mt-0 lp-anim lp-d2">
               <img 
                 src="/hero-teacher.jpg" 
                 alt="Guru menunjukkan dashboard absensi digital di tablet" 
-                className="w-full max-w-sm md:max-w-md rounded-2xl shadow-2xl"
+                className="w-full max-w-sm md:max-w-md rounded-2xl shadow-2xl lp-float"
               />
             </div>
           </div>
@@ -144,6 +145,7 @@ export default async function Home() {
           <h2 className="text-2xl md:text-3xl font-bold font-[Outfit] text-[#1A2332] mb-10">
             Waktu guru habis untuk administrasi, bukan mengajar
           </h2>
+          <Reveal>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
             <div className="flex items-start gap-4 p-5 rounded-2xl bg-[#fcfbf8]">
               <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
@@ -173,25 +175,29 @@ export default async function Home() {
               </div>
             </div>
           </div>
+        </Reveal>
         </div>
       </section>
 
       {/* FITUR */}
       <section id="fitur" className="py-16 md:py-24">
         <div className="max-w-6xl mx-auto px-5">
-          <div className="text-center mb-12">
-            <p className="text-[#0D7C66] font-bold text-sm uppercase tracking-wider mb-2">
-              Solusi Jurnal Guru
-            </p>
-            <h2 className="text-2xl md:text-4xl font-bold font-[Outfit] text-[#1A2332] mb-3">
-              Apa yang Kamu Dapatkan?
-            </h2>
-            <p className="max-w-2xl mx-auto text-gray-500">
-              Semua kebutuhan administrasi guru ada di satu tempat.
-            </p>
-          </div>
+          <Reveal>
+            <div className="text-center mb-12">
+              <p className="text-[#0D7C66] font-bold text-sm uppercase tracking-wider mb-2">
+                Solusi Jurnal Guru
+              </p>
+              <h2 className="text-2xl md:text-4xl font-bold font-[Outfit] text-[#1A2332] mb-3">
+                Apa yang Kamu Dapatkan?
+              </h2>
+              <p className="max-w-2xl mx-auto text-gray-500">
+                Semua kebutuhan administrasi guru ada di satu tempat.
+              </p>
+            </div>
+          </Reveal>
 
           {/* Featured Feature */}
+          <Reveal>
           <div className="bg-gradient-to-r from-[#0D7C66] to-[#0A6352] rounded-3xl p-8 md:p-12 mb-12 overflow-hidden relative">
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div className="text-white">
@@ -225,11 +231,13 @@ export default async function Home() {
               </div>
             </div>
           </div>
+          </Reveal>
 
           {/* Feature Grid */}
+          <Reveal>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((f, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-[#E8E4DC] p-6 hover:shadow-lg transition-all duration-300">
+              <div key={i} className="bg-white rounded-2xl border border-[#E8E4DC] p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                 <div className="w-14 h-14 mb-4 bg-[#0D7C66]/10 rounded-2xl flex items-center justify-center">
                   <i className={`fas ${f.icon} text-[#0D7C66] text-xl`}></i>
                 </div>
@@ -238,12 +246,14 @@ export default async function Home() {
               </div>
             ))}
           </div>
+          </Reveal>
         </div>
       </section>
 
       {/* CARA KERJA */}
       <section className="bg-white py-16">
         <div className="max-w-4xl mx-auto px-5">
+          <Reveal>
           <div className="text-center mb-12">
             <p className="text-[#E8A317] font-bold text-sm uppercase tracking-wider mb-2">
               Cara Kerja
@@ -252,7 +262,9 @@ export default async function Home() {
               Mulai dalam 3 Langkah
             </h2>
           </div>
+          </Reveal>
 
+          <Reveal>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             <div className="text-center group">
               <div className="w-16 h-16 bg-[#0D7C66] rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
@@ -284,12 +296,14 @@ export default async function Home() {
               className="w-full rounded-2xl shadow-2xl"
             />
           </div>
+          </Reveal>
         </div>
       </section>
 
       {/* HARGA */}
       <section id="harga" className="py-16 md:py-24">
         <div className="max-w-6xl mx-auto px-5">
+          <Reveal>
           <div className="text-center mb-12">
             <p className="text-[#E8A317] font-bold text-sm uppercase tracking-wider mb-3">
               Harga
@@ -301,10 +315,12 @@ export default async function Home() {
               Mulai gratis, upgrade kapan saja sesuai kebutuhan.
             </p>
           </div>
+          </Reveal>
 
+          <Reveal delay={1}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Gratis */}
-            <div className="bg-white rounded-2xl border border-[#E8E4DC] p-6">
+            <div className="bg-white rounded-2xl border border-[#E8E4DC] p-6 hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300">
               <div className="mb-4">
                 <p className="font-bold text-[#1A2332] text-lg">Gratis</p>
                 <p className="text-gray-500 text-sm">Cocok untuk guru individu</p>
@@ -339,7 +355,7 @@ export default async function Home() {
             </div>
 
             {/* Pro */}
-            <div className="bg-gradient-to-br from-[#0D7C66] to-[#0A6352] rounded-2xl p-6 relative transform md:scale-105 shadow-xl">
+            <div className="bg-gradient-to-br from-[#0D7C66] to-[#0A6352] rounded-2xl p-6 relative transform md:scale-105 shadow-xl hover:-translate-y-1.5 hover:shadow-2xl transition-all duration-300">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#E8A317] text-[#1A2332] text-xs font-bold px-3 py-1 rounded-full">
                 REKOMENDASI
               </div>
@@ -375,7 +391,7 @@ export default async function Home() {
             </div>
 
             {/* Premium */}
-            <div className="bg-white rounded-2xl border border-[#E8E4DC] p-6">
+            <div className="bg-white rounded-2xl border border-[#E8E4DC] p-6 hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300">
               <div className="mb-4">
                 <p className="font-bold text-[#1A2332] text-lg">Premium</p>
                 <p className="text-gray-500 text-sm">Untuk sekolah & guru berstatus pegawai</p>
@@ -407,7 +423,9 @@ export default async function Home() {
               </Link>
             </div>
           </div>
+          </Reveal>
 
+          <Reveal delay={2}>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm">
               <i className="fas fa-shield-halved"></i>
@@ -418,12 +436,14 @@ export default async function Home() {
               <span>Garansi Keamanan Data - Enkripsi &amp; Backup Otomatis</span>
             </div>
           </div>
+          </Reveal>
         </div>
       </section>
 
       {/* TESTIMONI */}
       <section id="testimoni" className="bg-white py-16">
         <div className="max-w-6xl mx-auto px-5">
+          <Reveal>
           <div className="text-center mb-12">
             <p className="text-[#0D7C66] font-bold text-sm uppercase tracking-wider mb-2">
               Testimoni
@@ -432,10 +452,12 @@ export default async function Home() {
               Apa Kata Guru?
             </h2>
           </div>
+          </Reveal>
 
+          <Reveal delay={1}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {testimonials.map((t, i) => (
-              <div key={i} className="bg-[#fcfbf8] rounded-2xl border border-[#E8E4DC] p-6">
+              <div key={i} className="bg-[#fcfbf8] rounded-2xl border border-[#E8E4DC] p-6 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
                 <div className="flex gap-1 mb-4">
                   {Array.from({ length: 5 }).map((_, j) => (
                     <i key={j} className="fas fa-star text-[#E8A317] text-sm"></i>
@@ -454,11 +476,13 @@ export default async function Home() {
               </div>
             ))}
           </div>
+          </Reveal>
         </div>
       </section>
 
       {/* CTA AKHIR */}
       <section className="px-5 py-16">
+        <Reveal>
         <div className="bg-gradient-to-br from-[#0D7C66] to-[#0A6352] rounded-3xl p-10 md:p-14 text-center text-white shadow-xl">
           <h2 className="text-2xl md:text-3xl font-bold font-[Outfit] mb-3">
             Siap Hemat Waktu untuk Administrasi?
@@ -466,13 +490,14 @@ export default async function Home() {
           <p className="max-w-xl mx-auto text-white/80 mb-7">
             Mulai kelola absensi, nilai, dan jurnal mengajar secara digital. Gratis, tanpa ribet.
           </p>
-          <Link href="/register" className="inline-flex items-center gap-2 bg-[#E8A317] hover:bg-[#ca8a04] text-[#1A2332] font-semibold px-8 py-3.5 rounded-xl transition-all shadow-lg">
+          <Link href="/register" className="inline-flex items-center gap-2 bg-[#E8A317] hover:bg-[#ca8a04] text-[#1A2332] font-semibold px-8 py-3.5 rounded-xl transition-all shadow-lg lp-shimmer-wrap">
             <i className="fas fa-rocket"></i> Coba Gratis Sekarang
           </Link>
           <p className="text-white/60 text-sm mt-4">
             <i className="fas fa-shield-halved mr-1"></i> Gratis selamanya &middot; Tanpa kartu kredit
           </p>
         </div>
+      </Reveal>
       </section>
 
       {/* FOOTER */}
