@@ -17,9 +17,10 @@ type MenuItem = {
   minPlan?: "pro" | "premium";
 };
 
-const menuItems: { section: string; items: MenuItem[] }[] = [
+const menuItems: { section: string; color: string; items: MenuItem[] }[] = [
   {
     section: "Menu Utama",
+    color: "#38BDF8",
     items: [
       { label: "Dashboard", icon: "fa-th-large", href: "/dashboard" },
       { label: "Data Siswa", icon: "fa-user-graduate", href: "/siswa" },
@@ -29,6 +30,7 @@ const menuItems: { section: string; items: MenuItem[] }[] = [
   },
   {
     section: "Presensi & Jurnal",
+    color: "#4ADE80",
     items: [
       { label: "Absensi", icon: "fa-clipboard-check", href: "/absensi" },
       { label: "Rekap Absensi", icon: "fa-chart-pie", href: "/rekap-absensi" },
@@ -38,6 +40,7 @@ const menuItems: { section: string; items: MenuItem[] }[] = [
   },
   {
     section: "Akademik",
+    color: "#60A5FA",
     items: [
       { label: "Nilai", icon: "fa-chart-bar", href: "/nilai", minPlan: "pro" },
       { label: "Rekap Nilai", icon: "fa-table-list", href: "/rekap-nilai", minPlan: "pro" },
@@ -46,6 +49,7 @@ const menuItems: { section: string; items: MenuItem[] }[] = [
   },
   {
     section: "Laporan Pegawai",
+    color: "#C084FC",
     items: [
       { label: "LCKH", icon: "fa-clipboard-list", href: "/lckh", minPlan: "premium" },
       { label: "LKB", icon: "fa-file-alt", href: "/lkb", minPlan: "premium" },
@@ -53,6 +57,7 @@ const menuItems: { section: string; items: MenuItem[] }[] = [
   },
   {
     section: "Sistem",
+    color: "#94A3B8",
     items: [
       { label: "Profil Sekolah", icon: "fa-school", href: "/profil" },
       { label: "Pengaturan", icon: "fa-cog", href: "/settings" },
@@ -63,6 +68,7 @@ const menuItems: { section: string; items: MenuItem[] }[] = [
   },
   {
     section: "Dokumen",
+    color: "#FBBF24",
     items: [
       { label: "Template Surat", icon: "fa-envelope", href: "/surat" },
       { label: "Panduan", icon: "fa-book", href: "/panduan" },
@@ -70,6 +76,7 @@ const menuItems: { section: string; items: MenuItem[] }[] = [
   },
   {
     section: "Panel Admin",
+    color: "#F87171",
     items: [
       { label: "Dashboard Admin", icon: "fa-gauge-high", href: "/admin", adminOnly: true },
       { label: "Kelola User", icon: "fa-users-cog", href: "/users", adminOnly: true },
@@ -150,14 +157,13 @@ export default function Sidebar() {
               return (
                 <div key={group.section}>
                   {group.section === "Panel Admin" && (
-                    <div className="mt-5 mx-6 border-t border-[#E8A317]/30 pt-4 mb-1"></div>
+                    <div className="mt-5 mx-6 border-t border-[#F87171]/30 pt-4 mb-1"></div>
                   )}
                   <p
                     className={`text-xs font-semibold uppercase tracking-wider px-8 mb-2 mt-4 first:mt-0 ${
-                      group.section === "Panel Admin"
-                        ? "text-[#E8A317] flex items-center gap-1.5"
-                        : "text-gray-600"
+                      group.section === "Panel Admin" ? "flex items-center gap-1.5" : ""
                     }`}
+                    style={{ color: group.color }}
                   >
                     {group.section === "Panel Admin" && (
                       <i className="fas fa-shield-halved text-[10px]"></i>
@@ -176,9 +182,10 @@ export default function Sidebar() {
                         aria-label={locked ? `${item.label} (terkunci, butuh upgrade)` : item.label}
                         className={`flex items-center gap-3 px-6 py-2.5 mx-3 rounded-lg cursor-pointer transition-all duration-200 text-sm font-medium border-l-3 border-transparent ${
                           active
-                            ? "bg-[#2D4055] text-white border-l-[#E8A317]"
+                            ? "bg-[#2D4055] text-white"
                             : "text-[#94a3b8] hover:bg-[#243447] hover:text-[#e2e8f0]"
                         }`}
+                        style={active ? { borderLeftColor: group.color } : undefined}
                       >
                         <i className={`fas ${item.icon} w-5 text-center text-sm ${locked ? "opacity-70" : ""}`}></i>
                         <span className="flex-1">{item.label}</span>
