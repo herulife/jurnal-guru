@@ -1,5 +1,5 @@
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Jurnal Guru <noreply@benuatech.web.id>";
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Jurnal Guru <noreply@cintabuku.site>";
 const APP_URL = "https://guru.cintabuku.site";
 
 export function emailConfigured(): boolean {
