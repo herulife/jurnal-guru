@@ -8,7 +8,8 @@
 **What it does:** Jurnal Guru membantu guru mengelola administrasi mengajar (absensi, nilai, jurnal, jadwal, data siswa) dalam satu platform web yang mudah digunakan. Rekap otomatis, akses dari mana saja.
 **Product category:** Education Technology / School Management
 **Product type:** SaaS (Web-based)
-**Business model:** Freemium (fitur dasar gratis, fitur premium berbayar)
+**Business model:** Freemium (fitur dasar gratis, Pro & Premium sekali bayar 6 bulan)
+**Pricing (per 16 Agu 2026):** Gratis = trial 2 hari semua fitur, lalu fitur dasar (presensi, jurnal, kalender, surat). Pro = Rp 29.000/6 bulan (+ nilai, rekap nilai, kelompok belajar). Premium = Rp 49.000/6 bulan, akses semua fitur (+ LCKH/LKB, ekspor pegawai). Minimal pembelian 6 bulan, transfer bank BRI, verifikasi admin.
 
 ## Target Audience
 **Target companies:** Sekolah SD, SMP, SMA di Indonesia
@@ -47,7 +48,8 @@
 
 ## Differentiation
 **Key differentiators:**
-- Gratis untuk semua guru
+- Gratis untuk memulai — trial 2 hari semua fitur, tanpa kartu kredit
+- Sekali bayar 6 bulan, bukan langganan bulanan — harga terjangkau guru
 - Rekap absensi otomatis
 - Interface sederhana, mudah digunakan
 - Akses dari HP, tablet, atau laptop
@@ -85,22 +87,21 @@
 **Personality:** Praktis, modern, dapat diandalkan
 
 ## Proof Points
-**Metrics:** 281 guru aktif, 45 kelas, 1.200+ absensi
-**Testimonials:**
-> "Absensi jadi lebih cepat. Rekap otomatis, tidak perlu hitung manual lagi." — Bu Ratna, Guru Matematika
-> "Nilai dan jurnal tersusun rapi. Laporan ke orang tua jadi lebih mudah." — Pak Ahmad, Wali Kelas
+**Metrics:** 281 guru aktif, 45 kelas, 1.200+ absensi — [TBD verifikasi angka aktual di DB]
+**Testimonials:** [TBD — perlu izin & verifikasi guru pengguna nyata]
 
 **Value themes:**
 | Theme | Proof |
 |-------|-------|
 | Hemat Waktu | Rekap otomatis, tidak perlu hitung manual |
 | Mudah Digunakan | Interface sederhana, langsung bisa |
-| Gratis | Tidak ada biaya, tanpa kartu kredit |
+| Gratis untuk Memulai | Trial 2 hari semua fitur, tanpa kartu kredit |
 
 ## Goals
-**Business goal:** Mendapatkan 1.000 guru aktif dalam 6 bulan
+**Business goal:** Mendapatkan 1.000 guru aktif dalam 6 bulan (rilis 16 Agu: harga baru trial 2 hari, Pro 29rb/6bln, Premium 49rb/6bln — lihat .agents/marketing-plan-jurnal-guru.md)
 **Conversion action:** Login dan gunakan dashboard
-**Current metrics:** 281 guru, 8 kelas, 309 absensi
+**Current metrics:** 281 guru, 8 kelas, 309 absensi — [TBD verifikasi]
 
 ## Changelog
+- v2 (2026-08-16) — Pricing baru (trial 2 hari, Pro 29rb/6bln, Premium 49rb/6bln); domain live guru.cintabuku.site; metrik & testimoni ditandai [TBD verifikasi]; arahkan ke .agents/marketing-plan-jurnal-guru.md.
 - v1 (2026-08-05) — Initial context.

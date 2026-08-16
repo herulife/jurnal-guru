@@ -28,36 +28,12 @@ Instal via `npx skills add <owner/repo>` atau clone ke `.agents/skills/`.
 - BrianRWagner/ai-marketing-claude-code-skills — 19 skill, mode quick/standard/deep
 - donatassimkus/claude-ai-skills — growth marketing, seo-hacks, marketing-hacks
 
-## Marketing Plan — Ringkasan (detail lengkap ada di .agents/session-backup.md)
-
-Target: 100 guru terdaftar organik dalam 90 hari, 50% konversi ke Pro/Premium.
-
-### Fase 1 — Fondasi & SEO (Hari 1-30)
-- Audit teknis SEO guru.benuatech.web.id: meta, schema, sitemap, llms.txt, FAQ schema
-  (skill: seo-audit, geo-seo-claude)
-- Halaman programmatic per fitur: /aplikasi-jurnal-mengajar, /aplikasi-absensi-guru,
-  /contoh-jurnal-mengajar, /rekap-nilai-guru (skill: programmatic-seo, content-strategy)
-- Fix canonical & meta semua halaman landing (skill: seo-audit)
-- Analisa kompetitor -> celah positioning (skill: competitors, competitor-intel)
-
-### Fase 2 — Konten & Trafik (Hari 31-60)
-- 8-10 artikel SEO Bahasa Indonesia: "cara membuat jurnal mengajar",
-  "cara input nilai rapor", "template LCKH/LKB" (skill: content-production)
-- Landing page pricing di-optimasi: CTA, testimoni, garansi (skill: copywriting)
-- Email sequence: welcome -> aktivasi -> upsell Pro -> upsell Premium
-  (skill: email-sequence, churn-prevention)
-- Pantau mention di Reddit/FB/Twitter Indonesia (skill: brand-mention-scanner)
-
-### Fase 3 — Konversi & Referral (Hari 61-90)
-- Analisa funnel AARRR: regis gratis -> pakai fitur -> bayar (skill: campaign-analytics)
-- A/B test harga & CTA paywall (skill: ab-test-setup, pricing-analyzer)
-- Program referral antar guru (skill: referral-program)
-- Kumpulkan testimoni guru -> halaman social proof (skill: case-study-writer)
-
-### KPI per Fase
-- Fase 1: PageSpeed >= 90, sitemap ter-index, 5 keyword page 1 Google
-- Fase 2: 2.000 kunjungan organik/bulan, 100 pendaftar, 30% aktivasi
-- Fase 3: konversi 5-8% free->paid, 50 pelanggan, MRR >= Rp1,5 jt
+## Marketing Plan — RENCANA LENGKAP (v1, 16 Agu 2026)
+- **Dokumen utama:** `.agents/marketing-plan-jurnal-guru.md` (13 seksi, AARRR, 90 hari + 12 bulan, Bahasa Indonesia, ~6.700 kata) — hasil skill `marketing-plan` (coreyhaines31/marketingskills), terpasang lokal di `~/.config/opencode/skills/`.
+- Working files + riset: folder lokal `~/marketing-plans/jurnal-guru/` (research.md, sections/, progress.md, final_plan.md).
+- Inti: SEO Bahasa Indonesia + GEO (llms.txt, schema FAQ/HowTo, kutipan AI) + komunitas guru (FB/WA) + referral dua-pihak + siklus tahun ajaran. Semua biaya Rp 0, dieksekusi founder + agen AI.
+- Skill terpasang lokal: `marketing-plan`, `marketing-ideas` (plus marketing-context, product-marketing, content-strategy, ai-seo, launch-strategy, community-marketing, dll).
+- Prioritas 90 hari: (1) analitik funnel, (2) audit SEO teknis, (3) pillar + 10 artikel + template, (4) aktif 5 grup guru, (5) email welcome/perpanjangan/reaktivasi, (6) referral + momen share.
 
 ## Catatan
 - Skill hanya panduan prosedur; eksekusi tetap di tangan kita (agent/human)
