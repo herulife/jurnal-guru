@@ -617,6 +617,23 @@ Seksi 4–8 memetakan apa yang AKAN dikerjakan. Seksi ini memetakan apa yang MUN
 7. **Program duta guru** — bentuk & kompensasi final Q3. Dampak: referral.
 8. **Keputusan bootstrap vs pendanaan** — akhir Q4. Dampak: seluruh rencana tahun ke-2.
 
+## Aset Marketing
+
+**Banner (v1, live):**
+- Square 1080x1080 (grup WA & IG feed): https://guru.cintabuku.site/marketing/banner-square.png
+- Story 720x1280 (status WA & IG Story): https://guru.cintabuku.site/marketing/banner-story.png
+- Landscape 1200x630 (link preview/thumbnail): https://guru.cintabuku.site/marketing/banner-landscape.png
+- Sumber: `public/marketing/banner-square.html` (edit & screenshot ulang via Playwright)
+
+**Pesan inti banner:** "2 jam admin, jadi 10 menit" — hook angka, badge sosial proof (281+ guru aktif), CTA "Mulai Gratis" tanpa tekanan + URL. Brand voice: tanpa emoji, bahasa Indonesia, warna #0D7C66/#1A2332/#E8A317/#F5F3EF.
+
+**Caption siap pakai:**
+- Status WA: "2 jam admin, jadi 10 menit. Absensi, nilai, jurnal mengajar, LCKH — semua rapi di satu aplikasi. Mulai gratis: guru.cintabuku.site"
+- Grup WA guru: "Numpang info untuk rekan guru: ada aplikasi Jurnal Guru — absensi, nilai, jurnal mengajar, LCKH/LKB dalam satu tempat, rekap siap cetak. Bisa dicoba gratis dulu tanpa kartu kredit: guru.cintabuku.site. Kalau tidak perlu, abaikan saja."
+- IG feed: hook 2 jam admin + daftar fitur + CTA gratis tanpa kartu kredit + hashtag #aplikasiguru #jurnalmengajar #aplikasipendidikan #guruindonesia #administrasisekolah
+
+**Naskah video short (15-20 detik, Reels/Status WA):** hook tumpukan kertas → demo cepat fitur → kartu akhir banner story + URL. Rekam layar HP, edit CapCut + subtitle.
+
 ## Lampiran — tautan dokumen
 
 **Diterbitkan di repo tim (terakses):**
