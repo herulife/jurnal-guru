@@ -1,17 +1,26 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useUserPlan } from "@/lib/useUserPlan";
 
 type Event = { id: string; icon: string; title: string; sub: string };
 
 export default function SocialProofToast() {
+  const { plan, role, loading } = useUserPlan();
   const [current, setCurrent] = useState<Event | null>(null);
   const [queue, setQueue] = useState<Event[]>([]);
   const [visible, setVisible] = useState(false);
   const lastId = useRef<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const dibayar = plan === "pro" || plan === "premium" || role === "Admin";
+
   useEffect(() => {
+    if (dibayar) {
+      setCurrent(null);
+      setQueue([]);
+      return;
+    }
     let alive = true;
 
     async function load() {
@@ -35,9 +44,10 @@ export default function SocialProofToast() {
       clearInterval(iv);
       if (timer.current) clearTimeout(timer.current);
     };
-  }, []);
+  }, [dibayar]);
 
   useEffect(() => {
+    if (dibayar) return;
     if (current || !queue.length) return;
     const next = queue[0];
     setCurrent(next);
@@ -50,6 +60,7 @@ export default function SocialProofToast() {
     }, 7000);
   }, [queue, current]);
 
+  if (dibayar) return null;
   if (!current) return null;
 
   return (
