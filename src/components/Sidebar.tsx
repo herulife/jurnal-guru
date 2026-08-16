@@ -55,6 +55,7 @@ const menuItems: { section: string; items: MenuItem[] }[] = [
     section: "Sistem",
     items: [
       { label: "Dashboard Admin", icon: "fa-gauge-high", href: "/admin", adminOnly: true },
+      { label: "Marketing Plan", icon: "fa-bullhorn", href: "/marketing-plan", adminOnly: true },
       { label: "Kelola User", icon: "fa-users-cog", href: "/users", adminOnly: true },
       { label: "Profil Sekolah", icon: "fa-school", href: "/profil" },
       { label: "Pengaturan", icon: "fa-cog", href: "/settings" },
