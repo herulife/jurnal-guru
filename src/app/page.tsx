@@ -327,7 +327,7 @@ export default async function Home() {
               </div>
               <div className="mb-6">
                 <span className="text-4xl font-extrabold font-[Outfit] text-[#1A2332]">Rp 0</span>
-                <span className="text-gray-500 text-sm">/2 hari trial</span>
+                <span className="text-gray-500 text-sm">/coba gratis</span>
               </div>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-center gap-2 text-sm text-gray-600">

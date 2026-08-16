@@ -46,7 +46,7 @@ export default function SubscriptionPage() {
   }, []);
 
   const planMeta: Record<Plan, { label: string; desc: string; color: string }> = {
-    gratis: { label: "Gratis", desc: "Absensi, rekap presensi, jurnal mengajar — masa aktif 2 hari untuk akun baru", color: "bg-gray-100 text-gray-700" },
+    gratis: { label: "Gratis", desc: "Absensi, rekap presensi, jurnal mengajar — coba gratis untuk akun baru", color: "bg-gray-100 text-gray-700" },
     pro: { label: "Pro", desc: "Semua fitur Gratis + nilai, rekap nilai, kelompok belajar", color: "bg-[#0D7C66]/10 text-[#0D7C66]" },
     premium: { label: "Premium", desc: "Semua fitur Pro + generate LCKH dan LKB — Rp 49.000 / 6 bulan, akses semua", color: "bg-amber-100 text-amber-700" },
   };
