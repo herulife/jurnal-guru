@@ -163,15 +163,15 @@ function KonfirmasiInner() {
                       <i className="fas fa-university mr-1 text-[#0D7C66]"></i>{bank.bank_name}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center border-b border-dashed border-[#E8E4DC] pb-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-dashed border-[#E8E4DC] pb-3">
                     <span className="text-sm text-gray-500">No. Rekening</span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-extrabold text-[#0D7C66] text-lg tracking-wider tabular-nums">
+                    <div className="flex items-center gap-2 flex-wrap min-w-0">
+                      <span className="font-extrabold text-[#0D7C66] text-lg tracking-wider tabular-nums break-all">
                         {bank.bank_account_number}
                       </span>
                       <button
                         onClick={() => copyText(bank.bank_account_number, "Nomor rekening")}
-                        className="text-xs font-semibold text-[#0D7C66] border border-[#0D7C66]/20 rounded-full px-3 py-1 hover:bg-[#0D7C66] hover:text-white transition-colors"
+                        className="text-xs font-semibold text-[#0D7C66] border border-[#0D7C66]/20 rounded-full px-3 py-1 hover:bg-[#0D7C66] hover:text-white transition-colors shrink-0"
                       >
                         <i className="fas fa-copy mr-1"></i> Salin
                       </button>
@@ -280,11 +280,11 @@ function KonfirmasiInner() {
 
                 {whatsapp && (
                   <div className="flex items-center gap-2 pb-4 border-b border-[#E8E4DC] mb-4">
-                    <span className="text-xs font-semibold text-gray-400">No. WhatsApp:</span>
-                    <span className="text-xs font-bold text-[#1A2332] tabular-nums">{whatsapp}</span>
+                    <span className="text-xs font-semibold text-gray-400 shrink-0">No. WhatsApp:</span>
+                    <span className="text-xs font-bold text-[#1A2332] tabular-nums truncate">{whatsapp}</span>
                     <button
                       onClick={() => copyText(whatsapp, "Nomor WhatsApp")}
-                      className="text-[#0D7C66] text-xs ml-auto"
+                      className="text-[#0D7C66] text-xs ml-auto shrink-0"
                       title="Salin nomor WhatsApp"
                     >
                       <i className="fas fa-copy"></i>

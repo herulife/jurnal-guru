@@ -14,7 +14,10 @@ export function isValidPhone(raw: string): boolean {
 
 export async function sendWaNotification(phone: string, message: string): Promise<boolean> {
   const token = process.env.FONNTE_TOKEN;
-  if (!token) return false;
+  if (!token) {
+    console.error("[WA SEND SKIP] FONNTE_TOKEN belum di-set di environment");
+    return false;
+  }
   try {
     const res = await fetch("https://api.fonnte.com/send", {
       method: "POST",
@@ -24,7 +27,12 @@ export async function sendWaNotification(phone: string, message: string): Promis
       },
       body: JSON.stringify({ target: phone, message }),
     });
-    return res.ok;
+    const json = (await res.json().catch(() => null)) as { status?: unknown; reason?: string } | null;
+    if (!res.ok || !json || json.status !== true) {
+      console.error("[WA SEND FAIL]", json?.reason || `HTTP ${res.status}`, { phone });
+      return false;
+    }
+    return true;
   } catch (e) {
     console.error("[WA SEND ERROR]", e);
     return false;

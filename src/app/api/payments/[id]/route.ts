@@ -4,7 +4,7 @@ import { payments, subscriptions, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
 import { PLANS } from "@/app/api/payments/route";
-import { normalizePhone } from "@/lib/notifWa";
+import { normalizePhone, sendWaNotification } from "@/lib/notifWa";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -111,6 +111,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
             .update(users)
             .set({ plan: planDb, planExpires: expires ? expires.toISOString() : null })
             .where(eq(users.id, user.userId));
+
+          if (user.whatsapp) {
+            await sendWaNotification(
+              user.whatsapp,
+              `Pembayaran kamu sudah diverifikasi!\nPaket *${planDef?.name ?? "Premium"}* aktif ${planDef?.months ? `selama ${planDef.months} bulan` : ""} di Jurnal Guru.\nTerima kasih sudah berlangganan!`
+            );
+          }
         }
       }
 
