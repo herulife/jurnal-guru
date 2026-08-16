@@ -35,6 +35,12 @@ Instal via `npx skills add <owner/repo>` atau clone ke `.agents/skills/`.
 - Skill terpasang lokal: `marketing-plan`, `marketing-ideas` (plus marketing-context, product-marketing, content-strategy, ai-seo, launch-strategy, community-marketing, dll).
 - Prioritas 90 hari: (1) analitik funnel, (2) audit SEO teknis, (3) pillar + 10 artikel + template, (4) aktif 5 grup guru, (5) email welcome/perpanjangan/reaktivasi, (6) referral + momen share.
 
+## Skill Kustom: organic-marketing (dikembangkan sendiri, 16 Agu 2026)
+- **Kenapa dibuat:** tidak ada skill "organic marketing" khusus di coreyhaines31/marketingskills (punya `social` yang hanya konten) maupun ekinciio/saas-growth-marketing-skills.
+- **Lokasi:** `.agents/skills/organic-marketing/SKILL.md` (repo, versi v1.0.0) + terpasang di `~/.config/opencode/skills/organic-marketing/`.
+- **Isi:** orchestrator pemasaran organik Jurnal Guru — aturan brand voice, 7 kanal organik (SEO, GEO, konten, komunitas, sosial, email, referral), workflow 5 langkah, KPI per fase (AARRR), template cepat per kanal, checklist selesai. Semua Rp 0, bahasa Indonesia.
+- **Pemakaian:** muat saat minta "marketing organik" / eksekusi prioritas 90 hari; skill ini mengarahkan ke skill spesifik (seo-audit, ai-seo, content-strategy, community-marketing, social, referrals, email-sequence).
+
 ## Catatan
 - Skill hanya panduan prosedur; eksekusi tetap di tangan kita (agent/human)
 - Utamakan SEO Bahasa Indonesia + GEO (AI citation) karena target guru lokal
