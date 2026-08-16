@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; }
+  .banner {
+    width: 1080px; height: 1080px;
+    background: #F5F3EF;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  /* dekorasi geometris */
+  .blob1 { position: absolute; top: -180px; right: -160px; width: 520px; height: 520px; border-radius: 50%; background: linear-gradient(135deg, #0D7C66, #0A6352); opacity: 0.08; }
+  .blob2 { position: absolute; bottom: -200px; left: -140px; width: 480px; height: 480px; border-radius: 50%; background: linear-gradient(135deg, #E8A317, #c78a10); opacity: 0.10; }
+  .brand { position: absolute; top: 56px; left: 64px; display: flex; align-items: center; gap: 18px; }
+  .brand-logo { width: 64px; height: 64px; border-radius: 18px; background: linear-gradient(135deg, #0D7C66, #0A6352); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(13,124,102,.25); }
+  .brand-name { font-size: 34px; font-weight: 800; color: #1A2332; letter-spacing: -0.5px; }
+  .brand-sub { font-size: 17px; color: #7a8290; margin-top: 2px; }
+  .badge { position: absolute; top: 60px; right: 64px; background: #fff; border: 1px solid #E8E4DC; border-radius: 999px; padding: 12px 22px; font-size: 18px; font-weight: 700; color: #0D7C66; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(26,35,50,.06); }
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: #4ADE80; }
+  .content { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 64px; position: relative; z-index: 1; }
+  .kicker { display: inline-flex; align-items: center; gap: 10px; background: #0D7C66; color: #fff; font-size: 20px; font-weight: 700; padding: 12px 26px; border-radius: 999px; width: fit-content; letter-spacing: 1px; }
+  .kicker-bar { width: 10px; height: 10px; background: #E8A317; border-radius: 2px; }
+  h1 { font-size: 78px; font-weight: 800; color: #1A2332; line-height: 1.08; letter-spacing: -2px; margin-top: 34px; }
+  h1 .accent { color: #0D7C66; }
+  h1 .strike { color: #B0AFA9; text-decoration: line-through; text-decoration-color: #E8A317; text-decoration-thickness: 7px; }
+  .sub { font-size: 30px; color: #5a6270; margin-top: 30px; line-height: 1.5; max-width: 880px; }
+  .sub b { color: #1A2332; }
+  .cta-row { display: flex; align-items: center; gap: 30px; margin-top: 48px; }
+  .cta { background: linear-gradient(135deg, #0D7C66, #0A6352); color: #fff; font-size: 32px; font-weight: 800; padding: 24px 52px; border-radius: 18px; box-shadow: 0 12px 30px rgba(13,124,102,.35); }
+  .cta-note { font-size: 22px; color: #7a8290; font-weight: 600; }
+  .features { position: relative; z-index: 1; display: flex; gap: 20px; padding: 0 64px 56px; }
+  .feat { flex: 1; background: #fff; border: 1px solid #E8E4DC; border-radius: 16px; padding: 22px 24px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 14px rgba(26,35,50,.05); }
+  .feat i { width: 40px; height: 40px; border-radius: 11px; background: #F5F3EF; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .feat i svg { width: 22px; height: 22px; }
+  .feat span { font-size: 21px; font-weight: 700; color: #1A2332; }
+</style>
+</head>
+<body>
+  <div class="banner">
+    <div class="blob1"></div>
+    <div class="blob2"></div>
+    <div class="brand">
+      <div class="brand-logo">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M12 3L2 8l10 5 10-5-10-5z" fill="#fff"/><path d="M4 11v6c0 1.5 3.6 3 8 3s8-1.5 8-3v-6l-8 4-8-4z" fill="#fff" opacity=".85"/></svg>
+      </div>
+      <div>
+        <div class="brand-name">Jurnal Guru</div>
+        <div class="brand-sub">Sistem administrasi sekolah</div>
+      </div>
+    </div>
+    <div class="badge"><span class="dot"></span>281+ guru aktif</div>
+    <div class="content">
+      <span class="kicker"><span class="kicker-bar"></span>UNTUK GURU</span>
+      <h1>2 jam admin,<br/>jadi <span class="strike">beban</span><br/><span class="accent">10 menit.</span></h1>
+      <p class="sub">Absensi, nilai, jurnal mengajar, LCKH &amp; LKB —<br/>semua rapi di <b>satu aplikasi</b>, siap cetak &amp; rekap.</p>
+      <div class="cta-row">
+        <div class="cta">Mulai Gratis</div>
+        <div class="cta-note">guru.cintabuku.site</div>
+      </div>
+    </div>
+    <div class="features">
+      <div class="feat"><i><svg viewBox="0 0 24 24" fill="#0D7C66"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></i><span>Absensi &amp; rekap</span></div>
+      <div class="feat"><i><svg viewBox="0 0 24 24" fill="#0D7C66"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg></i><span>Nilai otomatis</span></div>
+      <div class="feat"><i><svg viewBox="0 0 24 24" fill="#0D7C66"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15z"/></svg></i><span>Jurnal &amp; LCKH</span></div>
+    </div>
+  </div>
+</body>
+</html>
