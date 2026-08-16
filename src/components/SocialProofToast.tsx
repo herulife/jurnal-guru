@@ -1,12 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useUserPlan } from "@/lib/useUserPlan";
 
 type Event = { id: string; icon: string; title: string; sub: string };
 
+const ADMIN_PATHS = ["/admin", "/users", "/log", "/billing", "/marketing-plan"];
+
 export default function SocialProofToast() {
+  const pathname = usePathname();
   const { plan, role, loading } = useUserPlan();
+  const isAdminPage = ADMIN_PATHS.some((p) => pathname.startsWith(p));
   const [current, setCurrent] = useState<Event | null>(null);
   const [queue, setQueue] = useState<Event[]>([]);
   const [visible, setVisible] = useState(false);
@@ -60,6 +65,7 @@ export default function SocialProofToast() {
     }, 7000);
   }, [queue, current]);
 
+  if (isAdminPage) return null;
   if (dibayar) return null;
   if (!current) return null;
 
