@@ -10,9 +10,9 @@ export default function MarketingPlanPage() {
   const md = fs.readFileSync(path.join(process.cwd(), ".agents", "marketing-plan-jurnal-guru.md"), "utf8");
   const toc = md
     .split("\n")
-    .filter((l) => /^## Seksi /.test(l))
+    .filter((l) => /^#{1,2} Seksi \d+ — /.test(l))
     .map((l) => {
-      const title = l.replace(/^## Seksi \d+ — /, "").trim();
+      const title = l.replace(/^#+ Seksi \d+ — /, "").trim();
       return { id: slugify(title), title };
     });
 

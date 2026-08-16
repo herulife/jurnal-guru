@@ -64,12 +64,14 @@ function renderBlock(lines: string[], i: number): { node: React.ReactNode; next:
     const text = hm[2];
     const id = slugify(text.replace(/^Seksi \d+ — /, ""));
     const base = "font-[Outfit] font-bold text-[#1A2332] scroll-mt-24";
-    const cls = level === 1 ? `${base} text-xl mt-2 mb-4`
+    const seksi = text.startsWith("Seksi ");
+    const cls = level === 1 && seksi ? `${base} text-2xl mt-10 mb-3 pb-2 border-b border-[#E8E4DC] flex items-center gap-2`
+      : level === 1 ? `${base} text-xl mt-2 mb-4`
       : level === 2 ? `${base} text-2xl mt-10 mb-3 pb-2 border-b border-[#E8E4DC] flex items-center gap-2`
       : level === 3 ? `${base} text-lg mt-8 mb-2`
       : level === 4 ? `${base} text-base mt-6 mb-2`
       : `${base} text-sm mt-5 mb-1 text-[#0D7C66] uppercase tracking-wide`;
-    const badge = level === 2 && text.startsWith("Seksi ") ? (
+    const badge = seksi && level <= 2 ? (
       <span className="shrink-0 text-[10px] font-bold bg-[#0D7C66]/10 text-[#0D7C66] px-2 py-0.5 rounded-full">{text.split("—")[0].trim()}</span>
     ) : null;
     return { node: <h2 id={id} key={i} className={cls}>{badge}<span>{text.replace(/^Seksi \d+ — /, "")}</span></h2>, next: i + 1 };
