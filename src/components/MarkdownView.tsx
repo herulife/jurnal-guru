@@ -81,6 +81,23 @@ function renderBlock(lines: string[], i: number): { node: React.ReactNode; next:
     return { node: <hr key={i} className="my-8 border-[#E8E4DC]" />, next: i + 1 };
   }
 
+  const im = line.match(/^!\[([^\]]*)\]\(([^)]+)\)\s*$/);
+  if (im) {
+    return {
+      node: (
+        <a key={i} href={im[2]} target="_blank" rel="noreferrer" className="inline-block my-3">
+          <img
+            src={im[2]}
+            alt={im[1] || "gambar"}
+            loading="lazy"
+            className="rounded-xl border border-[#E8E4DC] shadow-sm max-w-sm w-full"
+          />
+        </a>
+      ),
+      next: i + 1,
+    };
+  }
+
   if (line.trim().startsWith("|")) {
     let j = i;
     while (j < lines.length && lines[j].trim().startsWith("|")) j++;

@@ -9,10 +9,14 @@
 
 ## Aset Marketing (link langsung)
 
-**Banner:**
-- Square 1080x1080 (grup WA & IG feed): https://guru.cintabuku.site/marketing/banner-square.png
-- Story 720x1280 (status WA & IG Story): https://guru.cintabuku.site/marketing/banner-story.png
-- Landscape 1200x630 (link preview/thumbnail): https://guru.cintabuku.site/marketing/banner-landscape.png
+**Banner (klik untuk buka):**
+- [Square 1080x1080 — grup WA & IG feed](https://guru.cintabuku.site/marketing/banner-square.png)
+- [Story 720x1280 — status WA & IG Story](https://guru.cintabuku.site/marketing/banner-story.png)
+- [Landscape 1200x630 — link preview/thumbnail](https://guru.cintabuku.site/marketing/banner-landscape.png)
+
+![Banner square](https://guru.cintabuku.site/marketing/banner-square.png)
+![Banner story](https://guru.cintabuku.site/marketing/banner-story.png)
+![Banner landscape](https://guru.cintabuku.site/marketing/banner-landscape.png)
 - Sumber: `public/marketing/banner-square.html` (edit & screenshot ulang via Playwright)
 
 **Pesan inti banner:** "2 jam admin, jadi 10 menit" — hook angka, badge sosial proof (281+ guru aktif), CTA "Mulai Gratis" tanpa tekanan + URL. Brand voice: tanpa emoji, bahasa Indonesia, warna #0D7C66/#1A2332/#E8A317/#F5F3EF.
