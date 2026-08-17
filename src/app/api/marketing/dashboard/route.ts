@@ -1,4 +1,4 @@
-import { requireAuth, scopeUserId, AuthError } from "@/lib/auth";
+import { requireAdmin, scopeUserId, AuthError } from "@/lib/auth";
 import { db } from "@/db";
 import { marketingGoals, marketingTasks, marketingJournal } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
@@ -6,7 +6,7 @@ import { apiError, apiOk, apiServerError } from "@/lib/utils";
 
 export async function GET() {
   try {
-    const session = await requireAuth();
+    const session = await requireAdmin();
     const scope = scopeUserId(session.role, session.id);
     const today = new Date().toISOString().slice(0, 10);
 

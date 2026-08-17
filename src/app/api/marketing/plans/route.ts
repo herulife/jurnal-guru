@@ -1,4 +1,4 @@
-import { requireAuth, scopeUserId, AuthError, addLog } from "@/lib/auth";
+import { requireAdmin, scopeUserId, AuthError, addLog } from "@/lib/auth";
 import { db } from "@/db";
 import { marketingPlans } from "@/db/schema";
 import { eq, and, desc } from "drizzle-orm";
@@ -7,7 +7,7 @@ import { apiError, apiOk, apiServerError } from "@/lib/utils";
 
 export async function GET(req: Request) {
   try {
-    const session = await requireAuth();
+    const session = await requireAdmin();
     const scope = scopeUserId(session.role, session.id);
     const url = new URL(req.url);
     const filterGoalId = url.searchParams.get("goalId");
@@ -35,7 +35,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const session = await requireAuth();
+    const session = await requireAdmin();
     const body = await req.json();
     if (!body.name || !String(body.name).trim()) {
       return apiError("Nama marketing plan wajib diisi");

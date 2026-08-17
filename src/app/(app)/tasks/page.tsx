@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
+import AdminGuard from "@/components/AdminGuard";
 import Pagination from "@/components/Pagination";
 
 export interface Task {
@@ -64,6 +65,7 @@ export default function TasksPage() {
   function openAdd() { setEditData(null); setModalOpen(true); }
 
   return (
+    <AdminGuard>
     <div className="p-6 fade-in">
       <header className="sticky top-0 z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
         <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">Tasks</h1>
@@ -117,6 +119,7 @@ export default function TasksPage() {
 
       {modalOpen && <TaskModal editData={editData} onSave={load} onClose={() => setModalOpen(false)} />}
     </div>
+    </AdminGuard>
   );
 }
 

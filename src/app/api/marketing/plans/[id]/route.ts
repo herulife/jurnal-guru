@@ -1,4 +1,4 @@
-import { requireAuth, scopeUserId, AuthError, addLog } from "@/lib/auth";
+import { requireAdmin, scopeUserId, AuthError, addLog } from "@/lib/auth";
 import { db } from "@/db";
 import { marketingPlans, marketingTasks } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
@@ -15,7 +15,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await requireAuth();
+    const session = await requireAdmin();
     const scope = scopeUserId(session.role, session.id);
     const { id } = await params;
     const body = await req.json();
@@ -67,7 +67,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await requireAuth();
+    const session = await requireAdmin();
     const scope = scopeUserId(session.role, session.id);
     const { id } = await params;
 

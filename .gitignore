@@ -15,3 +15,5 @@ next-env.d.ts
 # Playwright
 /test-results/
 /playwright-report/
+
+dev-server*.log

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { apiGet } from "@/lib/useApi";
+import AdminGuard from "@/components/AdminGuard";
 
 interface CalendarItem {
   id: string;
@@ -86,6 +87,7 @@ export default function CalendarPage() {
   });
 
   return (
+    <AdminGuard>
     <div className="p-6 fade-in">
       <header className="sticky top-0 z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
         <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">Calendar</h1>
@@ -168,5 +170,6 @@ export default function CalendarPage() {
         <div className="card flex items-center gap-3"><i className="fas fa-clipboard-list text-purple-500 text-xl"></i><div><p className="text-2xl font-bold">{summary.plans}</p><p className="text-xs text-gray-500">Plans</p></div></div>
       </div>
     </div>
+    </AdminGuard>
   );
 }

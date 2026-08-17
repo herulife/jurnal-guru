@@ -21,6 +21,7 @@ interface DashboardData {
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [mk, setMk] = useState<any>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstance = useRef<Chart | null>(null);
 
@@ -28,9 +29,17 @@ export default function DashboardPage() {
     apiGet<DashboardData>("/api/dashboard").then((res: { ok: boolean; data?: DashboardData }) => {
       if (res.ok && res.data) setData(res.data);
     });
-    apiGet<any>("/api/marketing/dashboard").then((res: { ok: boolean; data?: any }) => {
-      if (res.ok && res.data) setMk(res.data);
-    });
+    fetch("/api/auth/check")
+      .then((r) => r.json())
+      .then((r) => {
+        if (r.ok && r.data?.user?.role === "Admin") {
+          setIsAdmin(true);
+          apiGet<any>("/api/marketing/dashboard").then((res: { ok: boolean; data?: any }) => {
+            if (res.ok && res.data) setMk(res.data);
+          });
+        }
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -169,7 +178,7 @@ export default function DashboardPage() {
       </div>
 
       {/* MarketingOS */}
-      {mk && (
+      {isAdmin && mk && (
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-bold text-gray-800 font-[Outfit]">
