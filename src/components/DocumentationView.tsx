@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import AdminGuard from "./AdminGuard";
 import MarkdownView from "./MarkdownView";
 
 type Audit = { name: string; date: string; sha: string; content: string };
@@ -46,13 +45,13 @@ export default function DocumentationView({ audits }: { audits: Audit[] }) {
 
   if (!audit) {
     return (
-      <AdminGuard>
-        <div className="min-h-screen bg-[#F5F3EF] p-6 md:ml-64">
+      <div className="min-h-screen bg-[#F5F3EF] p-6">
+        <div className="mx-auto max-w-5xl">
           <div className="card p-8 text-center text-gray-500">
             Belum ada audit. Jalankan <code>npm run audit</code> terlebih dahulu.
           </div>
         </div>
-      </AdminGuard>
+      </div>
     );
   }
 
@@ -82,9 +81,8 @@ export default function DocumentationView({ audits }: { audits: Audit[] }) {
   }
 
   return (
-    <AdminGuard>
-      <div className="min-h-screen bg-[#F5F3EF] p-6 md:ml-64">
-        <div className="mx-auto max-w-5xl">
+    <div className="min-h-screen bg-[#F5F3EF] p-6">
+      <div className="mx-auto max-w-5xl">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div>
               <h1 className="text-2xl font-bold text-[#1A2332]">Application Audit</h1>
@@ -194,6 +192,5 @@ export default function DocumentationView({ audits }: { audits: Audit[] }) {
           </div>
         </div>
       </div>
-    </AdminGuard>
   );
 }

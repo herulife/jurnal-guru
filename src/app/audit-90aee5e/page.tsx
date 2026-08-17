@@ -1,6 +1,11 @@
 import fs from "fs";
 import path from "path";
+import type { Metadata } from "next";
 import DocumentationView from "@/components/DocumentationView";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 function readAudits(): { name: string; date: string; sha: string; content: string }[] {
   const dir = path.join(process.cwd(), ".agents", "audits");
