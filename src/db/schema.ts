@@ -212,3 +212,70 @@ export const payments = sqliteTable("payments", {
   whatsapp: text("whatsapp"),
   createdAt: text("created_at").notNull().default("datetime('now')"),
 });
+
+// ── MARKETINGOS — Core Marketing (Phase 1) ──
+
+export const marketingGoals = sqliteTable("marketing_goals", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  metric: text("metric"),
+  targetValue: real("target_value").default(0),
+  currentValue: real("current_value").default(0),
+  period: text("period"),
+  startDate: text("start_date"),
+  endDate: text("end_date"),
+  status: text("status").notNull().default("ON_TRACK"),
+  createdAt: text("created_at").notNull().default("datetime('now')"),
+  updatedAt: text("updated_at").notNull().default("datetime('now')"),
+});
+
+export const marketingPlans = sqliteTable("marketing_plans", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  name: text("name").notNull(),
+  objective: text("objective"),
+  target: text("target"),
+  period: text("period"),
+  strategy: text("strategy"),
+  channels: text("channels"),
+  kpi: text("kpi"),
+  status: text("status").notNull().default("ACTIVE"),
+  goalId: text("goal_id").references(() => marketingGoals.id),
+  createdAt: text("created_at").notNull().default("datetime('now')"),
+  updatedAt: text("updated_at").notNull().default("datetime('now')"),
+});
+
+export const marketingTasks = sqliteTable("marketing_tasks", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  status: text("status").notNull().default("TODO"),
+  priority: text("priority").notNull().default("MEDIUM"),
+  dueDate: text("due_date"),
+  startDate: text("start_date"),
+  goalId: text("goal_id").references(() => marketingGoals.id),
+  planId: text("plan_id").references(() => marketingPlans.id),
+  campaignId: text("campaign_id"),
+  leadId: text("lead_id"),
+  assignedTo: text("assigned_to"),
+  recurring: text("recurring"),
+  notes: text("notes"),
+  createdAt: text("created_at").notNull().default("datetime('now')"),
+  updatedAt: text("updated_at").notNull().default("datetime('now')"),
+});
+
+export const marketingJournal = sqliteTable("marketing_journal", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  date: text("date").notNull(),
+  target: text("target"),
+  activities: text("activities"),
+  result: text("result"),
+  problems: text("problems"),
+  learning: text("learning"),
+  nextAction: text("next_action"),
+  createdAt: text("created_at").notNull().default("datetime('now')"),
+});

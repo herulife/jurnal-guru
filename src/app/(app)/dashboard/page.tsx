@@ -20,12 +20,16 @@ interface DashboardData {
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
+  const [mk, setMk] = useState<any>(null);
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstance = useRef<Chart | null>(null);
 
   useEffect(() => {
     apiGet<DashboardData>("/api/dashboard").then((res: { ok: boolean; data?: DashboardData }) => {
       if (res.ok && res.data) setData(res.data);
+    });
+    apiGet<any>("/api/marketing/dashboard").then((res: { ok: boolean; data?: any }) => {
+      if (res.ok && res.data) setMk(res.data);
     });
   }, []);
 
@@ -163,6 +167,61 @@ export default function DashboardPage() {
           </div>
         ))}
       </div>
+
+      {/* MarketingOS */}
+      {mk && (
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base font-bold text-gray-800 font-[Outfit]">
+              MarketingOS
+            </h2>
+            <a href="/goals" className="text-xs font-semibold text-[#EC4899] hover:underline">
+              Kelola Goals
+            </a>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            {[
+              { label: "Goals Aktif", value: mk.summary?.activeGoals ?? 0, icon: "fa-bullseye", bg: "bg-pink-50", color: "text-pink-600" },
+              { label: "Task Hari Ini", value: mk.summary?.todayTasks ?? 0, icon: "fa-list-check", bg: "bg-amber-50", color: "text-amber-600" },
+              { label: "Task Terlambat", value: mk.summary?.overdueTasks ?? 0, icon: "fa-clock", bg: "bg-red-50", color: "text-red-600" },
+              { label: "Journal Dicatat", value: mk.summary?.totalJournal ?? 0, icon: "fa-book", bg: "bg-emerald-50", color: "text-emerald-600" },
+            ].map((s) => (
+              <div key={s.label} className="card flex items-center gap-3">
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-lg ${s.bg} ${s.color}`}>
+                  <i className={`fas ${s.icon}`}></i>
+                </div>
+                <div>
+                  <p className="text-xl font-bold text-gray-800">{s.value}</p>
+                  <p className="text-xs text-gray-500">{s.label}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          {mk.goals?.length > 0 && (
+            <div className="card">
+              <h3 className="font-bold text-gray-800 mb-3 text-sm font-[Outfit]">
+                Progres Goal
+              </h3>
+              <div className="space-y-3">
+                {mk.goals.slice(0, 4).map((g: any) => (
+                  <div key={g.id}>
+                    <div className="flex items-center justify-between text-sm mb-1">
+                      <span className="font-medium text-gray-700 truncate">{g.name}</span>
+                      <span className="text-xs text-gray-500">{g.progress ?? 0}%</span>
+                    </div>
+                    <div className="h-2 rounded-full bg-[#F5F3EF] overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-[#EC4899]"
+                        style={{ width: `${Math.min(100, g.progress ?? 0)}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Charts & Ringkasan */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
