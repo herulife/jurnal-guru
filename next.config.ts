@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["bcryptjs"],
+  outputFileTracingIncludes: {
+    "/marketing-plan": [".agents/marketing-plan-jurnal-guru.md"],
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",
