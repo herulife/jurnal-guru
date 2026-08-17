@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["bcryptjs"],
   outputFileTracingIncludes: {
     "/marketing-plan": [".agents/marketing-plan-jurnal-guru.md"],
+    "/audit-90aee5e": [".agents/audits/**", ".agents/audit-center.json"],
   },
   experimental: {
     serverActions: {

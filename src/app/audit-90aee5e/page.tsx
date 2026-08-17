@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import type { Metadata } from "next";
 import DocumentationView from "@/components/DocumentationView";
+import AuditCenterView from "@/components/AuditCenterView";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -28,5 +29,11 @@ function readAudits(): { name: string; date: string; sha: string; content: strin
 
 export default function DocumentationPage() {
   const audits = readAudits();
-  return <DocumentationView audits={audits} />;
+  const auditsMd = audits.map((a) => a.content).join("\n\n---\n\n");
+  return (
+    <>
+      <DocumentationView audits={audits} />
+      <AuditCenterView auditsMd={auditsMd} />
+    </>
+  );
 }
