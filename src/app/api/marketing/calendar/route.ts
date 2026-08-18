@@ -1,7 +1,7 @@
 import { requireAdmin, scopeUserId, AuthError } from "@/lib/auth";
 import { db } from "@/db";
 import { marketingTasks, marketingJournal, marketingPlans } from "@/db/schema";
-import { eq, and, gte, lte } from "drizzle-orm";
+import { eq, and, gte, lte, sql } from "drizzle-orm";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
 
 export async function GET(req: Request) {
@@ -17,7 +17,17 @@ export async function GET(req: Request) {
     if (scope) conditions.push(eq(marketingTasks.userId, scope));
     const taskWhere =
       start && end
-        ? and(...conditions, gte(marketingTasks.startDate || marketingTasks.dueDate, start))
+        ? and(
+            ...conditions,
+            gte(
+              sql`COALESCE(${marketingTasks.startDate}, ${marketingTasks.dueDate})`,
+              start
+            ),
+            lte(
+              sql`COALESCE(${marketingTasks.startDate}, ${marketingTasks.dueDate})`,
+              end
+            )
+          )
         : conditions.length
           ? and(...conditions)
           : undefined;

@@ -32,7 +32,7 @@ export default function MarketingCalendarPage() {
   const end = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0).toISOString().slice(0, 10);
 
   useEffect(() => {
-    apiGet<CalendarItem[]>(`/api/marketing/calendar?start=${start}&end=${end}`)
+    apiGet<{ view: string; items: CalendarItem[]; summary: unknown }>(`/api/marketing/calendar?start=${start}&end=${end}`)
       .then((r) => {
         if (!r.ok || !r.data) {
           setError(r.msg || "Gagal memuat kalender");
@@ -40,7 +40,7 @@ export default function MarketingCalendarPage() {
           return;
         }
         setError("");
-        setItems(r.data);
+        setItems(Array.isArray(r.data) ? r.data : r.data.items);
       })
       .catch(() => {
         setError("Gagal memuat kalender");

@@ -3,7 +3,7 @@
     "name": "Jurnal Guru — MarketingOS",
     "repo": "herulife/jurnal-guru",
     "live": "https://guru.cintabuku.site",
-    "updated_at": "2026-08-19T16:00:00+07:00"
+    "updated_at": "2026-08-19T17:00:00+07:00"
   },
   "phases": [
     {
@@ -468,6 +468,12 @@
       "phase": "P1",
       "event": "Marketing Dashboard & Marketing Calendar dibuat",
       "detail": "/marketing-dashboard (6 KPI cards + line chart 30 hari journal/taskDone + progres goal + today/overdue tasks) & /marketing-calendar (grid bulanan task/journal/plan) memakai API yang sudah ada; sidebar +2 menu; QA playwright pass"
+    },
+    {
+      "date": "2026-08-19",
+      "phase": "P1",
+      "event": "Bug API calendar diperbaiki",
+      "detail": "COALESCE(start_date,due_date) menggantikan operator || (NULL concat) di /api/marketing/calendar; task dgn dueDate tanpa startDate kini tampil di kalender; QA playwright pass; data awal dibuat (1 goal, 1 task)"
     }
   ],
   "test_status": {
@@ -528,5 +534,5 @@
     }
   },
   "blockers": [],
-  "next_action": "P1 QA menyeluruh + isi data Goals/Tasks pertama; lalu telaah ulang Marketing Plan UI"
+  "next_action": "Telaah ulang halaman Marketing Plans (/plans & /marketing-plan) + seed journal contoh; lalu QA P1 lengkap"
 }
