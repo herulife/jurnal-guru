@@ -163,6 +163,13 @@ export default async function StatusPage() {
             <div className="text-xs text-gray-400 mt-1 break-words">
               Multi-Agent: {oc.multiAgent} · Skills: {oc.skills}
             </div>
+            <a
+              href="/status/opencode"
+              className="text-xs font-medium mt-2 inline-block"
+              style={{ color: "#0D7C66" }}
+            >
+              Laporan lengkap →
+            </a>
           </div>
         </div>
 
