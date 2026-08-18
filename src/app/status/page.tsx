@@ -1,11 +1,53 @@
 import { db } from "@/db";
 import { sql } from "drizzle-orm";
 import { execSync } from "child_process";
+import fs from "fs";
+import path from "path";
+import os from "os";
 import StatusCopyButton from "@/components/StatusCopyButton";
 
 export const dynamic = "force-dynamic";
 
 const TABLE_NAME = /^[a-z][a-z0-9_]*$/;
+
+function countSkills(dir: string): number {
+  try {
+    return fs.readdirSync(dir).filter((f) => fs.statSync(path.join(dir, f)).isDirectory()).length;
+  } catch {
+    return 0;
+  }
+}
+
+function opencodeInfo(): { version: string; multiAgent: string; skills: string } {
+  let version = "—";
+  try {
+    version = execSync("opencode --version", { timeout: 8000 }).toString().trim();
+  } catch {
+    version = "—";
+  }
+  const cfgDir = path.join(os.homedir(), ".config", "opencode");
+  const projectDir = path.join(process.cwd(), ".opencode");
+  const hasAgentDir = fs.existsSync(path.join(cfgDir, "agent"));
+  const cfg = ["opencode.json", "opencode.jsonc", path.join(projectDir, "opencode.json")].some((f) =>
+    fs.existsSync(f)
+  );
+  let hasAgentKey = false;
+  for (const f of ["opencode.json", "opencode.jsonc", path.join(projectDir, "opencode.json")]) {
+    try {
+      const raw = fs.readFileSync(f, "utf8");
+      if (raw.includes('"agent"') || raw.includes('"agents"')) hasAgentKey = true;
+    } catch {
+      // file tidak ada — lewati
+    }
+  }
+  const globalSkills = countSkills(path.join(cfgDir, "skills"));
+  const projectSkills = countSkills(path.join(projectDir, "skills"));
+  const multiAgent =
+    hasAgentDir || hasAgentKey
+      ? "KONFIGURASI ADA"
+      : `NOT CONFIGURED (subagent bawaan: explore, general)${cfg ? "" : ""}`;
+  return { version, multiAgent, skills: `${globalSkills} global + ${projectSkills} project` };
+}
 
 export default async function StatusPage() {
   let git: string = "";
@@ -39,6 +81,7 @@ export default async function StatusPage() {
   }
 
   const generated = new Date().toISOString();
+  const oc = opencodeInfo();
 
   const statusText = [
     "STATUS APLIKASI — JURNAL GURU",
@@ -50,6 +93,11 @@ export default async function StatusPage() {
     ...(dbOk
       ? tables.map((t) => `- ${t}: ${counts[t]}`)
       : ["- (tidak tersedia)"]),
+    "",
+    "OPENCODE:",
+    `Versi: ${oc.version}`,
+    `Multi-Agent: ${oc.multiAgent}`,
+    `Skills: ${oc.skills}`,
     "",
     "Audit lengkap: https://guru.cintabuku.site/documentation",
   ].join("\n");
@@ -77,7 +125,7 @@ export default async function StatusPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div className="card p-5">
             <div className="text-sm text-gray-500 mb-1">Server</div>
             <div className="flex items-center gap-2">
@@ -108,6 +156,13 @@ export default async function StatusPage() {
             <div className="text-sm text-gray-500 mb-1">Deployment</div>
             <div className="font-semibold text-[#1A2332] truncate">{git}</div>
             <div className="text-xs text-gray-400 mt-1">next build + pm2 restart</div>
+          </div>
+          <div className="card p-5">
+            <div className="text-sm text-gray-500 mb-1">OpenCode</div>
+            <div className="font-semibold text-[#1A2332]">v{oc.version}</div>
+            <div className="text-xs text-gray-400 mt-1 break-words">
+              Multi-Agent: {oc.multiAgent} · Skills: {oc.skills}
+            </div>
           </div>
         </div>
 
