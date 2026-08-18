@@ -23,6 +23,12 @@ Dashboard guru (Jurnal Guru) untuk kelola absensi, nilai, jurnal mengajar, kelom
 ## Context
 Lihat `.agents/session-backup.md` & `.agents/product-marketing.md` untuk detail lengkap.
 
+## Orchestrator Doctrine
+- **Pola kerja utama:** `.agents/ORCHESTRATOR.md` (dimuat otomatis via `opencode.json` instructions) — agent utama berperan sebagai autonomous orchestrator: UNDERSTAND → ANALYZE → PLAN → DELEGATE → EXECUTE → VERIFY → REVIEW → CORRECT → UPDATE STATE → DECIDE NEXT ACTION.
+- **Project brain:** `.agents/PROJECT_STATUS.md` (status & ownership), `.agents/ARCHITECTURE.md`, `.agents/DATABASE.md`, `.agents/API.md`, `.agents/audit-center.json`. Prioritas kebenaran: source code > schema > API > tests > git > state files > docs (SOURCE CODE WINS).
+- **Delegasi:** pakai built-in `explore` (riset) / `general` (eksekusi) + brief; jangan buat subagent utk tugas kecil.
+- **Quality gate:** feature COMPLETE hanya jika code + DB + API + UI + validation + test + security (bila relevan) + documentation + audit semua ✓.
+
 ## Marketing Skills (GitHub)
 Referensi skill marketing AI-agent + marketing plan 90 hari ada di `.agents/marketing-skills.md`. Utamakan SEO Bahasa Indonesia + GEO (AI citation). Repo utama: `coreyhaines31/marketingskills` & `ekinciio/saas-growth-marketing-skills`.
 
