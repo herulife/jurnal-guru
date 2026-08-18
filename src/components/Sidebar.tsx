@@ -95,7 +95,7 @@ const menuItems: { section: string; color: string; items: MenuItem[] }[] = [
       { label: "Kelola User", icon: "fa-users-cog", href: "/users", adminOnly: true },
       { label: "Tagihan", icon: "fa-credit-card", href: "/billing", adminOnly: true },
 { label: "Activity Log", icon: "fa-history", href: "/log", adminOnly: true },
-      { label: "Marketing Plan", icon: "fa-bullhorn", href: "/marketing-plan", adminOnly: true },
+      { label: "Panduan Marketing", icon: "fa-bullhorn", href: "/marketing-plan", adminOnly: true },
       { label: "Application Audit", icon: "fa-file-shield", href: "/documentation", adminOnly: true },
     ],
   },

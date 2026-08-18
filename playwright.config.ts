@@ -7,8 +7,15 @@ export default defineConfig({
   reporter: [["list"]],
   use: {
     baseURL: process.env.TEST_BASE_URL || "http://localhost:3000",
+    storageState: "playwright/.auth/user.json",
     extraHTTPHeaders: {
       "x-test-run": "api",
     },
   },
+  projects: [
+    { name: "setup", testMatch: /auth\.setup\.ts/ },
+    { name: "p1", dependencies: ["setup"], testMatch: /_p1qa/ },
+    { name: "reg", dependencies: ["setup"], testMatch: /_p1reg/ },
+  ],
+  workers: 1,
 });

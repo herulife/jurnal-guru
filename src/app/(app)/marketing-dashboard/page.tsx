@@ -134,7 +134,7 @@ export default function MarketingDashboardPage() {
     { label: "Task Hari Ini", value: summary?.todayTasks ?? 0, icon: "fa-list-check", cls: "text-blue-500" },
     { label: "Task Terlambat", value: summary?.overdueTasks ?? 0, icon: "fa-triangle-exclamation", cls: "text-red-500" },
     { label: "Task Selesai", value: summary?.doneTasks ?? 0, icon: "fa-check-double", cls: "text-green-500" },
-    { label: "Journal (7 hari)", value: summary?.totalJournal ?? 0, icon: "fa-book", cls: "text-[#1A2332]" },
+    { label: "Journal", value: summary?.totalJournal ?? 0, icon: "fa-book", cls: "text-[#1A2332]" },
   ];
 
   function TaskRow({ t, late }: { t: Task; late?: boolean }) {

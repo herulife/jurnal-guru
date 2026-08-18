@@ -128,6 +128,13 @@ function TaskModal({ editData, onSave, onClose }: { editData: Task | null; onSav
     title: "", description: "", status: "TODO", priority: "MEDIUM",
     dueDate: "", startDate: "", goalId: "", assignedTo: "", recurring: "", notes: "",
   });
+  const [goals, setGoals] = useState<{ id: string; name: string }[]>([]);
+
+  useEffect(() => {
+    apiGet<{ id: string; name: string }[]>("/api/marketing/goals").then((r) => {
+      if (r.ok && Array.isArray(r.data)) setGoals(r.data);
+    });
+  }, []);
 
   useEffect(() => {
     if (editData) {
@@ -179,6 +186,12 @@ function TaskModal({ editData, onSave, onClose }: { editData: Task | null; onSav
             </div>
             <div><label className="label">Due Date</label><input type="date" className="input" value={form.dueDate} onChange={(e) => setForm({ ...form, dueDate: e.target.value })} /></div>
             <div><label className="label">Start Date</label><input type="date" className="input" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} /></div>
+            <div><label className="label">Terkait Goal</label>
+              <select className="input" value={form.goalId} onChange={(e) => setForm({ ...form, goalId: e.target.value })}>
+                <option value="">— Tanpa goal —</option>
+                {goals.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
+              </select>
+            </div>
             <div><label className="label">Ditugaskan ke</label><input type="text" className="input" value={form.assignedTo} onChange={(e) => setForm({ ...form, assignedTo: e.target.value })} /></div>
             <div><label className="label">Recurring</label><input type="text" className="input" value={form.recurring} placeholder="contoh: harian, mingguan" onChange={(e) => setForm({ ...form, recurring: e.target.value })} /></div>
             <div className="sm:col-span-2"><label className="label">Catatan</label><textarea className="input" rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></div>

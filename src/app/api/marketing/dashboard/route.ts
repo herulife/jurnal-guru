@@ -28,7 +28,7 @@ export async function GET() {
       .from(marketingJournal)
       .where(scope ? eq(marketingJournal.userId, scope) : undefined)
       .orderBy(desc(marketingJournal.date))
-      .limit(7)
+      .limit(90)
       .all();
 
     const todayTasks = tasks.filter(
