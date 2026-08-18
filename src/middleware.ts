@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
-const publicPaths = ["/", "/login", "/register", "/checkout", "/api/auth/login", "/api/auth/register", "/api/auth/check", "/api/auth/verify-email", "/api/auth/resend-verification", "/api/health"];
+const publicPaths = ["/", "/login", "/register", "/checkout", "/api/auth/login", "/api/auth/register", "/api/auth/check", "/api/auth/verify-email", "/api/auth/resend-verification", "/api/health", "/api/audit"];
 
 const protectedPrefixes = [
   "/dashboard", "/absensi", "/admin", "/billing", "/faq", "/jadwal", "/jurnal",

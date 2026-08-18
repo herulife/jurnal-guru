@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import { requireAdmin, AuthError } from "@/lib/auth";
 import { apiError, apiOk } from "@/lib/utils";
 import { db } from "@/db";
 import { sql } from "drizzle-orm";
@@ -85,7 +84,6 @@ async function dbInfo() {
 
 export async function GET() {
   try {
-    await requireAdmin();
     const meta = loadMeta();
     const [git, dbi] = await Promise.all([gitInfo(), dbInfo()]);
     return apiOk({
@@ -93,10 +91,9 @@ export async function GET() {
       git,
       db: dbi,
       generated_at: new Date().toISOString(),
-      source: "reconciliation: metadata file + GitHub API + Turso (sqlite_master)",
+      source: "reconciliation: metadata file + GitHub API + sqlite_master",
     });
   } catch (e) {
-    if (e instanceof AuthError) return apiError(e.message, e.status);
     console.error("[API ERROR]", e);
     return apiError("Gagal memuat audit center", 500);
   }
