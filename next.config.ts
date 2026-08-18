@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/marketing-plan": [".agents/marketing-plan-jurnal-guru.md"],
     "/documentation": [".agents/audits/**", ".agents/audit-center.json"],
+    "/status/opencode": [".agents/ORCHESTRATOR.md"],
   },
   experimental: {
     serverActions: {

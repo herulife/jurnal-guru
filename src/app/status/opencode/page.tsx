@@ -271,11 +271,22 @@ function buildReport(): { version: string; report: string } {
 
 export default function OpenCodeStatusPage() {
   const { version, report } = buildReport();
+  let orchReport = "";
+  try {
+    orchReport = fs.readFileSync(path.join(process.cwd(), ".agents", "ORCHESTRATOR.md"), "utf8");
+  } catch {
+    orchReport = "# MARKETINGOS AUTONOMOUS ORCHESTRATOR\n\n(Dokumen .agents/ORCHESTRATOR.md tidak ditemukan)";
+  }
 
   return (
     <div className="min-h-screen bg-[#F5F3EF] p-6">
       <div className="mx-auto max-w-4xl">
-        <ReportTabs version={version} statusReport={report} archReport={ARCH_REPORT} />
+        <ReportTabs
+          version={version}
+          statusReport={report}
+          archReport={ARCH_REPORT}
+          orchReport={orchReport}
+        />
       </div>
     </div>
   );
