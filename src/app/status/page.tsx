@@ -1,6 +1,7 @@
 import { db } from "@/db";
 import { sql } from "drizzle-orm";
 import { execSync } from "child_process";
+import StatusCopyButton from "@/components/StatusCopyButton";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,20 @@ export default async function StatusPage() {
 
   const generated = new Date().toISOString();
 
+  const statusText = [
+    "STATUS APLIKASI — JURNAL GURU",
+    `Generated: ${generated}`,
+    `Server: ${dbOk ? "OK — VPS (pm2, port 3000, Cloudflare Tunnel)" : "ERROR"}`,
+    `Database: ${dbOk ? `OK — SQLite (${tables.length} tabel, file:./data.db)` : `GAGAL — ${dbError}`}`,
+    `Deployment: ${git}`,
+    "Record per tabel:",
+    ...(dbOk
+      ? tables.map((t) => `- ${t}: ${counts[t]}`)
+      : ["- (tidak tersedia)"]),
+    "",
+    "Audit lengkap: https://guru.cintabuku.site/documentation",
+  ].join("\n");
+
   return (
     <div className="min-h-screen bg-[#F5F3EF] p-6">
       <div className="mx-auto max-w-4xl">
@@ -49,14 +64,17 @@ export default async function StatusPage() {
               Status aplikasi Jurnal Guru — {generated}
             </p>
           </div>
-          <a
-            href="/documentation"
-            className="btn btn-outline text-sm"
-            style={{ color: "#0D7C66" }}
-          >
-            <i className="fa-solid fa-book mr-2" />
-            Application Audit
-          </a>
+          <div className="flex gap-2">
+            <StatusCopyButton text={statusText} />
+            <a
+              href="/documentation"
+              className="btn btn-outline text-sm"
+              style={{ color: "#0D7C66" }}
+            >
+              <i className="fa-solid fa-book mr-2" />
+              Application Audit
+            </a>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
