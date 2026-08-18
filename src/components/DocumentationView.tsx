@@ -92,6 +92,14 @@ export default function DocumentationView({ audits }: { audits: Audit[] }) {
               </p>
             </div>
             <div className="flex gap-2">
+              <a
+                href="/status"
+                className="btn btn-outline"
+                title="Status Center publik"
+              >
+                <i className="fa-solid fa-heart-pulse mr-2" />
+                Status Center
+              </a>
               <button className="btn btn-outline" onClick={exportMarkdown}>
                 <i className="fa-solid fa-download mr-2" />Export Markdown
               </button>
