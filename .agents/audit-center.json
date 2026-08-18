@@ -3,7 +3,7 @@
     "name": "Jurnal Guru — MarketingOS",
     "repo": "herulife/jurnal-guru",
     "live": "https://guru.cintabuku.site",
-    "updated_at": "2026-08-17T12:00:00+07:00"
+    "updated_at": "2026-08-19T16:00:00+07:00"
   },
   "phases": [
     {
@@ -17,8 +17,8 @@
       "id": "P1",
       "name": "Core Marketing",
       "status": "IN_PROGRESS",
-      "progress": 55,
-      "notes": "MarketingOS dasar live; sedang: Audit Center sebagai Source of Truth"
+      "progress": 80,
+      "notes": "Goals/Plans/Tasks/Journal + Marketing Dashboard (KPI & chart 30 hari) + Marketing Calendar (bulanan) live"
     },
     {
       "id": "P2",
@@ -462,6 +462,12 @@
       "agent": "QA",
       "type": "COMPLETED TASK",
       "detail": "Verifikasi produksi: render status center, COPY ChatGPT & COPY JSON, 401 non-admin (Playwright PASS)"
+    },
+    {
+      "date": "2026-08-19",
+      "phase": "P1",
+      "event": "Marketing Dashboard & Marketing Calendar dibuat",
+      "detail": "/marketing-dashboard (6 KPI cards + line chart 30 hari journal/taskDone + progres goal + today/overdue tasks) & /marketing-calendar (grid bulanan task/journal/plan) memakai API yang sudah ada; sidebar +2 menu; QA playwright pass"
     }
   ],
   "test_status": {
@@ -522,5 +528,5 @@
     }
   },
   "blockers": [],
-  "next_action": "Verifikasi stabilitas VPS beberapa hari; lalu lanjut Phase 2 CRM (Leads, Contacts, Follow-ups). Rollback ke Vercel bila perlu: /tmp/opencode/rollback-vps.env"
+  "next_action": "P1 QA menyeluruh + isi data Goals/Tasks pertama; lalu telaah ulang Marketing Plan UI"
 }

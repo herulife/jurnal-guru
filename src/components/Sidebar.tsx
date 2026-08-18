@@ -32,10 +32,12 @@ const menuItems: { section: string; color: string; items: MenuItem[] }[] = [
     section: "Marketing",
     color: "#EC4899",
     items: [
+      { label: "Marketing Dashboard", icon: "fa-chart-line", href: "/marketing-dashboard", adminOnly: true },
       { label: "Goals", icon: "fa-bullseye", href: "/goals", adminOnly: true },
       { label: "Marketing Plans", icon: "fa-route", href: "/plans", adminOnly: true },
       { label: "Tasks", icon: "fa-list-check", href: "/tasks", adminOnly: true },
       { label: "Calendar", icon: "fa-calendar-week", href: "/calendar", adminOnly: true },
+      { label: "Marketing Calendar", icon: "fa-calendar-days", href: "/marketing-calendar", adminOnly: true },
       { label: "Marketing Journal", icon: "fa-book", href: "/marketing-journal", adminOnly: true },
     ],
   },
