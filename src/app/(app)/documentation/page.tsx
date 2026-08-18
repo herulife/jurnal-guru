@@ -21,6 +21,8 @@ function readAudits(): { name: string; date: string; sha: string; content: strin
   });
 }
 
+export const dynamic = "force-dynamic";
+
 export default function DocumentationPage() {
   const audits = readAudits();
   const auditsMd = audits.map((a) => a.content).join("\n\n---\n\n");
