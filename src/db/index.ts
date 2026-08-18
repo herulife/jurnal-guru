@@ -21,7 +21,7 @@ function resolveDb(): AnyDb {
 
   try {
     const { env } = getCloudflareContext();
-    if (env.DB) {
+    if (env.DB && process.env.D1_ACTIVE !== "false") {
       dbInstance = drizzleD1(env.DB, { schema }) as unknown as AnyDb;
       return dbInstance;
     }

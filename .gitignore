@@ -17,3 +17,4 @@ next-env.d.ts
 /playwright-report/
 
 dev-server*.log
+data.db

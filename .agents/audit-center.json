@@ -417,6 +417,11 @@
   ],
   "activity_log": [
     {
+      "timestamp": "2026-08-18T08:15:00Z",
+      "agent": "opencode",
+      "action": "Aplikasi dipindah ke VPS (bukan Vercel): next start via pm2 (jurnal-guru, port 3000, DB file lokal data.db), Cloudflare Tunnel (guru-tunnel) utk domain guru.cintabuku.site, D1_ACTIVE=false di .env.local agar runtime Next 16 tidak memakai binding D1 dari wrangler.jsonc, libsql-server dihapus. Latensi: login 0.54s (sebelumnya 1.3-1.7s), audit 0.63s (1.7-2.5s). Rollback: /tmp/opencode/rollback-vps.env"
+    },
+    {
       "at": "2026-08-18 05:00",
       "agent": "BACKEND",
       "type": "COMPLETED TASK",
@@ -517,10 +522,5 @@
     }
   },
   "blockers": [],
-  "next_action": {
-    "title": "Fase berikutnya: CRM (Leads, Contacts, Follow-ups)",
-    "agent": "CRM",
-    "priority": "P1",
-    "reason": "Phase 1 (Core Marketing + Audit Center) selesai; lanjut Phase 2 sesuai roadmap"
-  }
+  "next_action": "Verifikasi stabilitas VPS beberapa hari; lalu lanjut Phase 2 CRM (Leads, Contacts, Follow-ups). Rollback ke Vercel bila perlu: /tmp/opencode/rollback-vps.env"
 }
