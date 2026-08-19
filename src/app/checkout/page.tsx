@@ -1,9 +1,10 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { apiGet, apiPost, apiPatch } from "@/lib/useApi";
+import { invoiceNumber } from "@/lib/invoice";
 import { useToast } from "@/components/Feedback";
 import OrderSteps from "@/components/OrderSteps";
 
@@ -28,7 +29,7 @@ const PRO_FEATURES = [
   "Export PDF & Excel",
 ];
 
-type Stage = "paket" | "bayar" | "konfirmasi" | "sukses";
+type Stage = "paket" | "bayar" | "konfirmasi" | "pending" | "sukses" | "rejected";
 
 type PaymentData = {
   amount: number;
@@ -36,6 +37,11 @@ type PaymentData = {
   whatsapp?: string;
   notes?: string;
   status?: string;
+  proofUrl?: string;
+  verifiedAt?: string | null;
+  subStartedAt?: string | null;
+  subExpiresAt?: string | null;
+  createdAt?: string;
 };
 
 type BankInfo = {
@@ -79,6 +85,9 @@ function CheckoutInner() {
     bank_note: "",
   });
   const [waSent, setWaSent] = useState(false);
+  const [proofFile, setProofFile] = useState<File | null>(null);
+  const [proofUrl, setProofUrl] = useState("");
+  const hydratedRef = useRef(false);
 
   const PLAN_LABEL: Record<string, { name: string; duration: string }> = {
     pro_6m: { name: "Pro", duration: "6 bulan" },
@@ -87,14 +96,17 @@ function CheckoutInner() {
 
   useEffect(() => {
     apiGet("/api/auth/check")
-      .then((r) => setAuthState(r.ok ? "ok" : "guest"))
-      .catch(() => setAuthState("guest"));
-
-    apiGet<{ bank: BankInfo }>("/api/payments")
       .then((r) => {
-        if (r.ok && r.data?.bank) setBank(r.data.bank);
+        setAuthState(r.ok ? "ok" : "guest");
+        if (r.ok) {
+          apiGet<{ bank: BankInfo }>("/api/payments")
+            .then((r2) => {
+              if (r2.ok && r2.data?.bank) setBank(r2.data.bank);
+            })
+            .catch(() => {});
+        }
       })
-      .catch(() => {});
+      .catch(() => setAuthState("guest"));
 
     const pid = searchParams.get("payment");
     if (pid) {
@@ -106,8 +118,12 @@ function CheckoutInner() {
           setPayment(p);
           setWhatsapp(p.whatsapp ?? "");
           setNotes(p.notes ?? "");
-          if (p.status && p.status !== "pending") setStage("sukses");
-          else setStage(p.notes ? "konfirmasi" : "bayar");
+          setProofUrl(p.proofUrl ?? "");
+          if (hydratedRef.current) return;
+          hydratedRef.current = true;
+          if (p.status === "paid") setStage("sukses");
+          else if (p.status === "rejected") setStage("rejected");
+          else if (p.status === "pending") setStage(p.proofUrl ? "pending" : p.notes ? "konfirmasi" : "bayar");
         })
         .catch(() => {});
     }
@@ -162,6 +178,18 @@ function CheckoutInner() {
     setLoading(true);
     setError("");
     try {
+      if (proofFile) {
+        const fd = new FormData();
+        fd.append("file", proofFile);
+        const up = await fetch(`/api/payments/${paymentId}/proof`, { method: "POST", body: fd });
+        const upJson = await up.json();
+        if (!upJson.ok) {
+          setError(upJson.msg || "Gagal mengunggah bukti");
+          show(upJson.msg || "Gagal mengunggah bukti", "error");
+          return;
+        }
+        setProofUrl(upJson.data?.proofUrl ?? "");
+      }
       const res = await apiPatch(`/api/payments/${paymentId}`, {
         notes,
         whatsapp: whatsapp.replace(/[^\d]/g, ""),
@@ -171,7 +199,7 @@ function CheckoutInner() {
         return;
       }
       show("Konfirmasi terkirim, terima kasih!", "success");
-      setStage("sukses");
+      setStage("pending");
     } catch {
       setError("Koneksi gagal");
     } finally {
@@ -201,7 +229,7 @@ function CheckoutInner() {
           <h1 className="text-2xl md:text-3xl font-extrabold font-[Outfit] mb-6 text-center">
             {stage === "paket" ? "Checkout — Pesanan Anda" : "Selesaikan Pembayaran"}
           </h1>
-          <OrderSteps step={stage === "paket" ? 1 : stage === "sukses" ? 3 : 2} />
+          <OrderSteps step={stage === "paket" ? 1 : stage === "bayar" ? 2 : 3} />
         </div>
       </div>
 
@@ -369,7 +397,7 @@ function CheckoutInner() {
                       <i className="fas fa-arrow-right mr-1"></i> Lanjut ke Pembayaran
                     </button>
                     <p className="text-center text-xs text-gray-400 mt-3">
-                      <i className="fas fa-shield-halved mr-1"></i> Garansi 30 hari: tidak hemat waktu? Uang kembali penuh
+                      <i className="fas fa-shield-halved mr-1"></i> Aman &amp; Terpercaya · Tanpa auto-debit · Verifikasi manual · Transparan
                     </p>
                   </div>
                 </div>
@@ -381,10 +409,13 @@ function CheckoutInner() {
           {stage === "bayar" && (
             <div className="max-w-2xl mx-auto">
               {paymentId && (
-                <div className="flex items-center justify-center gap-2 mb-6">
+                <div className="flex flex-col items-center gap-2 mb-6">
                   <span className="inline-flex items-center gap-2 text-xs font-bold rounded-full px-4 py-1.5 bg-amber-100 text-amber-700">
                     <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
                     Menunggu Pembayaran
+                  </span>
+                  <span className="text-xs text-gray-400">
+                    Order ID: <span className="font-mono font-bold text-[#1A2332]">{invoiceNumber(paymentId)}</span>
                   </span>
                 </div>
               )}
@@ -530,7 +561,7 @@ function CheckoutInner() {
                 </>
               )}
               <p className="text-center text-xs text-gray-400 mt-3">
-                <i className="fas fa-shield-halved mr-1"></i> Garansi 30 hari: tidak hemat waktu? Uang kembali penuh
+                <i className="fas fa-shield-halved mr-1"></i> Aman &amp; Terpercaya · Tanpa auto-debit · Verifikasi manual · Transparan
               </p>
             </div>
           )}
@@ -560,9 +591,28 @@ function CheckoutInner() {
                   <p className="text-xs text-gray-400 mb-4">
                     <i className="fas fa-info-circle mr-1"></i> Nomor ini dipakai untuk notifikasi status pesanan via WhatsApp.
                   </p>
-                  <label className="label">Catatan / Bukti Transfer</label>
+                  <label className="label">Upload Bukti Transfer</label>
+                  <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-[#0D7C66]/30 bg-[#0D7C66]/5 rounded-2xl p-6 cursor-pointer hover:border-[#0D7C66]/60 transition-colors mb-3">
+                    <i className="fa-solid fa-cloud-arrow-up text-2xl text-[#0D7C66]"></i>
+                    <span className="text-sm font-semibold text-[#0D7C66]">
+                      {proofFile ? proofFile.name : "Pilih file bukti transfer"}
+                    </span>
+                    <span className="text-xs text-gray-400">Format: JPG / PNG / PDF · maks 5 MB</span>
+                    <input
+                      type="file"
+                      accept=".jpg,.jpeg,.png,.pdf"
+                      className="hidden"
+                      onChange={(e) => setProofFile(e.target.files?.[0] ?? null)}
+                    />
+                  </label>
+                  {proofUrl && (
+                    <p className="text-xs text-green-600 mb-3 flex items-center gap-1.5">
+                      <i className="fa-solid fa-circle-check"></i> Bukti terunggah — bisa diganti jika salah pilih.
+                    </p>
+                  )}
+                  <label className="label">Catatan Transfer (opsional)</label>
                   <textarea
-                    className="input min-h-[100px]"
+                    className="input min-h-[80px]"
                     placeholder="Contoh: Sudah transfer Rp 29.000 dari a.n. Bu Ratna (No. HP 08xx) pada tanggal 2026-08-07"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
@@ -593,58 +643,79 @@ function CheckoutInner() {
             </div>
           )}
 
-          {/* ===== TAHAP 5: SUKSES ===== */}
-          {stage === "sukses" && (
+          {/* ===== TAHAP 5: MENUNGGU VERIFIKASI ===== */}
+          {stage === "pending" && (
             <div className="max-w-2xl mx-auto">
-              <div className="bg-white rounded-2xl border border-[#E8E4DC] overflow-hidden">
-                <div className="p-8 text-center">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i className="fas fa-check text-green-600 text-2xl"></i>
-                  </div>
-                  <h2 className="text-xl font-extrabold font-[Outfit] text-[#1A2332] mb-2">
-                    Terima Kasih! Pesanan Kamu Diterima
-                  </h2>
-                  <p className="text-sm text-gray-500 mb-6">
-                    Pembayaran kamu sedang menunggu verifikasi admin (maksimal 24 jam). Paket akan aktif otomatis setelah diverifikasi.
-                  </p>
-
-                  <div className="inline-flex items-center gap-2 text-xs font-bold rounded-full px-4 py-1.5 bg-amber-100 text-amber-700 mb-6">
-                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                    Menunggu Verifikasi Admin
-                  </div>
-
-                  <div className="bg-[#fcfbf8] rounded-2xl border border-[#E8E4DC] p-5 text-left space-y-3 mb-6">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-gray-400">No. Order</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-[#1A2332] font-mono">#{paymentId?.slice(0, 8).toUpperCase()}</span>
-                        <button onClick={() => paymentId && copyText(paymentId, "Nomor order")} className="text-[#0D7C66] text-xs" title="Salin nomor order">
-                          <i className="fas fa-copy"></i>
-                        </button>
-                      </div>
+              <div className="bg-white rounded-2xl border border-[#E8E4DC] overflow-hidden mb-5">
+                <div className="px-6 py-4 bg-amber-500 text-white flex items-center gap-2">
+                  <i className="fas fa-hourglass-half"></i>
+                  <span className="font-bold font-[Outfit] text-sm">Pesanan Anda — Menunggu Verifikasi</span>
+                </div>
+                <div className="p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:justify-between mb-5">
+                    <div>
+                      <p className="text-xs text-gray-400">Order ID</p>
+                      <p className="font-mono font-bold text-[#1A2332]">{paymentId ? invoiceNumber(paymentId) : "-"}</p>
                     </div>
+                    <span className="inline-flex items-center gap-2 text-xs font-bold rounded-full px-4 py-1.5 bg-amber-100 text-amber-700 self-start">
+                      <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                      Menunggu Verifikasi
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 mb-6">
+                    {[
+                      { done: true, label: "Pesanan Dibuat", sub: "Order berhasil dibuat" },
+                      { done: true, label: "Pembayaran Dikonfirmasi", sub: "Bukti transfer diterima" },
+                      { done: false, active: true, label: "Menunggu Verifikasi", sub: "Admin sedang memeriksa bukti" },
+                      { done: false, label: "Paket Aktif", sub: "Akses fitur langsung terbuka" },
+                    ].map((s) => (
+                      <div key={s.label} className="flex items-start gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${s.done ? "bg-[#0D7C66] text-white" : s.active ? "bg-amber-100 text-amber-600 border-2 border-amber-400" : "bg-gray-100 text-gray-300"}`}>
+                          {s.done ? <i className="fas fa-check text-sm"></i> : <span className="text-sm font-bold">{s.active ? "●" : "○"}</span>}
+                        </div>
+                        <div>
+                          <p className={`text-sm font-bold ${s.done ? "text-[#1A2332]" : s.active ? "text-amber-600" : "text-gray-400"}`}>{s.label}</p>
+                          <p className="text-xs text-gray-400">{s.sub}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="bg-[#fcfbf8] rounded-2xl border border-[#E8E4DC] p-5 text-left space-y-3 mb-4">
                     <div className="flex justify-between">
                       <span className="text-xs text-gray-400">Paket</span>
                       <span className="text-xs font-bold text-[#1A2332]">{planInfo ? `${planInfo.name} — ${planInfo.duration}` : ringkasan}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-xs text-gray-400">Total Transfer</span>
+                      <span className="text-xs text-gray-400">Total</span>
                       <span className="text-xs font-extrabold text-[#1A2332]">Rp {payment?.amount?.toLocaleString("id-ID") ?? "-"}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-xs text-gray-400">No. WhatsApp</span>
-                      <span className="text-xs font-bold text-[#1A2332]">{whatsapp || "-"}</span>
+                      <span className="text-xs text-gray-400">Tanggal Pesanan</span>
+                      <span className="text-xs font-bold text-[#1A2332]">
+                        {payment?.createdAt ? new Date(payment.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }) : "-"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-xs text-gray-400">Status</span>
+                      <span className="text-xs font-bold text-amber-600">Menunggu Verifikasi</span>
                     </div>
                   </div>
 
+                  <p className="text-xs text-gray-400 mb-4 flex items-start gap-1.5">
+                    <i className="fas fa-info-circle mt-0.5 text-[#0D7C66]"></i>
+                    Pembayaran Anda sedang diperiksa oleh admin. Setelah diverifikasi, paket aktif otomatis dan Anda akan mendapat notifikasi via WhatsApp/email.
+                  </p>
+
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <Link href="/dashboard" className="btn btn-primary flex-1 justify-center">
+                    <Link href="/dashboard" className="btn btn-outline flex-1 justify-center">
                       <i className="fas fa-home mr-1"></i> Ke Dashboard
                     </Link>
                     {bank.wa_admin && (
                       <a
                         href={`https://wa.me/${bank.wa_admin}?text=${encodeURIComponent(
-                          `Halo Jurnal Guru, saya sudah transfer.\nNo. Order: #${paymentId ?? "-"}\nNominal: Rp ${payment?.amount?.toLocaleString("id-ID") ?? "-"}\nPaket: ${planInfo ? `${planInfo.name} (${planInfo.duration})` : "-"}`
+                          `Halo Jurnal Guru, saya sudah transfer.\nNo. Order: ${paymentId ? invoiceNumber(paymentId) : "-"}\nNominal: Rp ${payment?.amount?.toLocaleString("id-ID") ?? "-"}\nPaket: ${planInfo ? `${planInfo.name} (${planInfo.duration})` : "-"}`
                         )}`}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -654,6 +725,106 @@ function CheckoutInner() {
                       </a>
                     )}
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ===== TAHAP 6: PEMBAYARAN BERHASIL ===== */}
+          {stage === "sukses" && (
+            <div className="max-w-2xl mx-auto">
+              <div className="bg-white rounded-2xl border border-[#E8E4DC] overflow-hidden">
+                <div className="p-8 text-center">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i className="fas fa-check text-green-600 text-2xl"></i>
+                  </div>
+                  <h2 className="text-xl font-extrabold font-[Outfit] text-[#1A2332] mb-2">
+                    Pembayaran Berhasil!
+                  </h2>
+                  <p className="text-sm text-gray-500 mb-6">
+                    Selamat! Paket Anda sudah aktif.
+                  </p>
+
+                  <div className="bg-[#fcfbf8] rounded-2xl border border-[#E8E4DC] p-5 text-left space-y-3 mb-6">
+                    <div className="flex justify-between">
+                      <span className="text-xs text-gray-400">Order ID</span>
+                      <span className="text-xs font-bold text-[#1A2332] font-mono">{paymentId ? invoiceNumber(paymentId) : "-"}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-xs text-gray-400">Paket</span>
+                      <span className="text-xs font-bold text-[#1A2332]">{planInfo ? `${planInfo.name} — ${planInfo.duration}` : ringkasan}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-xs text-gray-400">Masa Aktif</span>
+                      <span className="text-xs font-bold text-[#1A2332]">
+                        {payment?.subStartedAt
+                          ? `${new Date(payment.subStartedAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })} — ${payment.subExpiresAt ? new Date(payment.subExpiresAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) : "selamanya"}`
+                          : "-"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-xs text-gray-400">Status</span>
+                      <span className="text-xs font-bold text-green-600">
+                        <i className="fas fa-circle-check mr-1"></i>Aktif
+                      </span>
+                    </div>
+                  </div>
+
+                  <Link href="/dashboard" className="btn btn-primary w-full justify-center text-base py-3">
+                    <i className="fas fa-home mr-1"></i> Kembali ke Dashboard
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ===== TAHAP 7: PEMBAYARAN DITOLAK ===== */}
+          {stage === "rejected" && (
+            <div className="max-w-2xl mx-auto">
+              <div className="bg-white rounded-2xl border border-[#E8E4DC] overflow-hidden">
+                <div className="p-8 text-center">
+                  <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i className="fas fa-xmark text-red-600 text-2xl"></i>
+                  </div>
+                  <h2 className="text-xl font-extrabold font-[Outfit] text-[#1A2332] mb-2">
+                    Pembayaran Tidak Berhasil
+                  </h2>
+                  <p className="text-sm text-gray-500 mb-6">
+                    Status: <span className="font-bold text-red-500">Ditolak</span> — bukti transfer tidak dapat diverifikasi.
+                  </p>
+
+                  <div className="bg-[#fcfbf8] rounded-2xl border border-[#E8E4DC] p-5 text-left space-y-3 mb-6">
+                    <div className="flex justify-between">
+                      <span className="text-xs text-gray-400">Order ID</span>
+                      <span className="text-xs font-bold text-[#1A2332] font-mono">{paymentId ? invoiceNumber(paymentId) : "-"}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-xs text-gray-400">Paket</span>
+                      <span className="text-xs font-bold text-[#1A2332]">{planInfo ? `${planInfo.name} — ${planInfo.duration}` : ringkasan}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-xs text-gray-400">Total</span>
+                      <span className="text-xs font-extrabold text-[#1A2332]">Rp {payment?.amount?.toLocaleString("id-ID") ?? "-"}</span>
+                    </div>
+                    {payment?.notes && (
+                      <div className="flex justify-between gap-3">
+                        <span className="text-xs text-gray-400">Catatan Admin</span>
+                        <span className="text-xs font-bold text-[#1A2332] text-right">{payment.notes}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <p className="text-xs text-gray-400 mb-5">
+                    Pastikan nominal & pengirim sesuai, lalu coba buat pesanan baru.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setError(""); setPaymentId(null); setPayment(null); setNotes(""); setProofFile(null); setProofUrl(""); setStage("paket");
+                    }}
+                    className="btn btn-primary w-full justify-center text-base py-3"
+                  >
+                    <i className="fas fa-rotate-left mr-1"></i> Coba Pembayaran Lagi
+                  </button>
                 </div>
               </div>
             </div>

@@ -514,6 +514,12 @@
       "phase": "SALES",
       "event": "Pre-launch sales readiness",
       "detail": "Audit landing/CTA/pricing/register/login/checkout/mobile/SEO/analytics; tambah onboarding 5 langkah di dashboard utk user baru (kelas & siswa 0); QA suite _sales 7/7 + full 21/21; analytics belum ada -> rekomendasi event saja"
+    },
+    {
+      "date": "2026-08-19",
+      "phase": "CHECKOUT",
+      "event": "Redesign checkout jadi Order Online UX",
+      "detail": "Flow pilih paket -> ringkasan -> bayar (rekening + Order ID JG-XXXXXXXX) -> upload bukti -> menunggu verifikasi (timeline 4 langkah) -> sukses (masa aktif) / ditolak (coba lagi). src/lib/payment-plans.ts sumber tunggal plan; POST /api/payments/[id]/proof upload bukti (5MB, jpg/png/pdf); GET /api/payments/[id] + verifiedAt/subStartedAt/subExpiresAt; GET /api/payments user + planId; halaman Langganan + tabel Riwayat Pesanan; trust elements; fix race loader-vs-user stage (hydratedRef); fix redirect guest (bank hanya fetch saat login); QA suite _checkout 5/5 + full 28/28 PASS"
     }
   ],
   "test_status": {

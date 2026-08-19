@@ -5,7 +5,7 @@ type OrderStepsProps = {
 const STEPS = [
   { n: 1, label: "Pilih Paket" },
   { n: 2, label: "Pembayaran" },
-  { n: 3, label: "Selesai" },
+  { n: 3, label: "Verifikasi" },
 ];
 
 export default function OrderSteps({ step }: OrderStepsProps) {

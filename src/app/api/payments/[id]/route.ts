@@ -3,7 +3,7 @@ import { db } from "@/db";
 import { payments, subscriptions, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
-import { PLANS } from "@/app/api/payments/route";
+import { PLANS } from "@/lib/payment-plans";
 import { normalizePhone, sendWaNotification } from "@/lib/notifWa";
 import { invoiceWaText, invoiceHtml, invoiceNumber } from "@/lib/invoice";
 import { sendInvoiceEmail } from "@/lib/email";
@@ -22,6 +22,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         whatsapp: payments.whatsapp,
         planId: subscriptions.planId,
         createdAt: payments.createdAt,
+        verifiedAt: payments.verifiedAt,
+        proofUrl: payments.proofUrl,
+        subStartedAt: subscriptions.startedAt,
+        subExpiresAt: subscriptions.expiresAt,
       })
       .from(payments)
       .leftJoin(subscriptions, eq(payments.subscriptionId, subscriptions.id))

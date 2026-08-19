@@ -4,22 +4,10 @@ import { payments, subscriptions, users, settings } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
+import { PLANS, ACTIVE_PLAN_IDS } from "@/lib/payment-plans";
 import { normalizePhone, sendWaNotification } from "@/lib/notifWa";
 import { invoiceWaText, invoiceHtml, invoiceNumber } from "@/lib/invoice";
 import { sendInvoiceEmail } from "@/lib/email";
-
-export const PLANS: Record<string, { name: string; price: number; months: number; tagline: string }> = {
-  pro_6m: { name: "Pro", price: 29000, months: 6, tagline: "6 bulan" },
-  premium_6m: { name: "Premium", price: 49000, months: 6, tagline: "6 bulan, akses semua" },
-  // legacy: untuk verifikasi order lama yang masih pending
-  pro_1m: { name: "Pro", price: 29000, months: 1, tagline: "1 bulan" },
-  pro_3m: { name: "Pro", price: 79000, months: 3, tagline: "3 bulan" },
-  pro_12m: { name: "Pro", price: 279000, months: 12, tagline: "1 tahun" },
-  pro_24m: { name: "Pro", price: 499000, months: 24, tagline: "2 tahun" },
-  premium: { name: "Premium", price: 499000, months: 6, tagline: "6 bulan" },
-};
-
-const ACTIVE_PLAN_IDS = ["pro_6m", "premium_6m"];
 
 export async function getPaymentSettings() {
   const rows = await db.select().from(settings).all();
@@ -177,8 +165,21 @@ export async function GET(req: Request) {
     }
 
     const rows = await db
-      .select()
+      .select({
+        id: payments.id,
+        amount: payments.amount,
+        status: payments.status,
+        paymentMethod: payments.paymentMethod,
+        bankName: payments.bankName,
+        createdAt: payments.createdAt,
+        notes: payments.notes,
+        verifiedAt: payments.verifiedAt,
+        whatsapp: payments.whatsapp,
+        proofUrl: payments.proofUrl,
+        plan: subscriptions.planId,
+      })
       .from(payments)
+      .leftJoin(subscriptions, eq(payments.subscriptionId, subscriptions.id))
       .where(eq(payments.userId, session.id))
       .orderBy(payments.createdAt)
       .all();

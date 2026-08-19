@@ -3,6 +3,25 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { apiGet } from "@/lib/useApi";
+import { invoiceNumber } from "@/lib/invoice";
+
+const PLAN_LABEL: Record<string, string> = {
+  pro_6m: "Pro 6 bulan",
+  premium_6m: "Premium 6 bulan",
+  pro_1m: "Pro 1 bulan",
+  pro_3m: "Pro 3 bulan",
+  pro_12m: "Pro 1 tahun",
+  pro_24m: "Pro 2 tahun",
+  premium: "Premium 6 bulan",
+  pro: "Pro 6 bulan",
+  sekolah: "Premium 6 bulan",
+};
+
+const STATUS_LABEL: Record<string, { label: string; cls: string }> = {
+  pending: { label: "Menunggu Pembayaran", cls: "bg-amber-100 text-amber-700" },
+  paid: { label: "Berhasil", cls: "bg-green-100 text-green-700" },
+  rejected: { label: "Ditolak", cls: "bg-red-100 text-red-600" },
+};
 
 type Plan = "gratis" | "pro" | "premium";
 
@@ -25,6 +44,7 @@ export default function SubscriptionPage() {
   const [info, setInfo] = useState<SubsInfo | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [payments, setPayments] = useState<any[]>([]);
 
   useEffect(() => {
     apiGet<{ user?: { plan?: string; role?: string; planExpires?: string | null } }>("/api/auth/check").then((r) => {
@@ -35,7 +55,9 @@ export default function SubscriptionPage() {
     });
     apiGet<{ plan?: string; payments?: any[] }>("/api/payments").then((r) => {
       if (r.ok && r.data) {
-        const latest = r.data.payments?.[0] || null;
+        const list = r.data.payments || [];
+        setPayments(list);
+        const latest = list[0] || null;
         setInfo((prev) => ({
           plan: prev?.plan ?? "gratis",
           planExpires: prev?.planExpires ?? null,
@@ -109,7 +131,7 @@ export default function SubscriptionPage() {
       </div>
 
       {info?.payment && (
-        <div className="card">
+        <div className="card mb-6">
           <h3 className="font-bold text-[#1A2332] mb-4"><i className="fas fa-receipt text-[#0D7C66] mr-2"></i>Pembayaran Terakhir</h3>
           <div className="flex justify-between items-center text-sm mb-2">
             <span className="text-gray-500">Nominal</span>
@@ -123,6 +145,49 @@ export default function SubscriptionPage() {
             <span className="text-gray-500">Tanggal</span>
             <span>{info.payment.createdAt ? new Date(info.payment.createdAt).toLocaleDateString("id-ID") : "-"}</span>
           </div>
+        </div>
+      )}
+
+      {payments.length > 0 && (
+        <div className="card overflow-x-auto">
+          <h3 className="font-bold text-[#1A2332] mb-4"><i className="fas fa-clock-rotate-left text-[#0D7C66] mr-2"></i>Riwayat Pesanan</h3>
+          <table className="w-full text-sm min-w-[520px]">
+            <thead>
+              <tr className="text-left text-xs text-gray-400 border-b border-[#E8E4DC]">
+                <th className="py-2 pr-3 font-semibold">Order ID</th>
+                <th className="py-2 pr-3 font-semibold">Tanggal</th>
+                <th className="py-2 pr-3 font-semibold">Paket</th>
+                <th className="py-2 pr-3 font-semibold">Total</th>
+                <th className="py-2 pr-3 font-semibold">Status</th>
+                <th className="py-2 font-semibold">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {payments.map((p) => {
+                const st = STATUS_LABEL[p.status] || { label: p.status, cls: "bg-gray-100 text-gray-600" };
+                return (
+                  <tr key={p.id} className="border-b border-[#E8E4DC] last:border-0">
+                    <td className="py-2.5 pr-3 font-mono font-bold text-[#1A2332]">{invoiceNumber(p.id)}</td>
+                    <td className="py-2.5 pr-3 text-gray-600">{p.createdAt ? new Date(p.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) : "-"}</td>
+                    <td className="py-2.5 pr-3 text-gray-700">{PLAN_LABEL[p.plan] || "Paket"}</td>
+                    <td className="py-2.5 pr-3 font-semibold text-[#1A2332]">Rp {Number(p.amount || 0).toLocaleString("id-ID")}</td>
+                    <td className="py-2.5 pr-3">
+                      <span className={`inline-block text-[11px] font-bold px-2.5 py-1 rounded-full ${st.cls}`}>{st.label}</span>
+                    </td>
+                    <td className="py-2.5">
+                      {p.status === "pending" ? (
+                        <Link href={`/checkout?payment=${p.id}`} className="text-[#0D7C66] font-semibold text-xs hover:underline">
+                          Lanjutkan <i className="fas fa-arrow-right ml-0.5"></i>
+                        </Link>
+                      ) : (
+                        <span className="text-xs text-gray-300">-</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
