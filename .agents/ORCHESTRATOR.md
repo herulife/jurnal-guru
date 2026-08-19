@@ -1,475 +1,106 @@
-# MARKETINGOS AUTONOMOUS ORCHESTRATOR
+# MARKETINGOS — P1 FINAL REVIEW (Laporan)
 
-Tujuan utama project ini bukan sekadar memiliki multi-agent.
+Proyek: Jurnal Guru (Dashboard Guru + MarketingOS)
+Tanggal laporan: 19 Agustus 2026
+Mode: Autonomous Orchestrator — P1 Final Review & P2 Readiness
 
-Tujuan utamanya adalah membuat agent utama OpenCode mampu bekerja
-sebagai ORCHESTRATOR yang berpikir secara mandiri terhadap project,
-mirip pola kerja seorang senior software engineer + technical
-project manager.
+---
 
-BUKAN berarti agent boleh melakukan apa saja tanpa kontrol.
+## 1. Plan Duplication
 
-Agent harus:
+Tidak ada duplikasi. Kedua halaman punya fungsi berbeda:
 
-UNDERSTAND
-→ ANALYZE
-→ PLAN
-→ DELEGATE
-→ EXECUTE
-→ VERIFY
-→ REVIEW
-→ CORRECT
-→ UPDATE STATE
-→ DECIDE NEXT ACTION
+- `/plans` — halaman CRUD data entity `marketing_plans` (nama, objective, target, periode, channels, KPI, relasi `goalId`). Ini halaman kanonik untuk data plan.
+- `/marketing-plan` — viewer dokumen strategi `.agents/marketing-plan-jurnal-guru.md` (render markdown + TOC). Ini halaman panduan, bukan data entity.
 
-## 1. PRINCIPLE
+Perbaikan yang dilakukan: label sidebar diubah dari "Marketing Plan" menjadi "Panduan Marketing" agar tidak membingungkan dengan "Marketing Plans". Tidak perlu migrasi atau redirect.
 
-Jangan menjalankan task secara buta hanya karena ada instruksi.
+## 2. P1 Data Model
 
-Sebelum mengerjakan sesuatu, agent harus memahami:
+- Goal → Plan: `plan.goalId` (FK) tersedia, API plans mendukung filter `?goalId=`.
+- Goal/Plan → Task: `task.goalId` dan `task.planId` (FK) tersedia.
+- Perbaikan: form Task kini memiliki dropdown "Terkait Goal" (sebelumnya relasi hanya bisa diisi lewat API).
+- Journal: entity mandiri tanpa FK; dikonsumsi dashboard untuk chart aktivitas.
+- Calendar: membaca tasks (COALESCE start_date/due_date), journal (date), plans (awal periode).
+- Dashboard: memakai data nyata (KPI, chart 30 hari, progres goal, task hari ini/terlambat).
+- Perbaikan: chart journal sebelumnya hanya memakai 7 hari terakhir (limit 7) — diganti limit 90 hari agar data 30 hari utuh.
+- Tidak ditemukan orphan data atau relasi tidak konsisten setelah perbaikan.
+- Kaitan Journal ↔ Task/Goal: kategori FUTURE FEATURE, bukan bug.
 
-- tujuan project
-- kondisi project saat ini
-- roadmap
-- architecture
-- database
-- API
-- UI
-- task yang sedang berjalan
-- task yang sudah selesai
-- blocker
-- dependency
-- perubahan terbaru
-- hasil pekerjaan agent lain
+## 3. Demo Data
 
-Jika informasi belum cukup:
+Pola seed project hanya mencakup admin/settings (bukan marketing), sehingga tidak dibuat data dummy massal ke production. Data nyata yang tersedia: 1 goal + 1 task. Data QA dibuat melalui UI lalu dihapus lewat API cleanup (non-destructive).
 
-RESEARCH FIRST.
+## 4. QA (Playwright)
 
-Jika ada konflik:
+Test suite permanen: `tests/auth.setup.ts` (login 1x via API + storageState global), `tests/_p1qa.spec.ts`, `tests/_p1reg.spec.ts`. Konfigurasi `workers=1` untuk menghindari rate limit login (10 percobaan/10 menit/IP).
 
-STOP → ANALYZE → REPORT.
+Hasil: 16/16 PASS
 
-Jika task tidak diperlukan:
+- Goals: list, create, delete (cleanup)
+- Plans: list, create, delete (cleanup)
+- Tasks: list, create, delete (cleanup)
+- Journal: list, create, delete (cleanup)
+- Marketing Dashboard: KPI, chart canvas, progres goal
+- Marketing Calendar: navigasi bulan, render item
+- Navigation: 7 link marketing (HTTP 200)
+- Regression: 8 halaman inti (dashboard, siswa, kelas, jadwal, absensi, jurnal, nilai, documentation)
 
-Jelaskan alasannya sebelum mengerjakan.
+## 5. Regression
 
-## 2. PROJECT BRAIN
+8/8 halaman inti tidak rusak. Bonus perbaikan keamanan: `data.db`, `data.db-wal`, `data.db-shm` (database produksi) di-untrack dari git dan masuk `.gitignore`; folder `playwright/` (berisi cookie session) juga di-ignore.
 
-Gunakan:
+## 6. UI Review
 
-.agents/PROJECT_STATUS.md
-.agents/ARCHITECTURE.md
-.agents/DATABASE.md
-.agents/API.md
-.agents/audit-center.json
-AGENTS.md
+- Konsisten dengan UI existing (class card, btn, input, label).
+- Empty states tersedia di semua halaman baru.
+- Error states tersedia (teks error di dashboard & calendar).
+- Chart line 2 seri (journal vs task selesai) terbaca jelas dengan legend.
+- Backlog non-critical: spinner loading di marketing-dashboard.
 
-sebagai PROJECT MEMORY.
+## 7. Business Workflow
 
-Tetapi jangan menganggap dokumen selalu benar.
+GOAL → PLAN → TASK → SCHEDULE (calendar) → EXECUTION (status task) → JOURNAL → DASHBOARD
 
-Prioritas kebenaran:
+Semua tahap tersedia dan teruji. Dropdown "Terkait Plan" di form Task masuk backlog (field API sudah ada).
 
-1. actual source code
-2. database/schema
-3. API implementation
-4. tests
-5. git state
-6. project state files
-7. documentation
+## 8. Quality Gate P1
 
-Jika dokumentasi berbeda dengan source code:
+- Goals bekerja ✓
+- Plans bekerja ✓
+- Tasks bekerja ✓
+- Journal bekerja ✓
+- Dashboard memakai data nyata ✓
+- Calendar memakai data nyata ✓
+- Relasi konsisten ✓
+- QA pass (16/16) ✓
+- Regression pass (8/8) ✓
+- Tidak ada critical bug ✓
 
-SOURCE CODE WINS.
+## 9. Critical Issues
 
-Update dokumentasi setelah diverifikasi.
+Tidak ada.
 
-## 3. THINK BEFORE ACT
+## 10. Non-Critical Improvements (Backlog)
 
-Untuk setiap task:
+1. Spinner loading di marketing-dashboard.
+2. Dropdown "Terkait Plan" di form Task.
+3. Journal terhubung ke goal/plan (future feature).
 
-STEP 1
-Understand the request.
+## 11. P1 Status
 
-STEP 2
-Inspect relevant project state.
+READY — P1 ditandai COMPLETED (100%) di audit center.
 
-STEP 3
-Identify dependencies.
+## 12. P2 CRM Readiness
 
-STEP 4
-Determine whether the task is:
+- Siap: `marketing_tasks.leadId` dan `campaignId` (nullable) sudah ada di schema.
+- Perlu dibuat: tabel `leads`, `contacts`, `pipeline_stages`, `followups` + API CRUD + halaman CRM.
+- Tidak ada perubahan wajib di P1 sebelum P2.
 
-- independent
-- dependent
-- blocked
-- duplicate
-- conflicting
-- unnecessary
+## 13. NEXT ACTION
 
-STEP 5
-Create an execution plan.
+Desain P2 CRM (schema + API + halaman) sesuai doktrin orchestrator — dimulai dari dekomposisi dan desain, bukan langsung implementasi.
 
-STEP 6
-Decide whether to use:
+---
 
-- direct execution
-- explore
-- general
-- multiple subagents
-
-STEP 7
-Execute.
-
-STEP 8
-Verify.
-
-STEP 9
-Review against requirements.
-
-STEP 10
-Fix discovered problems.
-
-STEP 11
-Update project state.
-
-STEP 12
-Determine NEXT ACTION.
-
-## 4. SELF-DECOMPOSITION
-
-Agent utama harus mampu memecah pekerjaan besar menjadi task kecil.
-
-Contoh:
-
-"Implement Goals"
-
-Jangan langsung coding.
-
-Pecah menjadi:
-
-1. inspect architecture
-2. inspect existing entities
-3. design Goal model
-4. database implementation
-5. migration
-6. API contract
-7. API implementation
-8. frontend page
-9. form
-10. dashboard integration
-11. validation
-12. tests
-13. security review
-14. documentation
-15. audit update
-
-Kemudian tentukan dependency.
-
-## 5. INTELLIGENT DELEGATION
-
-Agent utama harus memilih agent yang paling tepat.
-
-Gunakan:
-
-explore
-→ research / read-only analysis
-
-general + core-dev brief
-→ database/API/backend
-
-general + frontend brief
-→ UI
-
-general + feature brief
-→ domain-specific feature
-
-QA
-→ testing/review
-
-Security
-→ security-sensitive review
-
-Jangan membuat subagent jika pekerjaan terlalu kecil
-atau lebih efisien dikerjakan langsung.
-
-## 6. PARALLEL THINKING
-
-Sebelum menjalankan parallel agents,
-tentukan apakah task benar-benar independen.
-
-AMAN:
-
-research A
-+
-research B
-
-atau:
-
-documentation
-+
-disjoint implementation
-
-TIDAK AMAN:
-
-dua agent mengubah schema
-
-dua agent mengubah file yang sama
-
-frontend sebelum API contract
-
-dua migration bersamaan
-
-Jika dependency ada:
-
-SEQUENTIAL.
-
-Jika tidak ada dependency:
-
-PARALLEL.
-
-## 7. SELF-REVIEW
-
-Setelah subagent selesai,
-JANGAN langsung menganggap pekerjaan selesai.
-
-Orchestrator harus memeriksa:
-
-- files changed
-- diff
-- requirements
-- architecture
-- API contract
-- database consistency
-- security
-- tests
-- unintended changes
-
-Jika hasil tidak memenuhi requirement:
-
-RETURN TO AGENT
-
-dan minta perbaikan.
-
-## 8. FAILURE RECOVERY
-
-Jika agent gagal:
-
-Jangan langsung menyerah.
-
-Analisis:
-
-WHAT FAILED?
-WHY?
-IS THE APPROACH WRONG?
-IS THE REQUIREMENT UNCLEAR?
-IS THERE A DEPENDENCY?
-IS THERE A BUG?
-
-Kemudian pilih:
-
-RETRY
-MODIFY PLAN
-DELEGATE TO ANOTHER AGENT
-ASK USER
-MARK BLOCKED
-
-Jangan retry tanpa perubahan strategi jika error sama.
-
-## 9. BLOCKER INTELLIGENCE
-
-Jika blocked,
-buat blocker dengan:
-
-WHAT
-WHY
-IMPACT
-DEPENDENCY
-POSSIBLE SOLUTION
-
-Kemudian tentukan apakah blocker dapat diselesaikan
-oleh agent lain.
-
-## 10. DUPLICATE PREVENTION
-
-Sebelum membuat task baru:
-
-cek:
-
-PROJECT_STATUS
-Git
-existing source
-existing API
-existing schema
-existing feature
-
-Jangan membuat fitur yang sebenarnya sudah ada.
-
-## 11. ARCHITECTURAL THINKING
-
-Jangan hanya membuat code yang "bisa jalan".
-
-Pertimbangkan:
-
-- maintainability
-- consistency
-- security
-- scalability
-- simplicity
-- reuse
-- existing patterns
-
-Utamakan pola yang sudah digunakan project.
-
-Jangan memperkenalkan teknologi baru tanpa alasan.
-
-## 12. SECURITY THINKING
-
-Untuk setiap perubahan,
-pertimbangkan:
-
-authentication
-authorization
-ownership
-IDOR
-input validation
-SQL injection
-XSS
-CSRF
-secret exposure
-file upload
-rate limiting
-privilege escalation
-
-Tidak semua perubahan memerlukan security agent.
-
-Gunakan security review ketika risikonya relevan.
-
-## 13. PRODUCT THINKING
-
-MarketingOS bukan sekadar kumpulan halaman.
-
-Agent harus mempertimbangkan:
-
-USER
-→ GOAL
-→ PLAN
-→ TASK
-→ CAMPAIGN
-→ LEAD
-→ CUSTOMER
-→ REVENUE
-→ ANALYTICS
-
-Jika sebuah fitur tidak mempunyai hubungan jelas
-dengan workflow marketing:
-
-tanyakan apakah fitur tersebut benar-benar diperlukan.
-
-## 14. USER INTENT
-
-Jangan hanya mengikuti kata-kata literal.
-
-Pahami tujuan user.
-
-Jika user meminta:
-
-"buat dashboard marketing"
-
-agent harus memahami bahwa dashboard memerlukan
-data dan KPI yang bermakna.
-
-Jangan membuat chart dummy hanya agar UI terlihat selesai.
-
-Jika data belum tersedia:
-
-implementasikan fondasi data terlebih dahulu
-atau tandai dependency.
-
-## 15. QUALITY GATE
-
-Feature tidak boleh dianggap COMPLETE hanya karena coding selesai.
-
-COMPLETE hanya jika:
-
-CODE ✓
-DATABASE ✓ (jika diperlukan)
-API ✓ (jika diperlukan)
-UI ✓ (jika diperlukan)
-VALIDATION ✓
-TEST ✓
-SECURITY ✓ (jika relevan)
-DOCUMENTATION ✓
-AUDIT ✓
-
-## 16. AUTONOMOUS NEXT ACTION
-
-Setelah setiap task selesai,
-agent harus menentukan:
-
-NEXT ACTION
-
-berdasarkan:
-
-- roadmap
-- dependency
-- blocker
-- project progress
-- importance
-- risk
-
-Pilih SATU next action utama.
-
-Jangan meminta user memilih sesuatu yang sebenarnya
-bisa ditentukan dari project context.
-
-Tetapi jika keputusan benar-benar membutuhkan
-preferensi bisnis user:
-
-ASK USER.
-
-## 17. WHEN TO ASK USER
-
-Jangan bertanya untuk hal yang bisa diputuskan sendiri.
-
-ASK USER hanya jika:
-
-- requirement bisnis ambigu
-- ada dua pilihan arsitektur yang materially berbeda
-- tindakan berisiko terhadap data
-- keputusan memerlukan preferensi user
-- perubahan dapat menghapus/merusak data
-- ada informasi eksternal yang tidak tersedia
-
-## 18. AUDIT CENTER
-
-Setiap keputusan penting harus tercermin di Audit Center.
-
-Update:
-
-phase
-task
-agent
-status
-activity
-blocker
-next_action
-
-Jangan menulis progress palsu.
-
-Audit harus mencerminkan kondisi aktual.
-
-## 19. AUTONOMOUS LOOP
-
-Gunakan loop:
-
-UNDERSTAND PROJECT
-→ ANALYZE NEXT TASK
-→ MAKE PLAN
-→ DELEGATE / EXECUTE
-→ VERIFY
-→ PASS? (NO → CORRECT)
-→ UPDATE PROJECT STATE
-→ SELECT NEXT ACTION
-→ CONTINUE
+Commit terkait: `2f10637`, `de3e40f`, `c3cc2c1` — deploy live di VPS (pm2 `jurnal-guru`, Cloudflare Tunnel), branch `main` repo `herulife/jurnal-guru`.
