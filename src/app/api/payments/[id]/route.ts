@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { payments, subscriptions, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
+import { trackEvent } from "@/lib/tracking";
 import { PLANS } from "@/lib/payment-plans";
 import { normalizePhone, sendWaNotification } from "@/lib/notifWa";
 import { invoiceWaText, invoiceHtml, invoiceNumber } from "@/lib/invoice";
@@ -145,6 +146,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
             }
           }
         }
+      }
+
+      if (verified) {
+        await trackEvent("payment_approved", {
+          userId: user.userId,
+          meta: { paymentId: id },
+        });
       }
 
       await addLog(session.id, "VERIFY_PAYMENT", `${body.status} ${id}`);

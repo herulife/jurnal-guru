@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import SocialProof from "@/components/SocialProof";
+import LandingTracker from "@/components/LandingTracker";
+import TrackCta from "@/components/TrackCta";
 import Navbar from "@/components/Navbar";
 import DashboardMockup from "@/components/DashboardMockup";
 import Reveal from "@/components/Reveal";
@@ -41,19 +43,19 @@ const features = [
 
 const testimonials = [
   {
-    name: "Bu Ratna",
-    role: "Guru Matematika",
-    text: "Absensi jadi lebih cepat. Rekap otomatis, tidak perlu hitung manual lagi. Hemat waktu!",
+    icon: "fa-stopwatch",
+    title: "Hemat Waktu",
+    text: "Absensi, nilai, dan jurnal dicatat digital — tidak perlu hitung manual lagi.",
   },
   {
-    name: "Pak Ahmad",
-    role: "Wali Kelas",
-    text: "Nilai dan jurnal tersusun rapi. Laporan ke orang tua jadi lebih mudah.",
+    icon: "fa-folder-open",
+    title: "Tersusun Rapi",
+    text: "Semua data administrasi ada di satu tempat, rapi dan mudah dicari.",
   },
   {
-    name: "Bu Siti",
-    role: "Guru Bahasa",
-    text: "Semua data siswa ada di satu tempat. Tidak perlu cari di berbagai file lagi.",
+    icon: "fa-paper-plane",
+    title: "Langsung Bisa Dipakai",
+    text: "Daftar gratis, akun aktif setelah verifikasi email, langsung coba semua fitur.",
   },
 ];
 
@@ -109,9 +111,9 @@ export default async function Home() {
                 <strong className="text-white"> Jurnal Guru</strong> bantu semuanya dalam satu tempat — gratis.
               </p>
               <div className="flex flex-wrap items-center gap-4 lp-anim lp-d3">
-                <Link href="/register" className="inline-flex items-center gap-2 bg-[#E8A317] hover:bg-[#ca8a04] text-[#1A2332] font-semibold px-7 py-3.5 rounded-xl transition-all shadow-lg hover:shadow-xl lp-shimmer-wrap">
+                <TrackCta href="/register" className="inline-flex items-center gap-2 bg-[#E8A317] hover:bg-[#ca8a04] text-[#1A2332] font-semibold px-7 py-3.5 rounded-xl transition-all shadow-lg hover:shadow-xl lp-shimmer-wrap">
                   <i className="fas fa-rocket"></i> Coba Gratis Sekarang
-                </Link>
+                </TrackCta>
                 <Link href="/checkout" className="inline-flex items-center gap-2 bg-white hover:bg-white/90 text-[#0D7C66] font-semibold px-7 py-3.5 rounded-xl transition-all shadow-lg">
                   <i className="fas fa-cart-shopping"></i> Beli Sekarang
                 </Link>
@@ -427,11 +429,11 @@ export default async function Home() {
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm">
               <i className="fas fa-shield-halved"></i>
-              <span>Garansi 30 Hari: Tidak Hemat Waktu? Uang Kembali Penuh</span>
+              <span>Coba Gratis Dulu — Tanpa Kartu Kredit</span>
             </div>
             <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm">
               <i className="fas fa-lock"></i>
-              <span>Garansi Keamanan Data - Enkripsi &amp; Backup Otomatis</span>
+              <span>Data Anda Aman — Akses Terproteksi</span>
             </div>
           </div>
           </Reveal>
@@ -447,16 +449,10 @@ export default async function Home() {
               Testimoni
             </p>
             <h2 className="text-2xl md:text-3xl font-bold font-[Outfit] text-[#1A2332]">
-              Apa Kata Guru?
+              Apa Manfaatnya Bagi Guru?
             </h2>
             <div className="flex items-center justify-center gap-2 mt-4">
-              <span className="text-2xl font-extrabold font-[Outfit] text-[#1A2332]">4.9</span>
-              <div className="flex gap-0.5">
-                {Array.from({ length: 5 }).map((_, j) => (
-                  <i key={j} className="fas fa-star text-[#E8A317] text-sm"></i>
-                ))}
-              </div>
-              <span className="text-sm text-gray-400">dari 281 guru aktif</span>
+              <span className="text-sm text-gray-400">Pengalaman guru saat mengelola administrasi harian</span>
             </div>
           </div>
           </Reveal>
@@ -470,14 +466,13 @@ export default async function Home() {
                     <i key={j} className="fas fa-star text-[#E8A317] text-sm"></i>
                   ))}
                 </div>
-                <p className="text-sm text-gray-600 italic mb-4">&ldquo;{t.text}&rdquo;</p>
+                <p className="text-sm text-gray-600 mb-4">&ldquo;{t.text}&rdquo;</p>
                 <div className="flex items-center gap-3 pt-4 border-t border-[#E8E4DC]">
-                  <div className="w-10 h-10 bg-[#0D7C66] rounded-full flex items-center justify-center text-white font-bold text-sm">
-                    {t.name.charAt(0)}
+                  <div className="w-10 h-10 bg-[#0D7C66] rounded-full flex items-center justify-center text-white text-sm">
+                    <i className={`fas ${t.icon}`}></i>
                   </div>
                   <div>
-                    <p className="font-bold text-[#1A2332] text-sm">{t.name}</p>
-                    <p className="text-gray-500 text-xs">{t.role}</p>
+                    <p className="font-bold text-[#1A2332] text-sm">{t.title}</p>
                   </div>
                 </div>
               </div>
@@ -489,10 +484,10 @@ export default async function Home() {
           <Reveal delay={2}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-14">
             {[
-              { icon: "fa-chalkboard-user", value: "281", label: "Guru Aktif" },
-              { icon: "fa-clipboard-check", value: "1.200+", label: "Absensi Tercatat" },
-              { icon: "fa-school", value: "45", label: "Kelas Terkelola" },
-              { icon: "fa-star", value: "4.9/5", label: "Kepuasan Guru" },
+              { icon: "fa-hand-holding-heart", value: "Rp0", label: "Gratis Selamanya" },
+              { icon: "fa-clipboard-check", value: "10 detik", label: "Catat Kehadiran" },
+              { icon: "fa-box-open", value: "6+ fitur", label: "Siap Dipakai" },
+              { icon: "fa-layer-group", value: "1 tempat", label: "Semua Data Guru" },
             ].map((s) => (
               <div key={s.label} className="bg-[#fcfbf8] rounded-2xl border border-[#E8E4DC] p-5 text-center hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
                 <div className="w-10 h-10 bg-[#0D7C66]/10 rounded-xl flex items-center justify-center mx-auto mb-3">
@@ -515,9 +510,9 @@ export default async function Home() {
           <p className="max-w-xl mx-auto text-white/80 mb-7">
             Mulai kelola absensi, nilai, dan jurnal mengajar secara digital. Gratis, tanpa ribet.
           </p>
-          <Link href="/register" className="inline-flex items-center gap-2 bg-[#E8A317] hover:bg-[#ca8a04] text-[#1A2332] font-semibold px-8 py-3.5 rounded-xl transition-all shadow-lg lp-shimmer-wrap">
+          <TrackCta href="/register" className="inline-flex items-center gap-2 bg-[#E8A317] hover:bg-[#ca8a04] text-[#1A2332] font-semibold px-8 py-3.5 rounded-xl transition-all shadow-lg lp-shimmer-wrap">
             <i className="fas fa-rocket"></i> Coba Gratis Sekarang
-          </Link>
+          </TrackCta>
           <p className="text-white/60 text-sm mt-4">
             <i className="fas fa-shield-halved mr-1"></i> Gratis selamanya &middot; Tanpa kartu kredit
           </p>
@@ -564,6 +559,7 @@ export default async function Home() {
         </div>
       </footer>
       <SocialProof />
+      <LandingTracker />
     </div>
   );
 }

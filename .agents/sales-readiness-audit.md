@@ -1,7 +1,17 @@
 # SALES READINESS — RINGKASAN & VERDICT (2026-08-19)
 
 Target: GURU · Live: https://guru.cintabuku.site
-Audit menyeluruh 10 fase sudah dilakukan (bukti test tersimpan: checkout 5/5, security 6/6, mobile 4/4, regresi 28/28). Di bawah ini hanya hasil terbaru yang penting.
+Audit menyeluruh 10 fase sudah dilakukan (bukti test tersimpan: checkout 5/5, security 6/6, mobile 4/4, regresi 28/28, tracking 4/4).
+
+## STATUS QUICK WINS
+
+| Quick Win | Status |
+|---|---|
+| 1. Copy garansi diganti (tanpa klaim refund/enkripsi) | DONE 2026-08-19 |
+| 2. Social proof angka hardcode diganti (angka fungsional + testimoni fiktif dihapus) | DONE 2026-08-19 |
+| 3. Upload bukti pindah folder privat | BACKLOG — NON-BLOCKER (.agents/BACKLOG.md) |
+| 4. Teks 'verifikasi biasanya < 2 jam' | OPEN — opsional |
+| 5. Tracking minimal 7 event + UTM | DONE 2026-08-19 (test 4/4) |
 
 ## FINAL STATUS
 

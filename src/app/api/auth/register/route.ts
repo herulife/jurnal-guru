@@ -1,6 +1,7 @@
 import { hashPassword, addLog } from "@/lib/auth";
 import { apiError, apiResponse, apiServerError } from "@/lib/utils";
 import { rateLimited } from "@/lib/rateLimit";
+import { trackEvent } from "@/lib/tracking";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq, or } from "drizzle-orm";
@@ -88,6 +89,7 @@ export async function POST(req: Request) {
     }
 
     await addLog(userId, "REGISTER", `${userEmail} mendaftar (menunggu verifikasi)`);
+    await trackEvent("register_completed", { userId, meta: { email: userEmail } });
 
     return apiResponse(true, { email: userEmail }, "Registrasi berhasil. Silakan cek email untuk aktivasi.");
   } catch (e: unknown) {

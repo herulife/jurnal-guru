@@ -4,6 +4,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { apiGet, apiPost, apiPatch } from "@/lib/useApi";
+import { trackOnce } from "@/lib/track-client";
 import { invoiceNumber } from "@/lib/invoice";
 import { useToast } from "@/components/Feedback";
 import OrderSteps from "@/components/OrderSteps";
@@ -95,6 +96,7 @@ function CheckoutInner() {
   };
 
   useEffect(() => {
+    trackOnce("checkout_viewed", "checkout");
     apiGet("/api/auth/check")
       .then((r) => {
         setAuthState(r.ok ? "ok" : "guest");

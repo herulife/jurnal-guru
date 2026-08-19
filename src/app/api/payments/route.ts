@@ -4,6 +4,7 @@ import { payments, subscriptions, users, settings } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
+import { trackEvent } from "@/lib/tracking";
 import { PLANS, ACTIVE_PLAN_IDS } from "@/lib/payment-plans";
 import { normalizePhone, sendWaNotification } from "@/lib/notifWa";
 import { invoiceWaText, invoiceHtml, invoiceNumber } from "@/lib/invoice";
@@ -79,6 +80,10 @@ export async function POST(req: Request) {
     });
 
     await addLog(session.id, "CREATE_PAYMENT", `Order ${plan.name} Rp ${plan.price}`);
+    await trackEvent("payment_created", {
+      userId: session.id,
+      meta: { planId, amount: plan.price },
+    });
 
     const bank = await getPaymentSettings();
     const invoiceInfo = {

@@ -279,3 +279,13 @@ export const marketingJournal = sqliteTable("marketing_journal", {
   nextAction: text("next_action"),
   createdAt: text("created_at").notNull().default("datetime('now')"),
 });
+
+// ── TRACKING MINIMAL (Pre-Ad Launch) ──
+
+export const events = sqliteTable("events", {
+  id: text("id").primaryKey(),
+  event: text("event").notNull(),
+  timestamp: text("timestamp").notNull(),
+  userId: text("user_id"),
+  meta: text("meta"),
+});

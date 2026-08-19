@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 import { useState } from "react";
 import Link from "next/link";
 import { apiPost } from "@/lib/useApi";
+import { track } from "@/lib/track-client";
 import { useToast } from "@/components/Feedback";
 import DashboardMockup from "@/components/DashboardMockup";
 
@@ -30,6 +31,8 @@ export default function RegisterPage() {
       setLoading(false);
       return;
     }
+
+    track("register_started");
 
     try {
       const res = await apiPost("/api/auth/register", {

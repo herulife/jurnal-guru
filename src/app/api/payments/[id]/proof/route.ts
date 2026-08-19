@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { payments } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
+import { trackEvent } from "@/lib/tracking";
 import fs from "fs";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
@@ -42,6 +43,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       .where(eq(payments.id, id));
 
     await addLog(session.id, "UPLOAD_PROOF", `Bukti pembayaran ${id.slice(0, 8)}`);
+    await trackEvent("payment_proof_submitted", {
+      userId: session.id,
+      meta: { paymentId: id },
+    });
     return apiOk({ proofUrl: `/uploads/${filename}` }, "Bukti pembayaran dikirim");
   } catch (e: unknown) {
     if (e instanceof AuthError) return apiError(e.message, e.status);

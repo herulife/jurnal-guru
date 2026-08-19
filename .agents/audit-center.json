@@ -526,6 +526,12 @@
       "agent": "QA",
       "type": "COMPLETED AUDIT",
       "detail": "Sales Readiness Final Audit (10 fase): landing PASS (2 catatan copy garansi/social proof), register/login PASS, role & plan security PASS (bypass test _security.spec.ts 6/6: gratis 403 semua fitur, pro hanya nilai, premium semua, user tak bisa verifikasi/lihat payment orang lain, upload exe/6MB ditolak), payment E2E PASS (amount server-side, planId whitelist, approval -> subscription active + users.plan + planExpires +6bln), payment security PASS (1 catatan MEDIUM: bukti transfer di public/uploads), mobile PASS (_mobile.spec.ts 4/4, 375/390/412 tanpa overflow), friction: HIGH x2 (klaim garansi 30 hari tanpa mekanisme refund, social proof angka hardcode), funnel mapping lengkap, tracking: TIDAK ADA sama sekali. CRITICAL BLOCKERS: NONE. Halaman /audit dibuat (tab per fase + tombol copy). Laporan: .agents/sales-readiness-audit.md"
+    },
+    {
+      "at": "2026-08-19 12:00",
+      "agent": "DEV",
+      "type": "COMPLETED PRE-AD LAUNCH",
+      "detail": "Quick Win 1-2 (copy landing): klaim 'Garansi 30 Hari Uang Kembali' & 'Enkripsi & Backup' diganti 'Coba Gratis Dulu — Tanpa Kartu Kredit' + 'Data Anda Aman — Akses Terproteksi'; rating '4.9 dari 281 guru aktif' & stats 281/1.200+/45/4.9 diganti angka fungsional (Rp0/10 detik/6+ fitur/1 tempat); testimoni fiktif (Bu Ratna dkk) & popup fake social proof diganti kartu manfaat + 'Tip Cepat' fitur. Quick Win 5 (tracking minimal): tabel events + POST /api/track (publik, whitelist 7 event: landing_view, register_started, register_completed, checkout_viewed, payment_created, payment_proof_submitted, payment_approved) + UTM (utm_source/medium/campaign/content via cookie jg_utm 30 hari) + GET admin utk lihat data; dedupe re-render via localStorage trackOnce 6 jam; tanpa password/token/proof binary; tracking tidak bisa ubah payment/plan (insert-only, whitelist event, GET admin-only). Test: _tracking.spec.ts 4/4. Backlog: .agents/BACKLOG.md (Private Payment Proof Storage, NON-BLOCKER)."
     }
   ],
   "test_status": {
@@ -544,7 +550,7 @@
     "integration": {
       "status": "PASS",
       "last_run": "2026-08-19",
-      "detail": "Playwright: checkout 5/5, security 6/6, mobile 4/4, regresi 28/28"
+      "detail": "Playwright: checkout 5/5 + sales + security 6/6 + mobile 4/4 + tracking 4/4 + regresi p1/reg — 42/42"
     },
     "build": {
       "status": "PASS",
@@ -586,5 +592,5 @@
     }
   },
   "blockers": [],
-  "next_action": "NEXT ACTION: terapkan quick wins 1-2 (copy garansi + social proof riil) sebelum iklan; tracking minimal (tabel events 6 titik) sebelum kampanye; upload bukti dipindah ke folder privat. FINAL VERDICT: READY TO ADVERTISE (blocker none, 2 catatan copy)"
+  "next_action": "READY TO ADVERTISE — iklan bisa jalan. Setelah launch: quick win 3 (upload privat, lihat .agents/BACKLOG.md), lalu P2 CRM (tunggu instruksi)."
 }

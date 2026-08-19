@@ -3,20 +3,20 @@
 import { useEffect, useState } from "react";
 
 const notifications = [
-  { name: "Bu Ratna", location: "Jakarta", action: "baru saja menggunakan Jurnal Guru" },
-  { name: "Pak Ahmad", location: "Bandung", action: "telah mengelola 5 kelas" },
-  { name: "Bu Siti", location: "Surabaya", action: "menyelesaikan absensi hari ini" },
-  { name: "Pak Budi", location: "Medan", action: "menggunakan Jurnal Guru" },
-  { name: "Bu Dewi", location: "Semarang", action: "baru saja login" },
-  { name: "Pak Hendra", location: "Makassar", action: "mengelola 120 siswa" },
-  { name: "Bu Maya", location: "Yogyakarta", action: "menyelesaikan jurnal mengajar" },
-  { name: "Pak Rizki", location: "Palembang", action: "baru saja menggunakan Jurnal Guru" },
+  { action: "Catat absensi siswa dalam 10 detik per kelas" },
+  { action: "Rekap nilai & KKM otomatis, tanpa hitung manual" },
+  { action: "Jurnal mengajar tersusun rapi per pertemuan" },
+  { action: "Data siswa terpusat, cepat dicari" },
+  { action: "Template surat sekolah siap pakai" },
+  { action: "Kelompok belajar dibuat otomatis" },
+  { action: "Jadwal mengajar tampil dalam satu kalender" },
+  { action: "LCKH & LKB bisa dibuat dari dashboard" },
 ];
 
 const stats = [
-  { label: "Guru Aktif", value: "281" },
-  { label: "Kelas Terkelola", value: "45" },
-  { label: "Absensi Tercatat", value: "1.200+" },
+  { label: "Gratis Selamanya", value: "Rp0" },
+  { label: "Catat Kehadiran", value: "10 detik" },
+  { label: "Siap Dipakai", value: "6+ fitur" },
 ];
 
 export default function SocialProof() {
@@ -25,7 +25,7 @@ export default function SocialProof() {
   const [showStats, setShowStats] = useState(false);
 
   useEffect(() => {
-    // Show first notification after 5 seconds
+    // Show first tip after 5 seconds
     const timer1 = setTimeout(() => setShow(true), 5000);
 
     // Show stats after 3 seconds
@@ -70,7 +70,7 @@ export default function SocialProof() {
         </div>
       )}
 
-      {/* Notification popup */}
+      {/* Tip popup */}
       <div
         className={`fixed bottom-20 left-4 z-50 bg-white rounded-xl shadow-lg border border-[#E8E4DC] p-3 flex items-center gap-3 max-w-xs transition-all duration-500 ${
           show
@@ -78,18 +78,14 @@ export default function SocialProof() {
             : "opacity-0 translate-y-4 pointer-events-none"
         }`}
       >
-        <div className="w-9 h-9 bg-[#0D7C66] rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-          {n.name.charAt(0)}
+        <div className="w-9 h-9 bg-[#0D7C66] rounded-full flex items-center justify-center text-white flex-shrink-0">
+          <i className="fas fa-lightbulb text-sm"></i>
         </div>
         <div className="min-w-0">
           <p className="text-sm text-[#1A2332]">
-            <span className="font-bold">{n.name}</span>{" "}
-            <span className="text-gray-500">dari {n.location}</span>
+            <span className="font-bold">Tip Cepat</span>
           </p>
-          <p className="text-xs text-gray-400 truncate">{n.action}</p>
-        </div>
-        <div className="flex-shrink-0">
-          <span className="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+          <p className="text-xs text-gray-500">{n.action}</p>
         </div>
       </div>
     </>
