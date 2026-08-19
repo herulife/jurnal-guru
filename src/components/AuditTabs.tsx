@@ -80,11 +80,13 @@ export default function AuditTabs({ report }: { report: string }) {
             Quick Wins: {quickWinCount}
           </span>
           <button
-            onClick={() => setTab(phases.findIndex((p) => p.title.includes("PHASE 10")))}
+            onClick={() =>
+              setTab(Math.max(0, phases.findIndex((p) => p.title.startsWith("NEXT ACTION"))))
+            }
             className="btn btn-sm text-sm"
             style={{ backgroundColor: "#0D7C66", color: "#fff" }}
           >
-            Lihat Verdict &amp; Next Action
+            Lihat Next Action
           </button>
         </div>
       </div>
