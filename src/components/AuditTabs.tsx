@@ -17,6 +17,18 @@ export default function AuditTabs({ report }: { report: string }) {
   const header = sections[0] ?? { title: "SALES READINESS AUDIT", body: "" };
   const phases = sections.slice(1);
 
+  const full = `## ${header.title}\n\n${header.body}\n\n${phases.map((p) => `## ${p.title}\n\n${p.body}`).join("\n\n")}`;
+
+  function sectionBody(name: string): string {
+    return phases.find((p) => p.title === name)?.body ?? "";
+  }
+
+  const blockers = sectionBody("CRITICAL BLOCKERS");
+  const quickWins = sectionBody("QUICK WINS");
+  const nextAction = sectionBody("NEXT ACTION");
+  const ready = !/NOT READY/i.test(blockers + nextAction + sectionBody("FINAL SALES VERDICT"));
+  const quickWinCount = quickWins.split("\n").filter((l) => /^\d+\./.test(l.trim())).length;
+
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
@@ -49,6 +61,30 @@ export default function AuditTabs({ report }: { report: string }) {
           >
             <i className="fa-solid fa-copy mr-2" />
             Salin Semua
+          </button>
+        </div>
+      </div>
+
+      <div className="card p-5 mb-4 border-l-4" style={{ borderLeftColor: ready ? "#16a34a" : "#dc2626" }}>
+        <div className="flex flex-wrap items-center gap-3">
+          <span
+            className="px-3 py-1 rounded-full text-sm font-bold text-white"
+            style={{ backgroundColor: ready ? "#16a34a" : "#dc2626" }}
+          >
+            {ready ? "READY TO ADVERTISE" : "NOT READY TO ADVERTISE"}
+          </span>
+          <span className="px-3 py-1 rounded-full text-sm font-semibold bg-white border border-gray-200 text-gray-700">
+            Blockers: {blockers === "NONE" || blockers.startsWith("NONE") ? "TIDAK ADA" : blockers}
+          </span>
+          <span className="px-3 py-1 rounded-full text-sm font-semibold bg-white border border-gray-200 text-gray-700">
+            Quick Wins: {quickWinCount}
+          </span>
+          <button
+            onClick={() => setTab(phases.findIndex((p) => p.title.includes("PHASE 10")))}
+            className="btn btn-sm text-sm"
+            style={{ backgroundColor: "#0D7C66", color: "#fff" }}
+          >
+            Lihat Verdict &amp; Next Action
           </button>
         </div>
       </div>
