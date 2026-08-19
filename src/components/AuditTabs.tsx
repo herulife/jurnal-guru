@@ -20,7 +20,7 @@ export default function AuditTabs({ report }: { report: string }) {
   const full = `## ${header.title}\n\n${header.body}\n\n${phases.map((p) => `## ${p.title}\n\n${p.body}`).join("\n\n")}`;
 
   function sectionBody(name: string): string {
-    return phases.find((p) => p.title === name)?.body ?? "";
+    return phases.find((p) => p.title.startsWith(name))?.body ?? "";
   }
 
   const blockers = sectionBody("CRITICAL BLOCKERS");
@@ -74,7 +74,7 @@ export default function AuditTabs({ report }: { report: string }) {
             {ready ? "READY TO ADVERTISE" : "NOT READY TO ADVERTISE"}
           </span>
           <span className="px-3 py-1 rounded-full text-sm font-semibold bg-white border border-gray-200 text-gray-700">
-            Blockers: {blockers === "NONE" || blockers.startsWith("NONE") ? "TIDAK ADA" : blockers}
+            Blockers: {blockers.includes("TIDAK ADA") ? "TIDAK ADA" : blockers.split("\n")[0]}
           </span>
           <span className="px-3 py-1 rounded-full text-sm font-semibold bg-white border border-gray-200 text-gray-700">
             Quick Wins: {quickWinCount}
@@ -110,7 +110,7 @@ export default function AuditTabs({ report }: { report: string }) {
           className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-[#1A2332] bg-white rounded-lg border border-gray-100 p-4 overflow-x-auto"
           style={{ maxHeight: "70vh" }}
         >
-          {phases[tab]?.body ?? ""}
+          {phases.length ? phases[tab]?.body ?? "" : header.body}
         </pre>
       </div>
     </>
