@@ -15,6 +15,8 @@ export default defineConfig({
     { name: "setup", testMatch: /auth\.setup\.ts/ },
     { name: "sales", testMatch: /_sales\.spec\.ts/ },
     { name: "checkout", testMatch: /_checkout\.spec\.ts/ },
+    { name: "security", testMatch: /_security\.spec\.ts/ },
+    { name: "mobile", testMatch: /_mobile\.spec\.ts/ },
     { name: "p1", dependencies: ["setup"], use: { storageState: "playwright/.auth/user.json" }, testMatch: /_p1qa/ },
     { name: "reg", dependencies: ["setup"], use: { storageState: "playwright/.auth/user.json" }, testMatch: /_p1reg/ },
   ],

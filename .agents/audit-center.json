@@ -520,6 +520,12 @@
       "phase": "CHECKOUT",
       "event": "Redesign checkout jadi Order Online UX",
       "detail": "Flow pilih paket -> ringkasan -> bayar (rekening + Order ID JG-XXXXXXXX) -> upload bukti -> menunggu verifikasi (timeline 4 langkah) -> sukses (masa aktif) / ditolak (coba lagi). src/lib/payment-plans.ts sumber tunggal plan; POST /api/payments/[id]/proof upload bukti (5MB, jpg/png/pdf); GET /api/payments/[id] + verifiedAt/subStartedAt/subExpiresAt; GET /api/payments user + planId; halaman Langganan + tabel Riwayat Pesanan; trust elements; fix race loader-vs-user stage (hydratedRef); fix redirect guest (bank hanya fetch saat login); QA suite _checkout 5/5 + full 28/28 PASS"
+    },
+    {
+      "at": "2026-08-19 10:30",
+      "agent": "QA",
+      "type": "COMPLETED AUDIT",
+      "detail": "Sales Readiness Final Audit (10 fase): landing PASS (2 catatan copy garansi/social proof), register/login PASS, role & plan security PASS (bypass test _security.spec.ts 6/6: gratis 403 semua fitur, pro hanya nilai, premium semua, user tak bisa verifikasi/lihat payment orang lain, upload exe/6MB ditolak), payment E2E PASS (amount server-side, planId whitelist, approval -> subscription active + users.plan + planExpires +6bln), payment security PASS (1 catatan MEDIUM: bukti transfer di public/uploads), mobile PASS (_mobile.spec.ts 4/4, 375/390/412 tanpa overflow), friction: HIGH x2 (klaim garansi 30 hari tanpa mekanisme refund, social proof angka hardcode), funnel mapping lengkap, tracking: TIDAK ADA sama sekali. CRITICAL BLOCKERS: NONE. Halaman /audit dibuat (tab per fase + tombol copy). Laporan: .agents/sales-readiness-audit.md"
     }
   ],
   "test_status": {
@@ -537,8 +543,8 @@
     },
     "integration": {
       "status": "PASS",
-      "last_run": "2026-08-16",
-      "detail": "Playwright payments API: 8/8 passed"
+      "last_run": "2026-08-19",
+      "detail": "Playwright: checkout 5/5, security 6/6, mobile 4/4, regresi 28/28"
     },
     "build": {
       "status": "PASS",
@@ -580,5 +586,5 @@
     }
   },
   "blockers": [],
-  "next_action": "NEXT BUSINESS ACTION: mulai promosi ke guru (lihat laporan SALES READINESS); lalu P2 CRM"
+  "next_action": "NEXT ACTION: terapkan quick wins 1-2 (copy garansi + social proof riil) sebelum iklan; tracking minimal (tabel events 6 titik) sebelum kampanye; upload bukti dipindah ke folder privat. FINAL VERDICT: READY TO ADVERTISE (blocker none, 2 catatan copy)"
 }
