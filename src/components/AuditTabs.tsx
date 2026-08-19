@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import StatusCopyButton from "@/components/StatusCopyButton";
 
 export default function AuditTabs({ report }: { report: string }) {
+  const [copied, setCopied] = useState(false);
+
   const sections = useMemo(() => {
     const parts = report.split(/^## /m).filter((p) => p.trim());
     return parts.map((p) => {
@@ -12,56 +14,58 @@ export default function AuditTabs({ report }: { report: string }) {
     });
   }, [report]);
 
-  const [tab, setTab] = useState(0);
-
-  const header = sections[0] ?? { title: "SALES READINESS AUDIT", body: "" };
-  const phases = sections.slice(1);
-
-  const full = `## ${header.title}\n\n${header.body}\n\n${phases.map((p) => `## ${p.title}\n\n${p.body}`).join("\n\n")}`;
+  const bannerIdx = sections.findIndex((s) => s.title.includes("BANNER"));
+  const bannerPart =
+    bannerIdx >= 0 ? sections[bannerIdx].body : "";
 
   function sectionBody(name: string): string {
-    return phases.find((p) => p.title.startsWith(name))?.body ?? "";
+    return sections.find((p) => p.title.startsWith(name))?.body ?? "";
   }
 
   const blockers = sectionBody("CRITICAL BLOCKERS");
   const quickWins = sectionBody("QUICK WINS");
   const nextAction = sectionBody("NEXT ACTION");
-  const ready = !/NOT READY/i.test(blockers + nextAction + sectionBody("FINAL SALES VERDICT"));
+  const ready = !/NOT READY/i.test(blockers + nextAction + sectionBody("FINAL STATUS"));
   const quickWinCount = quickWins.split("\n").filter((l) => /^\d+\./.test(l.trim())).length;
+
+  async function copyText(text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
 
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-[#1A2332]">
-            Sales Readiness Final Audit
+            Marketing &amp; Sales — Jurnal Guru
           </h1>
           <p className="text-sm text-gray-500">
-            {header.body.split("\n")[0]} · 10 fase + verdict akhir — siap disalin untuk
-            laporan
+            Banner promosi organic + hasil audit siap iklan — satu halaman, tinggal salin
           </p>
         </div>
         <div className="flex gap-2">
-          <StatusCopyButton text={phases[tab] ? `## ${phases[tab].title}\n\n${phases[tab].body}` : report} />
-          <button
-            className="btn btn-outline text-sm"
-            style={{ color: "#0D7C66" }}
-            onClick={async () => {
-              try {
-                await navigator.clipboard.writeText(report);
-              } catch {
-                const ta = document.createElement("textarea");
-                ta.value = report;
-                document.body.appendChild(ta);
-                ta.select();
-                document.execCommand("copy");
-                document.body.removeChild(ta);
-              }
-            }}
-          >
-            <i className="fa-solid fa-copy mr-2" />
-            Salin Semua
-          </button>
+          <StatusCopyButton text={report} />
+          {bannerPart && (
+            <button
+              className="btn btn-outline text-sm"
+              style={{ color: "#0D7C66" }}
+              onClick={() => void copyText(bannerPart)}
+            >
+              <i className="fa-solid fa-copy mr-2" />
+              Salin Banner
+            </button>
+          )}
         </div>
       </div>
 
@@ -79,40 +83,15 @@ export default function AuditTabs({ report }: { report: string }) {
           <span className="px-3 py-1 rounded-full text-sm font-semibold bg-white border border-gray-200 text-gray-700">
             Quick Wins: {quickWinCount}
           </span>
-          <button
-            onClick={() =>
-              setTab(Math.max(0, phases.findIndex((p) => p.title.startsWith("NEXT ACTION"))))
-            }
-            className="btn btn-sm text-sm"
-            style={{ backgroundColor: "#0D7C66", color: "#fff" }}
-          >
-            Lihat Next Action
-          </button>
         </div>
-      </div>
-
-      <div className="flex flex-wrap gap-2 mb-4">
-        {phases.map((p, i) => (
-          <button
-            key={p.title}
-            onClick={() => setTab(i)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              tab === i
-                ? "bg-[#0D7C66] text-white"
-                : "bg-white border border-gray-200 text-gray-600 hover:border-[#0D7C66]"
-            }`}
-          >
-            {p.title}
-          </button>
-        ))}
       </div>
 
       <div className="card p-5">
         <pre
           className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-[#1A2332] bg-white rounded-lg border border-gray-100 p-4 overflow-x-auto"
-          style={{ maxHeight: "70vh" }}
+          style={{ maxHeight: "75vh" }}
         >
-          {phases.length ? phases[tab]?.body ?? "" : header.body}
+          {report}
         </pre>
       </div>
     </>
