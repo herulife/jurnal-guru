@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     "/marketing-plan": [".agents/marketing-plan-jurnal-guru.md"],
     "/documentation": [".agents/audits/**", ".agents/audit-center.json"],
     "/status/opencode": [".agents/ORCHESTRATOR.md"],
-    "/audit": [".agents/sales-readiness-audit.md"],
+    "/audit": [".agents/sales-readiness-audit.md", ".agents/marketing-banner-plan.md"],
   },
   experimental: {
     serverActions: {
