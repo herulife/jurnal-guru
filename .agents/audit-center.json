@@ -3,7 +3,7 @@
     "name": "Jurnal Guru — MarketingOS",
     "repo": "herulife/jurnal-guru",
     "live": "https://guru.cintabuku.site",
-    "updated_at": "2026-08-19T20:30:00+07:00"
+    "updated_at": "2026-08-19T21:30:00+07:00"
   },
   "phases": [
     {
@@ -508,6 +508,12 @@
       "phase": "P1",
       "event": "Laporan final disimpan",
       "detail": ".agents/ORCHESTRATOR.md diganti laporan P1 FINAL REVIEW (13 bagian) utk disalin ke ChatGPT; tab Orchestrator Doctrine di /status/opencode otomatis menampilkannya (commit 168da97)"
+    },
+    {
+      "date": "2026-08-19",
+      "phase": "SALES",
+      "event": "Pre-launch sales readiness",
+      "detail": "Audit landing/CTA/pricing/register/login/checkout/mobile/SEO/analytics; tambah onboarding 5 langkah di dashboard utk user baru (kelas & siswa 0); QA suite _sales 7/7 + full 21/21; analytics belum ada -> rekomendasi event saja"
     }
   ],
   "test_status": {
@@ -568,5 +574,5 @@
     }
   },
   "blockers": [],
-  "next_action": "P2 CRM: desain schema (leads/contacts/pipeline_stages/followups) + API + halaman + QA"
+  "next_action": "NEXT BUSINESS ACTION: mulai promosi ke guru (lihat laporan SALES READINESS); lalu P2 CRM"
 }

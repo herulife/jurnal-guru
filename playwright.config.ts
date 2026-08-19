@@ -14,6 +14,7 @@ export default defineConfig({
   },
   projects: [
     { name: "setup", testMatch: /auth\.setup\.ts/ },
+    { name: "sales", storageState: { cookies: [], origins: [] }, testMatch: /_sales\.spec\.ts/ },
     { name: "p1", dependencies: ["setup"], testMatch: /_p1qa/ },
     { name: "reg", dependencies: ["setup"], testMatch: /_p1reg/ },
   ],

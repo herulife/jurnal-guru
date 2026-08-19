@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
 import { Chart, BarController, BarElement, CategoryScale, LinearScale, Tooltip } from "chart.js";
 import { apiGet } from "@/lib/useApi";
 
@@ -154,6 +155,37 @@ export default function DashboardPage() {
           </span>
         </div>
       </header>
+
+      {/* Onboarding */}
+      {(data?.totalKelas ?? 0) === 0 && (data?.totalSiswa ?? 0) === 0 && (
+        <div className="card p-5 mb-8 border-[#0D7C66]/30">
+          <div className="flex items-center gap-2 mb-1">
+            <i className="fa-solid fa-flag-checkered text-[#0D7C66]"></i>
+            <h2 className="font-bold text-[#1A2332]">Selamat datang! Mulai dalam 5 langkah</h2>
+          </div>
+          <p className="text-sm text-gray-500 mb-4">Lengkapi data dasar dulu — semua bisa diubah kapan saja.</p>
+          <div className="flex flex-col md:flex-row gap-2">
+            {[
+              { n: 1, label: "Lengkapi profil", href: "/profil" },
+              { n: 2, label: "Tambahkan kelas", href: "/kelas" },
+              { n: 3, label: "Tambahkan siswa", href: "/siswa" },
+              { n: 4, label: "Buat jadwal", href: "/jadwal" },
+              { n: 5, label: "Mulai absensi", href: "/absensi" },
+            ].map((s) => (
+              <Link
+                key={s.n}
+                href={s.href}
+                className="flex items-center gap-2 flex-1 px-3 py-2.5 rounded-xl border border-[#E8E4DC] text-sm font-medium text-[#1A2332] hover:border-[#0D7C66] hover:text-[#0D7C66] transition-all"
+              >
+                <span className="w-5 h-5 rounded-full bg-[#0D7C66] text-white text-[11px] font-bold flex items-center justify-center">
+                  {s.n}
+                </span>
+                {s.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
