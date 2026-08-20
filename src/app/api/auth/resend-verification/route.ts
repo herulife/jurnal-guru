@@ -3,7 +3,7 @@ import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { apiError, apiResponse, apiServerError } from "@/lib/utils";
 import { rateLimited } from "@/lib/rateLimit";
-import { emailConfigured, sendVerificationEmail, generateVerifyToken, verifyTokenExpiry } from "@/lib/email";
+import { emailConfigured, sendVerificationEmail, generateVerifyToken, verifyTokenExpiry, hashToken } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
 
     await db
       .update(users)
-      .set({ verifyToken, verifyTokenExpires: verifyExpires })
+      .set({ verifyTokenHash: hashToken(verifyToken), verifyToken: null, verifyTokenExpires: verifyExpires })
       .where(eq(users.id, user.id));
 
     const sent = await sendVerificationEmail(userEmail, user.namaLengkap, verifyToken);

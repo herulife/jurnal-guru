@@ -32,11 +32,17 @@ function resolveDb(): AnyDb {
   const url = process.env.DATABASE_URL;
   if (url) {
     const client = createClient({ url, authToken: process.env.TURSO_AUTH_TOKEN });
+    if (!url.startsWith("libsql:")) {
+      // File SQLite: tunggu lock sampai timeout agar write concurrent (register)
+      // tidak langsung gagal dengan SQLITE_BUSY. Non-destructive.
+      client.execute("PRAGMA busy_timeout = 5000").catch(() => {});
+    }
     dbInstance = drizzleLibsql(client, { schema });
     return dbInstance;
   }
 
   const client = createClient({ url: "file:./data.db" });
+  client.execute("PRAGMA busy_timeout = 5000").catch(() => {});
   dbInstance = drizzleLibsql(client, { schema });
   return dbInstance;
 }

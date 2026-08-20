@@ -1,0 +1,25 @@
+-- Migration: hash verification token (F-08)
+-- ==========================================
+-- Perubahan schema (src/db/schema.ts):
+--   users.verify_token          -> kolom legacy (plaintext) — TETAP dipakai utk user lama
+--   users.verify_token_hash     -> kolom BARU — satu-satunya tempat token baru disimpan (SHA-256)
+--
+-- Strategi migrasi (aman untuk data existing):
+-- 1. Tambah kolom baru (non-destructive).
+-- 2. Token plaintext existing di kolom verify_token TIDAK bisa di-hash ulang
+--    (raw token tidak pernah tersimpan di server). Karena itu verifikasi
+--    (src/app/api/auth/verify-email/route.ts) mendukung fallback legacy:
+--    cek hash dulu, lalu cek plaintext lama. Saat berhasil, KEDUA kolom dibersihkan.
+-- 3. Registrasi baru & resend-verification HANYA menulis ke verify_token_hash.
+-- 4. Setelah semua pending token legacy terpakai (dapat dicek via
+--    SELECT COUNT(*) FROM users WHERE verify_token IS NOT NULL), kolom
+--    verify_token boleh di-drop pada migrasi berikutnya.
+--
+-- Catatan: default role users di schema berubah 'admin' -> 'free' (F-10).
+-- SQLite tidak mendukung ALTER COLUMN DEFAULT; seluruh jalur insert aplikasi
+-- sudah selalu menetapkan role secara eksplisit (register role='free',
+-- users POST role=resolved, seed role='admin'), sehingga tidak perlu
+-- rebuild tabel. Untuk database baru (test/staging), drizzle-kit push akan
+-- menerapkan default baru otomatis dari schema.ts.
+
+ALTER TABLE users ADD COLUMN verify_token_hash TEXT;

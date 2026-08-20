@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
+import { validatePasswordForCreation } from "@/lib/password-policy";
 
 export async function POST(req: Request) {
   try {
@@ -13,8 +14,9 @@ export async function POST(req: Request) {
     if (!passwordLama || !passwordBaru) {
       return apiError("Password lama dan password baru wajib diisi");
     }
-    if (passwordBaru.length < 8) {
-      return apiError("Password baru minimal 8 karakter");
+    const passwordError = validatePasswordForCreation(passwordBaru);
+    if (passwordError) {
+      return apiError(passwordError);
     }
 
     const user = await db.select().from(users).where(eq(users.id, session.id)).get();

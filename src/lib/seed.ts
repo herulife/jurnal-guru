@@ -63,13 +63,14 @@ const JK = ["L", "P", "L", "P", "L", "P", "L", "P", "L", "P", "L", "P"];
 /**
  * Isi data dummy untuk satu user baru (dipanggil otomatis saat registrasi).
  * Membuat 2 kelas, 12 siswa, jadwal, absensi, nilai, jurnal, kelompok, LCKH, LKB & catatan kalender.
+ * `client` dapat berupa db atau transaction (tx) agar atomic dengan insert user.
  */
-export async function seedDummyData(userId: string) {
+export async function seedDummyData(userId: string, client: typeof db = db) {
   const tahun = "2026/2027";
 
   // Profil sekolah — kosong, agar dokumen tidak menampilkan data palsu.
   // User mengisi data sekolah asli di menu "Profil Sekolah".
-  await db.insert(profilSekolah).values({
+  await client.insert(profilSekolah).values({
     id: uuidv4(),
     userId,
     namaSekolah: "",
@@ -87,7 +88,7 @@ export async function seedDummyData(userId: string) {
 
   // Kelas — limit to 1 for free plan (max 1 kelas aktif)
   const k1 = uuidv4();
-  await db.insert(dataKelas).values([
+  await client.insert(dataKelas).values([
     { id: k1, userId, namaKelas: "X IPA 1", tingkat: 10, jurusan: "IPA", tahunAjaran: tahun, waliKelas: "Wali Kelas 1" },
   ]);
 
@@ -112,11 +113,11 @@ export async function seedDummyData(userId: string) {
     };
   });
   for (const row of siswaRows) {
-    await db.insert(dataSiswa).values(row);
+    await client.insert(dataSiswa).values(row);
   }
 
   // Jadwal
-  await db.insert(jadwalMengajar).values([
+  await client.insert(jadwalMengajar).values([
     { id: uuidv4(), userId, kelasId: k1, mataPelajaran: "Matematika", hari: "Senin", jamMulai: "07:00", jamSelesai: "08:30", semester: "1", ruangan: "R.101" },
     { id: uuidv4(), userId, kelasId: k1, mataPelajaran: "Bahasa Indonesia", hari: "Senin", jamMulai: "08:30", jamSelesai: "10:00", semester: "1", ruangan: "R.101" },
     { id: uuidv4(), userId, kelasId: k1, mataPelajaran: "Biologi", hari: "Selasa", jamMulai: "07:00", jamSelesai: "08:30", semester: "1", ruangan: "R.Lab" },
@@ -127,7 +128,7 @@ export async function seedDummyData(userId: string) {
   const tanggal = "2026-08-10";
   const statusArr = ["Hadir", "Hadir", "Sakit", "Hadir", "Izin", "Hadir", "Alpha", "Hadir"];
   for (let i = 0; i < 8; i++) {
-    await db.insert(absensi).values({
+    await client.insert(absensi).values({
       id: uuidv4(),
       userId,
       tanggal,
@@ -142,7 +143,7 @@ export async function seedDummyData(userId: string) {
   // Nilai (8 siswa)
   const nilaiArr = [88, 92, 70, 85, 76, 80, 65, 90];
   for (let i = 0; i < 8; i++) {
-    await db.insert(nilai).values({
+    await client.insert(nilai).values({
       id: uuidv4(),
       userId,
       tanggal: "2026-08-09",
@@ -160,7 +161,7 @@ export async function seedDummyData(userId: string) {
 
   // Jurnal
   const jurnalId = uuidv4();
-  await db.insert(jurnalMengajar).values({
+  await client.insert(jurnalMengajar).values({
     id: jurnalId,
     userId,
     tanggal: "2026-08-10",
@@ -177,7 +178,7 @@ export async function seedDummyData(userId: string) {
 
   // Kelompok belajar
   for (let i = 0; i < 6; i++) {
-    await db.insert(kelompokBelajar).values({
+    await client.insert(kelompokBelajar).values({
       id: uuidv4(),
       userId,
       kelasId: k1,
@@ -193,19 +194,19 @@ export async function seedDummyData(userId: string) {
   }
 
   // LCKH
-  await db.insert(lckh).values([
+  await client.insert(lckh).values([
     { id: uuidv4(), userId, no: "1", kegiatan: "Kegiatan pembelajaran Matematika", pekerjaan: "Penyusunan materi ajar, pelaksanaan PBM", tanggal: "2026-08-10", jurnalId },
     { id: uuidv4(), userId, no: "2", kegiatan: "Kegiatan penilaian harian", pekerjaan: "Penyusunan dan koreksi soal", tanggal: "2026-08-11", jurnalId: null },
   ]);
 
   // LKB
-  await db.insert(lkb).values([
+  await client.insert(lkb).values([
     { id: uuidv4(), userId, no: "1", uraianTugas: "Penyusunan silabus dan RPP", vol: 3, buktiDokumen: "Dokumen RPP 3 pertemuan", bulan: "Agustus", tahun: "2026" },
     { id: uuidv4(), userId, no: "2", uraianTugas: "Evaluasi hasil belajar siswa", vol: 2, buktiDokumen: "Analisis nilai ulangan harian", bulan: "Agustus", tahun: "2026" },
   ]);
 
   // Kalender catatan
-  await db.insert(kalenderCatatan).values({
+  await client.insert(kalenderCatatan).values({
     id: uuidv4(),
     userId,
     tanggal: "2026-08-18",

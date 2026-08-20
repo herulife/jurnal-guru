@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
 import { resolveUserRole } from "@/lib/plan-helpers";
+import { validatePasswordForCreation } from "@/lib/password-policy";
 
 export async function GET() {
   try {
@@ -42,8 +43,9 @@ export async function POST(req: Request) {
       return apiError("Username minimal 4 karakter");
     }
 
-    if (password.length < 8) {
-      return apiError("Password minimal 8 karakter");
+    const passwordError = validatePasswordForCreation(password);
+    if (passwordError) {
+      return apiError(passwordError);
     }
 
     const existing = await db

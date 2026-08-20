@@ -4,6 +4,7 @@ import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
 import { resolveUserRole } from "@/lib/plan-helpers";
+import { validatePasswordForCreation } from "@/lib/password-policy";
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -24,7 +25,9 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       updates.role = resolved.role;
       if (resolved.plan) updates.plan = resolved.plan;
     }
-    if (password && password.length >= 8) {
+    if (password) {
+      const passwordError = validatePasswordForCreation(password);
+      if (passwordError) return apiError(passwordError);
       updates.passwordHash = await hashPassword(password);
     }
 

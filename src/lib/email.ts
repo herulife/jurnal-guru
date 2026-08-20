@@ -1,4 +1,7 @@
+import { createHash } from "node:crypto";
+
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const RESEND_API_URL = process.env.RESEND_API_URL || "https://api.resend.com/emails";
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Jurnal Guru <noreply@cintabuku.site>";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://guru.cintabuku.site";
 
@@ -43,7 +46,7 @@ export async function sendVerificationEmail(to: string, nama: string, token: str
   `;
 
   try {
-    const res = await fetch("https://api.resend.com/emails", {
+    const res = await fetch(RESEND_API_URL, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${RESEND_API_KEY}`,
@@ -71,6 +74,10 @@ export function generateVerifyToken(): string {
   return crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "");
 }
 
+export function hashToken(token: string): string {
+  return createHash("sha256").update(token).digest("hex");
+}
+
 export function verifyTokenExpiry(): string {
   return new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 }
@@ -78,7 +85,7 @@ export function verifyTokenExpiry(): string {
 export async function sendInvoiceEmail(to: string, subject: string, html: string): Promise<boolean> {
   if (!RESEND_API_KEY) return false;
   try {
-    const res = await fetch("https://api.resend.com/emails", {
+    const res = await fetch(RESEND_API_URL, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${RESEND_API_KEY}`,

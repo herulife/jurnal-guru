@@ -4,7 +4,7 @@ type Bucket = { count: number; resetAt: number };
 
 const WINDOW_MS = 10 * 60 * 1000;
 const MAX_ATTEMPTS = 10;
-const PERSIST_FILE = "/tmp/jg_rate_limits.json";
+const PERSIST_FILE = process.env.RATE_LIMIT_FILE || "/tmp/jg_rate_limits.json";
 
 let buckets: Map<string, Bucket> = new Map();
 

@@ -1,8 +1,9 @@
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, or, and } from "drizzle-orm";
 import { apiServerError } from "@/lib/utils";
 import { addLog } from "@/lib/auth";
+import { hashToken } from "@/lib/email";
 
 export async function GET(req: Request) {
   try {
@@ -14,10 +15,13 @@ export async function GET(req: Request) {
       return Response.redirect(`${base}/login?verify=fail`, 302);
     }
 
+    // Token baru disimpan sebagai SHA-256 hash; token lama (legacy) masih plaintext.
+    const hash = hashToken(token);
+
     const user = await db
       .select()
       .from(users)
-      .where(eq(users.verifyToken, token))
+      .where(or(eq(users.verifyTokenHash, hash), eq(users.verifyToken, token)))
       .get();
 
     if (!user) {
@@ -35,12 +39,17 @@ export async function GET(req: Request) {
       return Response.redirect(`${base}/login?activated=1`, 302);
     }
 
-    await db
+    // Update atomik bersyarat: hanya bertransisi jika belum terverifikasi.
+    // Menjamin token hanya bisa dipakai sekali (replay / concurrent = satu sukses).
+    const updated = await db
       .update(users)
-      .set({ emailVerified: 1, verifyToken: null, verifyTokenExpires: null })
-      .where(eq(users.id, user.id));
+      .set({ emailVerified: 1, verifyTokenHash: null, verifyToken: null })
+      .where(and(eq(users.id, user.id), eq(users.emailVerified, 0)))
+      .run();
 
-    await addLog(user.id, "VERIFY_EMAIL", `${user.email} mengkonfirmasi email`);
+    if (updated.rowsAffected === 1) {
+      await addLog(user.id, "VERIFY_EMAIL", `${user.email} mengkonfirmasi email`);
+    }
 
     return Response.redirect(`${base}/login?activated=1`, 302);
   } catch (e: unknown) {
