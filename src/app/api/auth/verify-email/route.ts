@@ -8,7 +8,7 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const token = searchParams.get("token");
-    const base = new URL(req.url).origin;
+    const base = process.env.NEXT_PUBLIC_APP_URL || "https://guru.cintabuku.site";
 
     if (!token) {
       return Response.redirect(`${base}/login?verify=fail`, 302);

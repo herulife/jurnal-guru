@@ -138,6 +138,7 @@ const landingPageChecks = [
 const issuesFixed: [string, string][] = [
   ["TRIAL REMOVED", "Free no longer has 2-day expiry. Free = forever."],
   ["PRICING CONSISTENT", "All 8 layers show Rp29k/Rp49k"],
+  ["EMAIL VERIFY FIXED", "Redirect pakai NEXT_PUBLIC_APP_URL (bukan req origin → localhost:3000 lewat tunnel)"],
   ["SEED FIXED", "New users get 1 class (not 2), 6 students (not 12)"],
   ["BACKUP ENFORCED", "Import respects plan limits"],
   ["SUBSCRIPTION FIXED", 'No more "trial" messaging'],
@@ -741,7 +742,7 @@ export default function AuditFullDocumentation() {
         <footer className="bg-[#1A2332] text-gray-400 text-xs text-center py-6 px-4 lg:ml-0">
           <p>Master Audit — Jurnal Guru — Hardened for Soft Launch — 20 Agustus 2026</p>
           <p className="mt-1">55 API | 23 Tabel | 26 Indexes | 21 Fitur | 6 Marketing | Entitlement System | 23/24 Tests PASS</p>
-          <p className="mt-1 text-green-400 font-bold">READY FOR LIMITED SOFT LAUNCH</p>
+          <p className="mt-1 text-green-400 font-bold">READY FOR LIMITED SOFT LAUNCH — PRICING 29rb/49rb LIVE · VERIFY EMAIL FIXED</p>
         </footer>
       </main>
     </div>
