@@ -588,34 +588,92 @@ export default function AuthSecurityAudit() {
           {/* s18 */}
           <section id="s18" className="mb-12 scroll-mt-6">
             <SectionHeader number="11" title="Fix Report — F-07 / F-08 / F-10 / F-12" />
-            <InfoBox icon="check-circle" text="Empat temuan tingkat register sudah diperbaiki dan diverifikasi dengan 16 tes regresi otomatis. Semua tes berjalan di database test terisolasi (tests/.tmp/reg.db) dengan mock email server — tidak ada data produksi yang disentuh." />
+            <InfoBox icon="check-circle" text="Empat temuan tingkat register diperbaiki dan diverifikasi dengan regression test otomatis (DB test terisolasi tests/.tmp/reg.db + mock email server). Status hanya ditandai FIXED jika ada evidence test & build; tidak ada data produksi yang dipakai untuk test." />
+
+            {[
+              {
+                id: "F-07",
+                title: "F-07 — Register failure tidak lagi meninggalkan orphan data",
+                status: <FixedBadge key="s7" />,
+                root: "Urutan lama: insert user → seedDummyData() (1 kelas, 6 siswa, jadwal, absensi, nilai, jurnal, kelompok, LCKH, LKB, kalender, profil) → kirim email. Jika email gagal, hanya user yang dihapus; 11+ tabel dummy tertinggal (orphan) per percobaan gagal. Insert + seed tidak atomik.",
+                fix: "Insert user + seed dibungkus satu transaksi (db.transaction). Email dikirim SETELAH commit (tidak menahan transaksi DB menunggu provider). Jika email gagal → compensating cleanup: hapus 13 tabel child (absensi, nilai, kelompok, jadwal, jurnal, siswa, kelas, profil, lckh, lkb, kalender, activity_log, events) lalu user. Aman: hanya menghapus baris WHERE user_id = UUID v4 yang di-generate request ini (bukan dari client); urutan hapus leaf-first + loop-until-empty agar benar walau foreign keys aktif; idempoten.",
+                evidence: "Regression test F07-2/F07-3 (email provider 500): jumlah baris users, data_kelas, data_siswa, profil_sekolah, jurnal_mengajar, lckh kembali ke baseline (zero orphan); test F07-3 idempotensi: akun lama & data user lain tidak tersentuh. Test suite: auth-register.spec.ts #7-8.",
+                tests: "F07-1 register sukses (user + related data + verification state) · F07-2 email failure → zero orphan · F07-3 cleanup idempoten & tidak menghapus data user lain",
+              },
+              {
+                id: "F-08",
+                title: "F-08 — Verification token disimpan sebagai hash (SHA-256)",
+                status: <FixedBadge key="s8" />,
+                root: "generateVerifyToken() menghasilkan 64-byte random hex (512-bit, CSPRNG — aman), TAPI disimpan plaintext di kolom users.verify_token. Risiko: DB leak → semua token valid terpapar; token ikut tersimpan di log/email provider.",
+                fix: "Kolom baru verify_token_hash (SHA-256 hex). Register & resend hanya menulis hash; raw token hanya dikirim ke email (URL verifikasi). verify-email: hash(raw) → lookup → cek expiry → update atomik bersyarat (WHERE email_verified=0) → consume (kosongkan hash). Kolom legacy verify_token tetap dibaca sebagai fallback untuk 96 akun lama, dibersihkan saat verifikasi sukses. Token: random 512-bit, 24 jam expiry, one-time, tidak replayable, tidak pernah masuk response/log/error.",
+                evidence: "Test F08-1: DB menyimpan sha256(raw token), verify_token = NULL, raw tidak muncul di response register (#16). Test F08-2/3/4: token valid → activated; salah → invalid; expired → expired. Test F08-5/6: replay & 2 request concurrent → hanya 1 transisi, log VERIFY_EMAIL = 1.",
+                tests: "F08-1 token hashed & raw tidak bocor · F08-2 valid token · F08-3 invalid token · F08-4 expired token · F08-5 replay (used token) · F08-6 concurrent verification (max 1 sukses)",
+              },
+              {
+                id: "F-10",
+                title: "F-10 — Race register & default role non-privileged",
+                status: <FixedBadge key="s10" />,
+                root: "(a) Cek duplikat 'select then insert' tidak atomik: 2 request bersamaan dengan email sama lolos pre-check, insert kedua melanggar UNIQUE → error mentah → 500 (bukan 'Email sudah terdaftar'). (b) users.role DEFAULT 'admin' di schema — satu insert lupa role = akun admin tak sengaja.",
+                fix: "(a) UNIQUE constraint tetap source of truth (users_email_unique diverifikasi ada di DB live & test). Error UNIQUE ditangkap eksplisit → 400 'Email sudah terdaftar' (tanpa stack trace). SQLITE_BUSY di-retry 6x dengan backoff + PRAGMA busy_timeout 5000ms. (b) DEFAULT role schema → 'free'; register selalu insert role:'free' eksplisit; register TIDAK membaca field role/isAdmin/isVerified/plan/entitlement dari body (hanya email, password, namaLengkap). Jalur lain: users POST (admin) pakai resolveUserRole, seed pakai role:'admin' eksplisit.",
+                evidence: "Test F10-1 (2x concurrent email sama): tepat 1 user, 1 sukses, sisanya 400, tanpa 500 & tanpa orphan. Test F10-2 (5x): tepat 1 user, nol 500. Test F10-3 (3 email berbeda): semua sukses, data terisolasi tanpa kontaminasi silang. Test role: body role=admin/plan=premium/isAdmin/emailVerified → user tetap role free, plan gratis, email_verified 0 (#12).",
+                tests: "F10-1 concurrent duplicate (2x) · F10-2 concurrent duplicate (5x) · F10-3 concurrent beda email · F10-4 default role free · F10-5 injection role/plan/isAdmin/isVerified ditolak",
+              },
+              {
+                id: "F-12",
+                title: "F-12 — Password maximum length (72 byte, tanpa truncate)",
+                status: <FixedBadge key="s12" />,
+                root: "Validasi lama hanya min 8 karakter. bcrypt memotong input di 72 byte secara diam-diam → dua password berbeda yang berbagi 72 byte pertama dianggap sama. Tidak ada batas atas → parsing body besar & perilaku truncate.",
+                fix: "Policy terpusat src/lib/password-policy.ts: MIN_PASSWORD_LENGTH=8, MAX_PASSWORD_BYTES=72, validatePasswordForCreation() mengukur Buffer.byteLength(password,'utf8') dan MENOLAK (bukan truncate) jika > 72 byte. Dipakai di register, /api/me/password, users POST, users/[id] PUT. LOGIN tidak memvalidasi panjang (verifikasi hash saja) → user lama dengan password >72 byte tetap bisa login.",
+                evidence: "Test F12-1: min 8 OK, normal OK, tepat 72 byte ASCII OK, 73 byte → 400 'maksimal', unicode pendek OK, unicode >72 byte (37×é) → 400, 5000 char → 400 cepat, error tidak memuat password (#13). Test F12-2: user lama password >72 byte tetap login (#14). Test F12-3: ganti password memakai policy sama (#15).",
+                tests: "F12-1 register: min/normal/exact-max/max+1/unicode/multi-byte/extremely-long · F12-2 kompatibilitas login password lama panjang · F12-3 change password policy sama",
+              },
+            ].map((f) => (
+              <Collapsible key={f.id} title={f.title} defaultOpen>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Status:</span>
+                  {f.status}
+                </div>
+                <p className="text-sm mb-2"><span className="font-bold text-[#1A2332]">Root cause:</span> <span className="text-gray-700">{f.root}</span></p>
+                <p className="text-sm mb-2"><span className="font-bold text-[#0D7C66]">Fix:</span> <span className="text-gray-700">{f.fix}</span></p>
+                <p className="text-sm mb-2"><span className="font-bold text-[#0D7C66]">Evidence:</span> <span className="text-gray-700">{f.evidence}</span></p>
+                <p className="text-sm"><span className="font-bold text-[#0D7C66]">Regression tests:</span> <span className="text-gray-700">{f.tests}</span></p>
+              </Collapsible>
+            ))}
+
+            <SectionHeader number="12" title="Checklist Register (diverifikasi)" />
             <TableWrap>
               <table className="w-full">
                 <thead>
                   <tr>
-                    <Th>ID</Th>
-                    <Th>Perbaikan</Th>
+                    <Th>Item</Th>
                     <Th>Status</Th>
                   </tr>
                 </thead>
                 <tbody>
                   {[
-                    ["F-07", "Insert user + seed data dibungkus dalam satu transaksi; jika kirim email gagal, seluruh data dummy dibersihkan (compensating cleanup) dengan urutan hapus leaf-first + loop-until-empty (aman walau foreign keys aktif).", <FixedBadge key="f7" />],
-                    ["F-08", "Token verifikasi disimpan sebagai SHA-256 hash di kolom baru verify_token_hash; kolom legacy verify_token tetap dibaca untuk 96 akun lama (fallback) lalu dibersihkan saat verifikasi sukses; update atomik bersyarat mencegah double-verification.", <FixedBadge key="f8" />],
-                    ["F-10", "Error UNIQUE constraint ditangkap dan dikembalikan sebagai 'Email sudah terdaftar' (bukan 500); error SQLITE_BUSY di-retry (6x, backoff) + PRAGMA busy_timeout 5s; default role schema diubah ke 'free' (semua jalur insert selalu menetapkan role eksplisit).", <FixedBadge key="f10" />],
-                    ["F-12", "Validasi password terpusat di src/lib/password-policy.ts: minimal 8 karakter, maksimal 72 byte (ukuran byte UTF-8, bukan jumlah karakter) — dipakai di register, ganti password, dan admin buat/ubah user; login tetap menerima password lama yang panjang (kompatibilitas).", <FixedBadge key="f12" />],
-                  ].map(([id, desc, badge]) => (
-                    <tr key={String(id)}>
-                      <Td className="font-mono text-xs font-bold text-[#0D7C66]">{id}</Td>
-                      <Td>{desc}</Td>
-                      <Td>{badge}</Td>
+                    ["Register creates expected user + related data", "PASS"],
+                    ["Default role is non-privileged (free)", "PASS"],
+                    ["Role cannot be injected", "PASS"],
+                    ["Email verification required (email_verified=0, login 403)", "PASS"],
+                    ["Verification token stored as hash (bukan plaintext)", "PASS"],
+                    ["Verification token one-time (replay ditolak)", "PASS"],
+                    ["Verification token expiry (24 jam)", "PASS"],
+                    ["Email failure cleanup (zero orphan)", "PASS"],
+                    ["Duplicate email handled safely (400, bukan 500)", "PASS"],
+                    ["Concurrent duplicate register (1 user, tanpa orphan)", "PASS"],
+                    ["Password maximum length (72 byte)", "PASS"],
+                    ["Unicode byte-length validation", "PASS"],
+                  ].map(([item, st]) => (
+                    <tr key={String(item)}>
+                      <Td>{item}</Td>
+                      <Td><VerdictBadge v={st} /></Td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </TableWrap>
 
-            <SectionHeader number="12" title="Hasil Regression Tests (16/16 PASS)" />
+            <SectionHeader number="13" title="Hasil Regression Tests (16/16 PASS)" />
             <TableWrap>
               <table className="w-full">
                 <thead>
@@ -656,17 +714,17 @@ export default function AuthSecurityAudit() {
 
             <Collapsible title="Catatan Deployment & Migrasi" defaultOpen>
               <ul className="list-disc pl-6 text-sm text-gray-700 space-y-1 py-2">
-                <li>Migration SQL: <span className="font-mono text-xs">scripts/migrate-verify-hash.sql</span> — <span className="font-mono text-xs">ALTER TABLE users ADD COLUMN verify_token_hash TEXT;</span> (non-destruktif).</li>
-                <li>96 akun lama dengan token plaintext tetap bisa verifikasi via fallback legacy; setelah terverifikasi, kolom verify_token ikut dibersihkan.</li>
-                <li>Default role schema berubah 'admin' → 'free'; SQLite tidak mendukung ALTER DEFAULT, namun seluruh jalur insert sudah menetapkan role eksplisit — tidak perlu rebuild tabel.</li>
-                <li>Jalankan test: <span className="font-mono text-xs">npx playwright test -c playwright.register.config.ts</span> (membuat DB test sendiri, aman).</li>
+                <li>Migration SQL: <span className="font-mono text-xs">scripts/migrate-verify-hash.sql</span> — <span className="font-mono text-xs">ALTER TABLE users ADD COLUMN verify_token_hash TEXT;</span> (non-destruktif) — SUDAH dijalankan di data.db live (20-08-2026), backup di /tmp/opencode.</li>
+                <li>96 akun lama dengan token plaintext tetap bisa verifikasi via fallback legacy; setelah terverifikasi, kolom verify_token ikut dibersihkan. Kolom legacy boleh di-drop pada migrasi berikutnya setelah semua pending token terpakai.</li>
+                <li>Default role schema berubah admin → free; SQLite tidak mendukung ALTER DEFAULT, namun seluruh jalur insert sudah menetapkan role eksplisit — tidak perlu rebuild tabel.</li>
+                <li>Jalankan test: <span className="font-mono text-xs">npx playwright test -c playwright.register.config.ts</span> (membuat DB test sendiri, aman). Build: <span className="font-mono text-xs">npx next build</span> PASS. Lint: eslint PASS untuk file yang diubah.</li>
               </ul>
             </Collapsible>
 
             <div className="bg-[#0D7C66] text-white rounded-xl p-5 mt-4">
               <p className="text-sm font-bold mb-1">STATUS REGISTRASI</p>
               <p className="text-sm text-emerald-50 leading-relaxed">
-                Modul registrasi dinyatakan SECURE untuk F-07/F-08/F-10/F-12 — didukung transaksi atomik, hash token, penanganan race, dan kebijakan password. Sisa prioritas terbuka: F-01 (reset password), F-02 (revoke sesi), F-03 (rate limit anti-spoof), F-09 (cascade delete user), F-11 (lockout per akun).
+                Modul registrasi: F-07, F-08, F-10, F-12 = FIXED (didukung 16 regression test + build + lint). Sisa prioritas masih OPEN di luar scope: F-01 (reset password), F-02 (revoke sesi), F-03 (rate limit anti-spoof), F-04 (admin default credential), F-05/F-06 (enumeration), F-09 (cascade delete user), F-11 (lockout per akun).
               </p>
             </div>
           </section>

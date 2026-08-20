@@ -1,4 +1,5 @@
 import { createClient } from "@libsql/client";
+import { createHash } from "node:crypto";
 
 export const DB_PATH = "file:./tests/.tmp/reg.db";
 
@@ -28,7 +29,6 @@ export async function tableCount(table: string) {
 }
 
 export function sha256hex(raw: string): string {
-  const { createHash } = require("node:crypto");
   return createHash("sha256").update(raw).digest("hex");
 }
 

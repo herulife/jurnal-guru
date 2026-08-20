@@ -138,7 +138,7 @@ export async function POST(req: Request) {
 
     // Insert user + seed data dummy dalam SATU transaction (atomic).
     // Retry terbatas hanya untuk SQLITE_BUSY (race penulisan file SQLite).
-    let maxAttempts = 6;
+    const maxAttempts = 6;
     let attempt = 0;
     for (;;) {
       try {
