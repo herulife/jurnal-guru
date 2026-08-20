@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import AdminGuard from "@/components/AdminGuard";
 import { apiGet } from "@/lib/useApi";
 
 type CalendarItem = {
@@ -64,6 +65,7 @@ export default function MarketingCalendarPage() {
   }
 
   return (
+    <AdminGuard>
     <div className="p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
@@ -143,5 +145,6 @@ export default function MarketingCalendarPage() {
         </div>
       </div>
     </div>
+    </AdminGuard>
   );
 }

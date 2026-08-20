@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import AdminGuard from "@/components/AdminGuard";
 import { apiGet, apiPatch } from "@/lib/useApi";
 
 interface Payment {
@@ -65,6 +66,7 @@ export default function BillingPage() {
   }
 
   return (
+    <AdminGuard>
     <div className="max-w-5xl mx-auto">
       <h1 className="text-2xl font-bold text-[#1A2332] mb-2">Tagihan & Pembayaran</h1>
       <p className="text-sm text-gray-500 mb-6">Verifikasi pembayaran transfer bank dan kelola pengaturan rekening.</p>
@@ -152,5 +154,6 @@ export default function BillingPage() {
         </table>
       </div>
     </div>
+    </AdminGuard>
   );
 }

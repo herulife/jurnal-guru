@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { eq, desc } from "drizzle-orm";
 import { db } from "@/db";
-import { users, payments } from "@/db/schema";
+import { users, payments, subscriptions } from "@/db/schema";
 import { requireAuth } from "@/lib/auth";
 
 const KOTA = ["Jakarta", "Bandung", "Surabaya", "Semarang", "Yogyakarta", "Medan", "Makassar", "Palembang", "Malang", "Denpasar", "Balikpapan", "Padang", "Bogor", "Tangerang"];
@@ -32,8 +32,9 @@ export async function GET(req: NextRequest) {
         .where(eq(users.role, "user"))
         .orderBy(desc(users.createdAt))
         .limit(8),
-      db.select({ userId: payments.userId, amount: payments.amount, verifiedAt: payments.verifiedAt, createdAt: payments.createdAt })
+      db.select({ userId: payments.userId, amount: payments.amount, planId: subscriptions.planId, verifiedAt: payments.verifiedAt, createdAt: payments.createdAt })
         .from(payments)
+        .leftJoin(subscriptions, eq(payments.subscriptionId, subscriptions.id))
         .where(eq(payments.status, "verified"))
         .orderBy(desc(payments.verifiedAt))
         .limit(8),
@@ -45,7 +46,7 @@ export async function GET(req: NextRequest) {
     const namaDipakai = new Set<string>();
 
     for (const p of recentPayments) {
-      const plan = PLAN_LABEL[p.amount === 49000 ? "premium_6m" : "pro_6m"] ?? "Pro";
+      const plan = PLAN_LABEL[p.planId ?? ""] ?? (p.amount >= 99000 || p.amount === 49000 ? "Premium" : "Pro");
       const user = recentUsers.find((u) => u.namaLengkap);
       const nama = user?.namaLengkap?.split(" ")[0] || "";
       if (nama && !namaDipakai.has(nama)) {

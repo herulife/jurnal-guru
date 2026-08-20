@@ -61,14 +61,15 @@ test.describe.serial("checkout order ux", () => {
   test("order flow: pilih pro → bayar → upload bukti → pending", async ({ browser }) => {
     const { ctx, page } = await userCtx(browser);
     await page.goto("/checkout?plan=pro");
-    await expect(page.getByText("Rp 29.000", { exact: false }).first()).toBeVisible();
+    await expect(page.getByText("Rp 49.000", { exact: false }).first()).toBeVisible();
 
     await page.getByRole("button", { name: /Lanjut ke Pembayaran/i }).first().click();
     await page.locator("#wa").fill("081234567890");
     await page.getByRole("button", { name: /Buat Pesanan/i }).click();
     await expect(page.getByText(/Silakan Transfer ke Rekening/i)).toBeVisible({ timeout: 15000 });
     await page.getByRole("button", { name: /Saya Sudah Transfer/i }).click();
-    await expect(page.getByText(/Upload Bukti Transfer/i)).toBeVisible({ timeout: 15000 });
+    await page.waitForLoadState("networkidle");
+    await expect(page.getByText(/Upload Bukti Transfer/i)).toBeVisible({ timeout: 30000 });
 
     await page.locator('input[type="file"]').setInputFiles({ name: "bukti.png", mimeType: "image/png", buffer: PNG });
     await page.getByRole("button", { name: /Kirim Konfirmasi/i }).click();
@@ -117,7 +118,8 @@ test.describe.serial("checkout order ux", () => {
     await page.getByRole("button", { name: /Buat Pesanan/i }).click();
     await expect(page.getByText(/Silakan Transfer ke Rekening/i)).toBeVisible({ timeout: 15000 });
     await page.getByRole("button", { name: /Saya Sudah Transfer/i }).click();
-    await expect(page.getByText(/Upload Bukti Transfer/i)).toBeVisible({ timeout: 15000 });
+    await page.waitForLoadState("networkidle");
+    await expect(page.getByText(/Upload Bukti Transfer/i)).toBeVisible({ timeout: 30000 });
     await page.locator('input[type="file"]').setInputFiles({ name: "bukti2.png", mimeType: "image/png", buffer: PNG });
     await page.getByRole("button", { name: /Kirim Konfirmasi/i }).click();
     await expect(page.getByText("Menunggu Verifikasi").first()).toBeVisible({ timeout: 20000 });

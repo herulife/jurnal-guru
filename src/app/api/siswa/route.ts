@@ -5,6 +5,7 @@ import { eq, and } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
 import { canUseKelas } from "@/lib/ownership";
+import { getUserPlan, PLAN_LIMITS, countSiswa } from "@/lib/plans";
 
 export async function GET(req: Request) {
   try {
@@ -47,6 +48,23 @@ export async function POST(req: Request) {
     if (!(await canUseKelas(body.kelasId, scope))) {
       return apiError("Kelas tidak valid untuk akun Anda", 403);
     }
+
+    // ── Student limit enforcement ──
+    if (session.role !== "Admin") {
+      const plan = await getUserPlan(session.id);
+      const maxSiswa = PLAN_LIMITS[plan].maxSiswa;
+      if (maxSiswa !== null) {
+        const current = await countSiswa(session.id);
+        if (current >= maxSiswa) {
+          return apiError(
+            `Paket ${PLAN_LIMITS[plan].label} mendukung hingga ${maxSiswa} siswa. ` +
+            `Data yang sudah ada tetap aman. Upgrade ke Pro untuk menambahkan siswa tanpa batas.`,
+            403
+          );
+        }
+      }
+    }
+
     const id = uuidv4();
     await db.insert(dataSiswa).values({
       id,

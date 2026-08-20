@@ -2,6 +2,7 @@ import { requireAuth, isAdminRole, AuthError, addLog } from "@/lib/auth";
 import { db } from "@/db";
 import { sql } from "drizzle-orm";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
+import { getUserPlan, PLAN_LIMITS, countKelas, countSiswa } from "@/lib/plans";
 
 const VALID_COL_RE = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 
@@ -104,6 +105,32 @@ export async function POST(req: Request) {
       });
 
       await addLog(session.id, "BACKUP_IMPORT", `Import ${restored} baris data`);
+
+      if (!isAdminRole(session.role)) {
+        const plan = await getUserPlan(session.id);
+        const limits = PLAN_LIMITS[plan];
+        if (limits.maxKelas !== null) {
+          const currentKelas = await countKelas(session.id);
+          if (currentKelas > limits.maxKelas) {
+            return apiError(
+              `Import berhasil (${restored} baris), tetapi Anda memiliki ${currentKelas} kelas (maksimal ${limits.maxKelas} untuk paket ${limits.label}). ` +
+              `Data yang sudah ada tetap aman. Upgrade ke Pro untuk menggunakan lebih banyak kelas.`,
+              200
+            );
+          }
+        }
+        if (limits.maxSiswa !== null) {
+          const currentSiswa = await countSiswa(session.id);
+          if (currentSiswa > limits.maxSiswa) {
+            return apiError(
+              `Import berhasil (${restored} baris), tetapi Anda memiliki ${currentSiswa} siswa (maksimal ${limits.maxSiswa} untuk paket ${limits.label}). ` +
+              `Data yang sudah ada tetap aman. Upgrade ke Pro untuk menambahkan siswa tanpa batas.`,
+              200
+            );
+          }
+        }
+      }
+
       return apiOk({ msg: `${restored} baris data berhasil direstore` });
     }
 

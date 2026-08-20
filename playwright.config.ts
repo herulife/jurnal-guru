@@ -16,6 +16,7 @@ export default defineConfig({
     { name: "sales", testMatch: /_sales\.spec\.ts/ },
     { name: "checkout", testMatch: /_checkout\.spec\.ts/ },
     { name: "security", testMatch: /_security\.spec\.ts/ },
+    { name: "entitlement", testMatch: /entitlement\.spec\.ts/ },
     { name: "tracking", testMatch: /_tracking\.spec\.ts/ },
     { name: "mobile", testMatch: /_mobile\.spec\.ts/ },
     { name: "tracking", testMatch: /_tracking\.spec\.ts/ },

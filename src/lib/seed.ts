@@ -85,17 +85,15 @@ export async function seedDummyData(userId: string) {
     logoUrl: "",
   });
 
-  // Kelas
+  // Kelas — limit to 1 for free plan (max 1 kelas aktif)
   const k1 = uuidv4();
-  const k2 = uuidv4();
   await db.insert(dataKelas).values([
     { id: k1, userId, namaKelas: "X IPA 1", tingkat: 10, jurusan: "IPA", tahunAjaran: tahun, waliKelas: "Wali Kelas 1" },
-    { id: k2, userId, namaKelas: "XI IPS 1", tingkat: 11, jurusan: "IPS", tahunAjaran: tahun, waliKelas: "Wali Kelas 2" },
   ]);
 
-  // Siswa (6 per kelas) — insert per baris karena D1 batasi 100 param/query
+  // Siswa (6 in single class) — insert per row because D1 limits 100 params/query
   const siswaIds: string[] = [];
-  const siswaRows = NAMA.map((nama, i) => {
+  const siswaRows = NAMA.slice(0, 6).map((nama, i) => {
     const id = uuidv4();
     siswaIds.push(id);
     const no = String(i + 1).padStart(3, "0");
@@ -106,7 +104,7 @@ export async function seedDummyData(userId: string) {
       nisn: `0111123${String(i + 1).padStart(4, "0")}`,
       namaSiswa: nama,
       jenisKelamin: JK[i],
-      kelasId: i < 6 ? k1 : k2,
+      kelasId: k1,
       alamat: `Jl. Contoh No. ${i + 1}`,
       telepon: `08123456${String(i + 1).padStart(4, "0")}`,
       email: `siswa${i + 1}@mail.test`,
@@ -123,8 +121,6 @@ export async function seedDummyData(userId: string) {
     { id: uuidv4(), userId, kelasId: k1, mataPelajaran: "Bahasa Indonesia", hari: "Senin", jamMulai: "08:30", jamSelesai: "10:00", semester: "1", ruangan: "R.101" },
     { id: uuidv4(), userId, kelasId: k1, mataPelajaran: "Biologi", hari: "Selasa", jamMulai: "07:00", jamSelesai: "08:30", semester: "1", ruangan: "R.Lab" },
     { id: uuidv4(), userId, kelasId: k1, mataPelajaran: "Fisika", hari: "Kamis", jamMulai: "07:00", jamSelesai: "08:30", semester: "1", ruangan: "R.102" },
-    { id: uuidv4(), userId, kelasId: k2, mataPelajaran: "Matematika", hari: "Senin", jamMulai: "10:00", jamSelesai: "11:30", semester: "1", ruangan: "R.103" },
-    { id: uuidv4(), userId, kelasId: k2, mataPelajaran: "Ekonomi", hari: "Rabu", jamMulai: "09:00", jamSelesai: "10:30", semester: "1", ruangan: "R.104" },
   ]);
 
   // Absensi (kelas 1, mapel Matematika)
@@ -180,13 +176,13 @@ export async function seedDummyData(userId: string) {
   });
 
   // Kelompok belajar
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 6; i++) {
     await db.insert(kelompokBelajar).values({
       id: uuidv4(),
       userId,
       kelasId: k1,
-      kelompok: i < 4 ? "Kelompok A" : "Kelompok B",
-      no: String((i % 4) + 1),
+      kelompok: i < 3 ? "Kelompok A" : "Kelompok B",
+      no: String((i % 3) + 1),
       siswaId: siswaIds[i],
       nis: siswaRows[i].nis,
       namaSiswa: NAMA[i],

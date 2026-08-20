@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import AdminGuard from "@/components/AdminGuard";
 import HeaderActions from "@/components/HeaderActions";
 import TutorialLink from "@/components/TutorialLink";
 import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/useApi";
@@ -87,6 +88,7 @@ export default function UsersPage() {
   }
 
   return (
+    <AdminGuard>
     <div className="p-6 fade-in">
       <header className="sticky top-14 md:top-0 z-20 md:z-10 bg-[#F5F3EF]/80 backdrop-blur-lg border-b border-[#E8E4DC] -mx-6 px-6 py-3 flex items-center justify-between mb-6">
         <h1 className="text-lg font-bold text-gray-800 font-[Outfit]">Kelola User</h1>
@@ -223,5 +225,6 @@ export default function UsersPage() {
         </div>
       )}
     </div>
+    </AdminGuard>
   );
 }

@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, real, index } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
@@ -31,7 +31,7 @@ export const profilSekolah = sqliteTable("profil_sekolah", {
   namaGuru: text("nama_guru"),
   nipGuru: text("nip_guru"),
   logoUrl: text("logo_url"),
-});
+}, (t) => [index("profil_user_idx").on(t.userId)]);
 
 export const dataKelas = sqliteTable("data_kelas", {
   id: text("id").primaryKey(),
@@ -41,7 +41,7 @@ export const dataKelas = sqliteTable("data_kelas", {
   jurusan: text("jurusan"),
   tahunAjaran: text("tahun_ajaran"),
   waliKelas: text("wali_kelas"),
-});
+}, (t) => [index("kelas_user_idx").on(t.userId)]);
 
 export const dataSiswa = sqliteTable("data_siswa", {
   id: text("id").primaryKey(),
@@ -55,7 +55,7 @@ export const dataSiswa = sqliteTable("data_siswa", {
   telepon: text("telepon"),
   email: text("email"),
   namaOrtu: text("nama_ortu"),
-});
+}, (t) => [index("siswa_user_idx").on(t.userId), index("siswa_kelas_idx").on(t.kelasId)]);
 
 export const jadwalMengajar = sqliteTable("jadwal_mengajar", {
   id: text("id").primaryKey(),
@@ -67,7 +67,7 @@ export const jadwalMengajar = sqliteTable("jadwal_mengajar", {
   jamSelesai: text("jam_selesai"),
   semester: text("semester"),
   ruangan: text("ruangan"),
-});
+}, (t) => [index("jadwal_user_idx").on(t.userId), index("jadwal_kelas_idx").on(t.kelasId)]);
 
 export const absensi = sqliteTable("absensi", {
   id: text("id").primaryKey(),
@@ -78,7 +78,7 @@ export const absensi = sqliteTable("absensi", {
   status: text("status").notNull().default("Hadir"),
   keterangan: text("keterangan"),
   userId: text("user_id"),
-});
+}, (t) => [index("absensi_user_idx").on(t.userId), index("absensi_siswa_idx").on(t.siswaId), index("absensi_kelas_idx").on(t.kelasId)]);
 
 export const nilai = sqliteTable("nilai", {
   id: text("id").primaryKey(),
@@ -94,7 +94,7 @@ export const nilai = sqliteTable("nilai", {
   nilai: real("nilai").default(0),
   kkm: real("kkm").default(75),
   remedial: text("remedial"),
-});
+}, (t) => [index("nilai_user_idx").on(t.userId), index("nilai_siswa_idx").on(t.siswaId), index("nilai_kelas_idx").on(t.kelasId)]);
 
 export const jurnalMengajar = sqliteTable("jurnal_mengajar", {
   id: text("id").primaryKey(),
@@ -109,7 +109,7 @@ export const jurnalMengajar = sqliteTable("jurnal_mengajar", {
   solusi: text("solusi"),
   kehadiranSiswa: text("kehadiran_siswa"),
   catatan: text("catatan"),
-});
+}, (t) => [index("jurnal_user_idx").on(t.userId), index("jurnal_kelas_idx").on(t.kelasId)]);
 
 export const settings = sqliteTable("settings", {
   key: text("key").primaryKey(),
@@ -144,7 +144,7 @@ export const kelompokBelajar = sqliteTable("kelompok_belajar", {
   jenisKelamin: text("jenis_kelamin"),
   kelasAsal: text("kelas_asal"),
   nilai: text("nilai"),
-});
+}, (t) => [index("kelompok_user_idx").on(t.userId)]);
 
 export const lckh = sqliteTable("lckh", {
   id: text("id").primaryKey(),
@@ -154,7 +154,7 @@ export const lckh = sqliteTable("lckh", {
   pekerjaan: text("pekerjaan"),
   tanggal: text("tanggal"),
   jurnalId: text("jurnal_id"),
-});
+}, (t) => [index("lckh_user_idx").on(t.userId)]);
 
 export const kalenderCatatan = sqliteTable("kalender_catatan", {
   id: text("id").primaryKey(),
@@ -163,7 +163,7 @@ export const kalenderCatatan = sqliteTable("kalender_catatan", {
   userId: text("user_id"),
   createdAt: text("created_at").notNull().default("datetime('now')"),
   updatedAt: text("updated_at").notNull().default("datetime('now')"),
-});
+}, (t) => [index("kalender_user_idx").on(t.userId)]);
 
 export const lkb = sqliteTable("lkb", {
   id: text("id").primaryKey(),
@@ -174,7 +174,7 @@ export const lkb = sqliteTable("lkb", {
   buktiDokumen: text("bukti_dokumen"),
   bulan: text("bulan"),
   tahun: text("tahun"),
-});
+}, (t) => [index("lkb_user_idx").on(t.userId)]);
 
 export const activityLog = sqliteTable("activity_log", {
   id: text("id").primaryKey(),
@@ -182,7 +182,7 @@ export const activityLog = sqliteTable("activity_log", {
   userId: text("user_id"),
   action: text("action"),
   description: text("description"),
-});
+}, (t) => [index("log_user_idx").on(t.userId)]);
 
 export const subscriptions = sqliteTable("subscriptions", {
   id: text("id").primaryKey(),
@@ -192,7 +192,7 @@ export const subscriptions = sqliteTable("subscriptions", {
   startedAt: text("started_at").notNull(),
   expiresAt: text("expires_at"),
   createdAt: text("created_at").notNull().default("datetime('now')"),
-});
+}, (t) => [index("subs_user_idx").on(t.userId)]);
 
 export const payments = sqliteTable("payments", {
   id: text("id").primaryKey(),
@@ -211,9 +211,7 @@ export const payments = sqliteTable("payments", {
   verifiedBy: text("verified_by"),
   whatsapp: text("whatsapp"),
   createdAt: text("created_at").notNull().default("datetime('now')"),
-});
-
-// ── MARKETINGOS — Core Marketing (Phase 1) ──
+}, (t) => [index("pay_user_idx").on(t.userId)]);
 
 export const marketingGoals = sqliteTable("marketing_goals", {
   id: text("id").primaryKey(),
@@ -229,7 +227,7 @@ export const marketingGoals = sqliteTable("marketing_goals", {
   status: text("status").notNull().default("ON_TRACK"),
   createdAt: text("created_at").notNull().default("datetime('now')"),
   updatedAt: text("updated_at").notNull().default("datetime('now')"),
-});
+}, (t) => [index("mgoals_user_idx").on(t.userId)]);
 
 export const marketingPlans = sqliteTable("marketing_plans", {
   id: text("id").primaryKey(),
@@ -245,7 +243,7 @@ export const marketingPlans = sqliteTable("marketing_plans", {
   goalId: text("goal_id").references(() => marketingGoals.id),
   createdAt: text("created_at").notNull().default("datetime('now')"),
   updatedAt: text("updated_at").notNull().default("datetime('now')"),
-});
+}, (t) => [index("mplans_user_idx").on(t.userId)]);
 
 export const marketingTasks = sqliteTable("marketing_tasks", {
   id: text("id").primaryKey(),
@@ -265,7 +263,7 @@ export const marketingTasks = sqliteTable("marketing_tasks", {
   notes: text("notes"),
   createdAt: text("created_at").notNull().default("datetime('now')"),
   updatedAt: text("updated_at").notNull().default("datetime('now')"),
-});
+}, (t) => [index("mtasks_user_idx").on(t.userId)]);
 
 export const marketingJournal = sqliteTable("marketing_journal", {
   id: text("id").primaryKey(),
@@ -278,9 +276,7 @@ export const marketingJournal = sqliteTable("marketing_journal", {
   learning: text("learning"),
   nextAction: text("next_action"),
   createdAt: text("created_at").notNull().default("datetime('now')"),
-});
-
-// ── TRACKING MINIMAL (Pre-Ad Launch) ──
+}, (t) => [index("mjournal_user_idx").on(t.userId)]);
 
 export const events = sqliteTable("events", {
   id: text("id").primaryKey(),
@@ -288,4 +284,4 @@ export const events = sqliteTable("events", {
   timestamp: text("timestamp").notNull(),
   userId: text("user_id"),
   meta: text("meta"),
-});
+}, (t) => [index("events_user_idx").on(t.userId)]);

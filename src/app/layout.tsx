@@ -4,29 +4,41 @@ import { ToastProvider } from "@/components/Feedback";
 
 export const metadata: Metadata = {
   title: {
-    default: "Jurnal Guru — Aplikasi Jurnal Mengajar & Administrasi Guru Gratis",
+    default: "Jurnal Guru — Aplikasi Administrasi Guru & Sinkronisasi Google Sheets",
     template: "%s — Jurnal Guru",
   },
   description:
-    "Aplikasi jurnal mengajar gratis untuk guru Indonesia: kelola absensi, nilai, rekap otomatis, LCKH/LKB, dan data siswa dalam satu dashboard. Hemat waktu administrasi, rekap otomatis.",
-  metadataBase: new URL("https://guru.cintabuku.site"),
+    "Aplikasi administrasi guru untuk kelola absensi, nilai, jurnal mengajar, dan sinkronisasi Google Sheets. Hemat waktu, data tetap dalam kendali Anda.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://guru.cintabuku.site"),
   openGraph: {
     type: "website",
     locale: "id_ID",
     siteName: "Jurnal Guru",
-    title: "Jurnal Guru — Aplikasi Jurnal Mengajar & Administrasi Guru Gratis",
+    title: "Jurnal Guru — Aplikasi Administrasi Guru & Sinkronisasi Google Sheets",
     description:
-      "Aplikasi jurnal mengajar gratis untuk guru Indonesia: absensi, nilai, jurnal mengajar, LCKH/LKB, dan data siswa dalam satu dashboard yang aman dan mudah digunakan.",
+      "Aplikasi administrasi guru untuk kelola absensi, nilai, jurnal mengajar, dan sinkronisasi Google Sheets. Hemat waktu, data tetap dalam kendali Anda.",
+    url: process.env.NEXT_PUBLIC_APP_URL || "https://guru.cintabuku.site",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Jurnal Guru — Aplikasi Jurnal Mengajar & Administrasi Guru Gratis",
+    title: "Jurnal Guru — Aplikasi Administrasi Guru & Sinkronisasi Google Sheets",
     description:
-      "Aplikasi jurnal mengajar gratis untuk guru Indonesia: absensi, nilai, jurnal mengajar, LCKH/LKB, dan data siswa dalam satu dashboard yang aman dan mudah digunakan.",
+      "Aplikasi administrasi guru untuk kelola absensi, nilai, jurnal mengajar, dan sinkronisasi Google Sheets. Hemat waktu, data tetap dalam kendali Anda.",
   },
   alternates: {
-    canonical: "/",
+    canonical: process.env.NEXT_PUBLIC_APP_URL || "https://guru.cintabuku.site",
   },
+  keywords: [
+    "aplikasi administrasi guru",
+    "jurnal guru",
+    "aplikasi jurnal mengajar",
+    "absensi guru",
+    "administrasi guru",
+    "aplikasi guru",
+    "nilai siswa",
+    "rekap absensi",
+    "google sheets guru",
+  ],
 };
 
 export default function RootLayout({

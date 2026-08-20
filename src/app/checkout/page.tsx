@@ -10,7 +10,7 @@ import { useToast } from "@/components/Feedback";
 import OrderSteps from "@/components/OrderSteps";
 
 const PRO_DURATIONS = [
-  { id: "pro_6m", label: "6 Bulan", price: 29000, perBulan: 4834, months: 6 },
+  { id: "pro_6m", label: "6 Bulan", price: 29000, perBulan: 4833, months: 6 },
 ];
 
 const PREMIUM = {

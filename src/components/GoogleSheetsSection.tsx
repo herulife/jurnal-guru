@@ -17,16 +17,47 @@ export default function GoogleSheetsSection() {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [msg, setMsg] = useState<{ type: "ok" | "er"; text: string } | null>(null);
+  const [available, setAvailable] = useState<boolean | null>(null);
 
   useEffect(() => {
     apiGet<SheetsInfo>("/api/sheets").then((r) => {
       if (r.ok && r.data) {
         setInfo(r.data);
         setUrl(r.data.spreadsheetUrl);
+        setAvailable(true);
+      } else {
+        setAvailable(false);
       }
+      setLoading(false);
+    }).catch(() => {
+      setAvailable(false);
       setLoading(false);
     });
   }, []);
+
+  if (loading) {
+    return (
+      <div className="card">
+        <div className="flex items-center gap-3 text-gray-400 text-sm py-4">
+          <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin"></div>
+          Memeriksa fitur Google Sheets...
+        </div>
+      </div>
+    );
+  }
+
+  if (available === false) {
+    return (
+      <div className="card">
+        <h3 className="font-bold text-gray-800 mb-2 font-[Outfit]">
+          <i className="fas fa-file-excel text-gray-400 mr-2"></i>Sinkronisasi Google Sheets
+        </h3>
+        <p className="text-sm text-gray-500 leading-relaxed">
+          Fitur ini memerlukan konfigurasi Google Service Account di server. Hubungi administrator untuk mengaktifkannya.
+        </p>
+      </div>
+    );
+  }
 
   async function handleSave() {
     setLoading(true);
@@ -74,7 +105,6 @@ export default function GoogleSheetsSection() {
         </div>
       )}
 
-      {/* Tutorial */}
       <div className="space-y-4 mb-6">
         <div className="flex gap-3">
           <span className="w-7 h-7 shrink-0 rounded-full bg-[#0D7C66] text-white flex items-center justify-center font-bold text-sm">1</span>
@@ -114,7 +144,6 @@ export default function GoogleSheetsSection() {
         </div>
       </div>
 
-      {/* URL input */}
       <input
         type="text"
         className="input mb-3"
@@ -131,7 +160,6 @@ export default function GoogleSheetsSection() {
         </button>
       </div>
 
-      {/* Scopes */}
       <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-2">Data yang disinkronkan</p>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
         {(info?.scopes || []).map((s) => (

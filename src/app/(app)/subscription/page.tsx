@@ -35,7 +35,7 @@ interface SubsInfo {
 function sisaHari(expires?: string | null): string | null {
   if (!expires) return null;
   const ms = new Date(expires).getTime() - Date.now();
-  if (ms <= 0) return "Trial telah berakhir";
+  if (ms <= 0) return "Paket berakhir";
   const hari = Math.ceil(ms / 86400000);
   return hari <= 1 ? "Berakhir hari ini" : `Berakhir dalam ${hari} hari`;
 }
@@ -68,7 +68,7 @@ export default function SubscriptionPage() {
   }, []);
 
   const planMeta: Record<Plan, { label: string; desc: string; color: string }> = {
-    gratis: { label: "Gratis", desc: "Absensi, rekap presensi, jurnal mengajar — coba gratis untuk akun baru", color: "bg-gray-100 text-gray-700" },
+    gratis: { label: "Gratis", desc: "Paket dasar: 1 kelas, hingga 30 siswa, absensi, rekap presensi, jurnal mengajar", color: "bg-gray-100 text-gray-700" },
     pro: { label: "Pro", desc: "Semua fitur Gratis + nilai, rekap nilai, kelompok belajar", color: "bg-[#0D7C66]/10 text-[#0D7C66]" },
     premium: { label: "Premium", desc: "Semua fitur Pro + generate LCKH dan LKB — Rp 49.000 / 6 bulan, akses semua", color: "bg-amber-100 text-amber-700" },
   };
@@ -87,7 +87,7 @@ export default function SubscriptionPage() {
   const metaLabel = isAdmin ? "Admin — Akses Penuh" : meta.label;
   const metaColor = isAdmin ? "bg-[#1A2332] text-white" : meta.color;
   const sisa = sisaHari(info?.planExpires);
-  const isTrial = plan === "gratis" && !!info?.planExpires;
+  const isExpiring = plan !== "gratis" && !!info?.planExpires && sisa !== null;
 
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -103,10 +103,10 @@ export default function SubscriptionPage() {
         </div>
         <p className="text-sm text-gray-600 mb-4">{isAdmin ? "Akun administrator aplikasi. Semua fitur di semua paket terbuka tanpa berlangganan." : meta.desc}</p>
 
-        {isTrial && (
+        {isExpiring && (
           <div className="bg-[#E8A317]/10 border border-[#E8A317]/30 rounded-xl p-3 text-sm text-[#a16207] flex items-center gap-2 mb-4">
             <i className="fas fa-hourglass-half"></i>
-            <span className="font-medium">{sisa} — upgrade untuk fitur lengkap tanpa batas</span>
+            <span className="font-medium">{sisa} — perpanjang untuk fitur lengkap tanpa batas</span>
           </div>
         )}
 

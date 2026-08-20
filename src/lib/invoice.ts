@@ -30,7 +30,7 @@ export function invoiceWaText(info: InvoiceInfo, status: "pending" | "paid"): st
     status === "paid"
       ? "Terima kasih sudah berlangganan! Paket kamu sudah aktif."
       : "Setelah transfer, konfirmasi di dashboard dan paket akan aktif maksimal 24 jam.",
-    "https://guru.cintabuku.site",
+    process.env.NEXT_PUBLIC_APP_URL || "https://guru.cintabuku.site",
   ];
   return lines.join("\n");
 }

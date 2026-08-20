@@ -4,6 +4,7 @@ import { dataSiswa, dataKelas } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { apiError, apiOk, apiServerError } from "@/lib/utils";
+import { getUserPlan, PLAN_LIMITS, countSiswa } from "@/lib/plans";
 
 const MAX_BATCH = 500;
 
@@ -19,6 +20,23 @@ export async function POST(req: Request) {
     if (arr.length > MAX_BATCH) {
       return apiError(`Maksimal ${MAX_BATCH} record per upload`);
     }
+
+    // ── Student limit enforcement for bulk upload ──
+    if (session.role !== "Admin") {
+      const plan = await getUserPlan(session.id);
+      const maxSiswa = PLAN_LIMITS[plan].maxSiswa;
+      if (maxSiswa !== null) {
+        const current = await countSiswa(session.id);
+        if (current + arr.length > maxSiswa) {
+          return apiError(
+            `Import dibatalkan. Paket ${PLAN_LIMITS[plan].label} mendukung hingga ${maxSiswa} siswa ` +
+            `(saat ini ${current}). Upgrade ke Pro untuk import tanpa batas.`,
+            403
+          );
+        }
+      }
+    }
+
     const kelasList = scope
       ? await db.select().from(dataKelas).where(eq(dataKelas.userId, scope)).all()
       : await db.select().from(dataKelas).all();

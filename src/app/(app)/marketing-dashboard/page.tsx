@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import AdminGuard from "@/components/AdminGuard";
 import { apiGet } from "@/lib/useApi";
 import {
   Chart,
@@ -156,6 +157,7 @@ export default function MarketingDashboardPage() {
   }
 
   return (
+    <AdminGuard>
     <div className="p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-6">
@@ -234,5 +236,6 @@ export default function MarketingDashboardPage() {
         </div>
       </div>
     </div>
+    </AdminGuard>
   );
 }

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://guru.cintabuku.site";
+  const base = process.env.NEXT_PUBLIC_APP_URL || "https://guru.cintabuku.site";
   const now = new Date();
   const lastmod = now.toISOString().split("T")[0];
 
